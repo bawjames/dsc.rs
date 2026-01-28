@@ -835,8 +835,10 @@ fn print_category_tree(categories: &[CategoryInfo]) {
     }
 
     let mut seen = std::collections::HashSet::new();
-    for id in roots {
-        print_category_node(&map, &children, id, 0, &mut seen);
+    let last_index = roots.len().saturating_sub(1);
+    for (idx, id) in roots.into_iter().enumerate() {
+        let is_last = idx == last_index;
+        print_category_node(&map, &children, id, "", is_last, &mut seen);
     }
 }
 
@@ -844,18 +846,30 @@ fn print_category_node(
     map: &std::collections::HashMap<u64, CategoryInfo>,
     children: &std::collections::HashMap<u64, Vec<u64>>,
     id: u64,
-    depth: usize,
+    prefix: &str,
+    is_last: bool,
     seen: &mut std::collections::HashSet<u64>,
 ) {
     if !seen.insert(id) {
         return;
     }
     if let Some(category) = map.get(&id) {
-        let indent = "  ".repeat(depth);
-        println!("{}{} - {}", indent, id, category.name);
+        let branch = if is_last {
+            "└── ".to_string()
+        } else {
+            "├── ".to_string()
+        };
+        println!("{}{}{} - {}", prefix, branch, id, category.name);
         if let Some(child_ids) = children.get(&id) {
-            for child_id in child_ids {
-                print_category_node(map, children, *child_id, depth + 1, seen);
+            let new_prefix = if is_last {
+                format!("{}    ", prefix)
+            } else {
+                format!("{}│   ", prefix)
+            };
+            let last_index = child_ids.len().saturating_sub(1);
+            for (idx, child_id) in child_ids.iter().enumerate() {
+                let child_last = idx == last_index;
+                print_category_node(map, children, *child_id, &new_prefix, child_last, seen);
             }
         }
     }
