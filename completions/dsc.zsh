@@ -218,6 +218,7 @@ _arguments "${_arguments_options[@]}" : \
 _arguments "${_arguments_options[@]}" : \
 '-d+[]:DISCOURSE:_default' \
 '--discourse=[]:DISCOURSE:_default' \
+'--tree[]' \
 '-h[Print help]' \
 '--help[Print help]' \
 '::discourse_name:_default' \

@@ -81,6 +81,7 @@ complete -c dsc -n "__fish_dsc_using_subcommand category; and not __fish_seen_su
 complete -c dsc -n "__fish_dsc_using_subcommand category; and not __fish_seen_subcommand_from list copy pull push help" -f -a "push"
 complete -c dsc -n "__fish_dsc_using_subcommand category; and not __fish_seen_subcommand_from list copy pull push help" -f -a "help" -d 'Print this message or the help of the given subcommand(s)'
 complete -c dsc -n "__fish_dsc_using_subcommand category; and __fish_seen_subcommand_from list" -s d -l discourse -r
+complete -c dsc -n "__fish_dsc_using_subcommand category; and __fish_seen_subcommand_from list" -l tree
 complete -c dsc -n "__fish_dsc_using_subcommand category; and __fish_seen_subcommand_from list" -s h -l help -d 'Print help'
 complete -c dsc -n "__fish_dsc_using_subcommand category; and __fish_seen_subcommand_from copy" -s d -l discourse -r
 complete -c dsc -n "__fish_dsc_using_subcommand category; and __fish_seen_subcommand_from copy" -s h -l help -d 'Print help'

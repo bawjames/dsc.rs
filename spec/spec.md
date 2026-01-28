@@ -23,12 +23,12 @@ Lists all Discourse installs known to dsc.rs, optionally filtered by tags.
 
 List formats:
 
-- `plaintext` (default)
-- `markdown`
-- `markdown-table`
-- `json`
-- `yaml`
-- `csv`
+- `plaintext` | `txt`(default)
+- `markdown` | `md`
+- `markdown-table` | `md-table`
+- `json` 
+- `yaml` | `yml`
+- `csv` 
 
 ### `dsc add <name>,<name>,... [--interactive]`
 
@@ -124,7 +124,12 @@ The timestamps of both files will be shown before proceeding, and the user will 
 
 Lists all categories in the specified Discourse install, with their IDs and names.
 
-For consistency with other commands, prefer `--discourse <discourse>` when multiple discourses are configured.
+List formats are the same as `dsc list`.
+
+Flags:
+- `--tree` prints categories in a hierarchy, with subcategories indented under parents.
+
+
 
 ### `dsc category copy --discourse <discourse> <category-id>`
 
@@ -157,6 +162,8 @@ Pushes the specified local Markdown files up to the specified category in the Di
 Lists all groups in the specified Discourse install, with their IDs, names, and full names.
 
 If no Discourse is specified, the command will respond with syntax help.
+
+List formats are the same as `dsc list`.
 
 ### `dsc group info --discourse <discourse> --group <group-id>`
 

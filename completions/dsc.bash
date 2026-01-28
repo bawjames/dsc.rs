@@ -551,7 +551,7 @@ _dsc() {
             return 0
             ;;
         dsc__category__list)
-            opts="-d -h --discourse --help [DISCOURSE_NAME]"
+            opts="-d -h --discourse --tree --help [DISCOURSE_NAME]"
             if [[ ${cur} == -* || ${COMP_CWORD} -eq 3 ]] ; then
                 COMPREPLY=( $(compgen -W "${opts}" -- "${cur}") )
                 return 0

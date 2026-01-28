@@ -1,6 +1,6 @@
 use anyhow::{Context, Result, anyhow};
 use clap::{CommandFactory, Parser, Subcommand, ValueEnum};
-use clap_complete::{generate, Shell};
+use clap_complete::{Shell, generate};
 use dsc::config::{Config, DiscourseConfig, find_discourse, load_config, save_config};
 use dsc::discourse::{CategoryInfo, DiscourseClient, TopicSummary};
 use dsc::utils::{ensure_dir, read_markdown, resolve_topic_path, slugify, write_markdown};
@@ -111,6 +111,8 @@ enum CategoryCommand {
         discourse_name: Option<String>,
         #[arg(long, short = 'd')]
         discourse: Option<String>,
+        #[arg(long)]
+        tree: bool,
     },
     Copy {
         #[arg(long, short = 'd', required = true)]
@@ -218,9 +220,7 @@ fn main() -> Result<()> {
             post_changelog,
         } => {
             if name != "all" && (concurrent || max.is_some()) {
-                return Err(anyhow!(
-                    "--concurrent/--max only apply to 'dsc update all'"
-                ));
+                return Err(anyhow!("--concurrent/--max only apply to 'dsc update all'"));
             }
             if name == "all" {
                 if max.is_some() && !concurrent {
@@ -269,7 +269,13 @@ fn main() -> Result<()> {
             CategoryCommand::List {
                 discourse_name,
                 discourse,
-            } => category_list(&config, discourse_name.as_deref(), discourse.as_deref())?,
+                tree,
+            } => category_list(
+                &config,
+                discourse_name.as_deref(),
+                discourse.as_deref(),
+                tree,
+            )?,
             CategoryCommand::Copy {
                 discourse,
                 category_id,
@@ -292,9 +298,7 @@ fn main() -> Result<()> {
         },
         Commands::Group { command } => match command {
             GroupCommand::List { discourse } => group_list(&config, &discourse)?,
-            GroupCommand::Info { discourse, group } => {
-                group_info(&config, &discourse, group)?
-            }
+            GroupCommand::Info { discourse, group } => group_info(&config, &discourse, group)?,
             GroupCommand::Copy {
                 discourse,
                 target,
@@ -471,10 +475,7 @@ fn import_csv(config: &mut Config, raw: &str) -> Result<()> {
         } else {
             name.to_string()
         };
-        let tags = record
-            .get(2)
-            .map(parse_tags)
-            .filter(|t| !t.is_empty());
+        let tags = record.get(2).map(parse_tags).filter(|t| !t.is_empty());
         config.discourse.push(DiscourseConfig {
             name,
             baseurl: url.to_string(),
@@ -766,6 +767,7 @@ fn category_list(
     config: &Config,
     discourse_name: Option<&str>,
     discourse_flag: Option<&str>,
+    tree: bool,
 ) -> Result<()> {
     let discourse = select_discourse(config, merge_discourse_name(discourse_name, discourse_flag))?;
     let client = DiscourseClient::new(discourse)?;
@@ -774,15 +776,19 @@ fn category_list(
     for category in categories {
         flatten_categories(&category, &mut flat);
     }
-    let mut seen = std::collections::HashSet::new();
-    for category in flat {
-        if let Some(id) = category.id {
-            if !seen.insert(id) {
-                continue;
+    if tree {
+        print_category_tree(&flat);
+    } else {
+        let mut seen = std::collections::HashSet::new();
+        for category in flat {
+            if let Some(id) = category.id {
+                if !seen.insert(id) {
+                    continue;
+                }
             }
+            let id = category.id.unwrap_or_default();
+            println!("{} - {}", id, category.name);
         }
-        let id = category.id.unwrap_or_default();
-        println!("{} - {}", id, category.name);
     }
     Ok(())
 }
@@ -794,11 +800,68 @@ fn flatten_categories(category: &CategoryInfo, out: &mut Vec<CategoryInfo>) {
     }
 }
 
-fn category_copy(
-    config: &Config,
-    discourse_name: &str,
-    category_id: u64,
-) -> Result<()> {
+fn print_category_tree(categories: &[CategoryInfo]) {
+    let mut ordered_ids = Vec::new();
+    let mut map = std::collections::HashMap::new();
+    for category in categories {
+        if let Some(id) = category.id {
+            if !map.contains_key(&id) {
+                ordered_ids.push(id);
+                map.insert(id, category.clone());
+            }
+        }
+    }
+
+    let mut children: std::collections::HashMap<u64, Vec<u64>> = std::collections::HashMap::new();
+    for category in map.values() {
+        if let (Some(id), Some(parent_id)) = (category.id, category.parent_category_id) {
+            if map.contains_key(&parent_id) {
+                let entry = children.entry(parent_id).or_default();
+                if !entry.contains(&id) {
+                    entry.push(id);
+                }
+            }
+        }
+    }
+
+    let mut roots = Vec::new();
+    for id in &ordered_ids {
+        if let Some(category) = map.get(id) {
+            match category.parent_category_id {
+                Some(parent_id) if map.contains_key(&parent_id) => {}
+                _ => roots.push(*id),
+            }
+        }
+    }
+
+    let mut seen = std::collections::HashSet::new();
+    for id in roots {
+        print_category_node(&map, &children, id, 0, &mut seen);
+    }
+}
+
+fn print_category_node(
+    map: &std::collections::HashMap<u64, CategoryInfo>,
+    children: &std::collections::HashMap<u64, Vec<u64>>,
+    id: u64,
+    depth: usize,
+    seen: &mut std::collections::HashSet<u64>,
+) {
+    if !seen.insert(id) {
+        return;
+    }
+    if let Some(category) = map.get(&id) {
+        let indent = "  ".repeat(depth);
+        println!("{}{} - {}", indent, id, category.name);
+        if let Some(child_ids) = children.get(&id) {
+            for child_id in child_ids {
+                print_category_node(map, children, *child_id, depth + 1, seen);
+            }
+        }
+    }
+}
+
+fn category_copy(config: &Config, discourse_name: &str, category_id: u64) -> Result<()> {
     let discourse = find_discourse(config, discourse_name)
         .ok_or_else(|| anyhow!("unknown discourse {}", discourse_name))?;
     let client = DiscourseClient::new(discourse)?;

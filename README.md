@@ -62,6 +62,7 @@ General form: `dsc [--config dsc.toml] <command>`.
 - Topic pull: `dsc topic pull <topic-id> [local-path] [--discourse <name>]`
 - Topic push: `dsc topic push <local-path> <topic-id> [--discourse <name>]`
 - Topic sync (auto pull or push based on freshest copy): `dsc topic sync <topic-id> <local-path> [--discourse <name>] [--yes]`
+- Category list: `dsc category list [--discourse <name>] [--tree]`
 - Category pull: `dsc category pull <category-id> [local-path] [--discourse <name>]`
 - Category push: `dsc category push <local-path> <category-id> [--discourse <name>]`
 - Category copy: `dsc category copy --discourse <name> <category-id>`

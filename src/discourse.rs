@@ -147,13 +147,22 @@ impl DiscourseClient {
         let status = response.status();
         let text = response.text().context("reading site.json response body")?;
         if !status.is_success() {
-            return Err(anyhow!("site.json request failed with {}: {}", status, text));
+            return Err(anyhow!(
+                "site.json request failed with {}: {}",
+                status,
+                text
+            ));
         }
         let value: Value = serde_json::from_str(&text).context("parsing site.json")?;
         let array = value
             .get("categories")
             .and_then(|v| v.as_array())
-            .or_else(|| value.get("site").and_then(|v| v.get("categories")).and_then(|v| v.as_array()))
+            .or_else(|| {
+                value
+                    .get("site")
+                    .and_then(|v| v.get("categories"))
+                    .and_then(|v| v.as_array())
+            })
             .ok_or_else(|| anyhow!("site.json missing categories list"))?;
         let mut categories = Vec::new();
         for item in array {
@@ -319,10 +328,7 @@ impl DiscourseClient {
     /// Restore a backup by filename/path.
     pub fn restore_backup(&self, backup_path: &str) -> Result<()> {
         let path = format!("/admin/backups/{}/restore", backup_path);
-        let response = self
-            .post(&path)?
-            .send()
-            .context("restoring backup")?;
+        let response = self.post(&path)?.send().context("restoring backup")?;
         let status = response.status();
         let text = response.text().context("reading backup restore response")?;
         if !status.is_success() {
@@ -599,6 +605,8 @@ pub struct CategoryInfo {
     pub id: Option<u64>,
     #[serde(default)]
     pub subcategory_list: Vec<CategoryInfo>,
+    #[serde(default)]
+    pub parent_category_id: Option<u64>,
 }
 
 /// Response payload for categories.json.
