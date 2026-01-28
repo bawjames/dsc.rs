@@ -1,0 +1,41 @@
+# Implementation Plan
+
+## Source Spec
+
+- Read and implement the CLI described in `spec/spec.md`.
+
+## CLI + Project
+
+- Build the `dsc` CLI in Rust.
+- Cover every command in the spec with an end-to-end test.
+- Every flag should have a shortened alias for convenience (e.g., `--format` -> `-f`).
+- Ensure the CLI syntax adheres to standard conventions and is documented in the Unix style.
+- Tab completion scripts for bash, zsh, and fish should be provided.
+
+## Code Comments
+
+- Ensure all public functions and structs have appropriate Rustdoc comments.
+- Add inline comments for complex logic sections.
+
+## End-to-End Testing
+
+- Each `dsc` command must have an end-to-end test that:
+  - Sends messages to a test Discourse.
+  - Verifies the correct response on the forum.
+  - Deletes any test data created on the test forum, at the end of testing.
+- Test Discourse credentials/config will be provided in `testdsc.toml`.
+- Tests should be organised in a modular fashion within the `tests/` directory.
+
+## Git
+
+- Make regular commits with clear messages reflecting progress.
+
+## Configuration Files
+
+- Add a version-controlled example config file for `dsc.toml`.
+- Ensure full `dsc.toml` files are gitignored.
+
+## Questions Tracking
+
+- Collect any open questions in `queries.md` for user follow-up.
+- Remove resolved questions from `queries.md` as the implementation progresses.

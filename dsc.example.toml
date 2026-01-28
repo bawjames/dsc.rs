@@ -1,0 +1,14 @@
+# each Discourse should have its own [[discourse]] above, in double square brackets
+[[discourse]]
+name = "myforum" # unique name for this Discourse install
+baseurl = "https://forum.example.com" # base URL of the Discourse install
+apikey = "your_api_key_here" # API key with appropriate permissions
+api_username = "system" # API username
+changelog_topic_id = 123
+
+[[discourse]]
+name = "otherforum" # unique name for this Discourse install
+baseurl = "https://community.example.org" # base URL of the Discourse install
+apikey = "your_other_api_key_here" # API key with appropriate permissions
+api_username = "system" # API username
+changelog_topic_id = 456 # topic ID of a Changelog Topic on the forum

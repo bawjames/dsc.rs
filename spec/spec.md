@@ -1,0 +1,201 @@
+# dsc.rs
+
+dsc.rs is a very cleverly-named Discourse CLI tool written in Rust, which does many of the things I personally want to be able to do with Discourse forums remotely from the command line.
+
+## Features
+
+- Keeping track of Discourse installs
+- Performing updates over SSH
+- Updating the Changelog automatically
+- Synchronising Categories and Topics down to local Markdown files and back again
+
+---
+
+## Command Spec
+
+Global option:
+
+- `dsc --config <path> <command>` (or `-c <path>`) to select a config file (default: `dsc.toml`).
+
+### `dsc list [--format <format>]`
+
+Lists all Discourse installs known to dsc.rs
+List formats:
+
+- `plaintext` (default)
+- `markdown`
+- `markdown-table`
+- `json`
+- `yaml`
+- `csv`
+
+### `dsc add <name>,<name>,... [--interactive]`
+
+Adds one or more Discourses to `dsc.toml`, creating one entry per name.
+
+- `--interactive` (or `-i`) prompts for base URL, API key, username, and tags.
+
+### `dsc import [<path>]`
+
+Imports Discourses from stdin or a file.
+Supported formats:
+
+- Text file with one Discourse URL per line
+- CSV file with "name, url, tags" columns
+
+If `<path>` is omitted, input is read from stdin.
+
+`dsc` will attempt to populate the name field by querying the Discourse URL for the site title.
+
+### `dsc update <name|all> [--post-changelog] [--concurrent] [--max <n>]`
+
+Updates the Discourse install identified by `<name>` over SSH.
+Optionally makes a post in the Changelog topic about the update:
+
+```md
+- [x] Ubuntu OS updated
+- [x] Server rebooted
+- [x] Updated Discourse to version [x.y.z] (where x.y.z is the new version number)
+- [x] `./launcher cleanup` Total reclaimed space: [reclaimed space] (where [reclaimed space] is the amount of disk space reclaimed)
+```
+
+Flags:
+
+- `--post-changelog` (or `-p`) posts the checklist to `changelog_topic_id`.
+- `--concurrent` (or `-C`) only applies to `dsc update all`.
+- `--max <n>` (or `-m <n>`) limits concurrency (only with `--concurrent`).
+
+> SSH credentials are not stored in `dsc.toml`; it is advised to set up SSH keys and use an SSH config file.
+
+### `dsc update all [--concurrent] [--max <n>] [--post-changelog]`
+
+Updates all Discourses known to `dsc` over SSH, optionally concurrently.
+
+> SSH credentials are not stored in `dsc.toml`; it is advised to set up SSH keys and use an SSH config file.
+
+## Emoji
+
+I like to use custom emoji on my forums but the current interface for uploading them is quite tedious, being restricted to the same number of simultaneous uploads as you have set for Posts, and the maximum is currently 20. dsc.rs can bulk upload emoji from a local directory to a target Discourse install.
+
+Having a complete set of the Fontawesome icons used in the Discourse UI as Custom Emoji makes it far easier to explain the user interface in posts to users.
+
+### `dsc emoji add <emoji-path> <emoji-name> [<discourse>] [--discourse <discourse>]`
+
+Adds a new emoji to a Discourse install from a local image file.
+
+For consistency with other commands, prefer the flag form:
+
+- `dsc emoji add <emoji-path> <emoji-name> --discourse <discourse>`
+
+Note: the CLI currently also accepts the Discourse name as an optional positional argument.
+
+## Topics
+
+### `dsc topic pull <topic-id> [<local-path>] [--discourse <discourse>]`
+
+Pulls the specified topic into a local Markdown file.
+
+If `<local-path>` is omitted, the topic is written to a new file in the current directory (named from the topic title). If the path does not exist, it will be created.
+
+### `dsc topic push <local-path> <topic-id> [--discourse <discourse>]`
+Pushes the specified local Markdown file up to the specified topic in the Discourse install, updating the topic with the contents of the local file.
+
+### `dsc topic sync <topic-id> <local-path> [--discourse <discourse>] [--yes]`
+
+Intelligently syncs the specified topic with the specified local Markdown file, using the most recently modified as the updated version.
+
+The timestamps of both files will be shown before proceeding, and the user will be prompted to confirm the sync unless `--yes` (or `-y`) is passed.
+
+---
+
+## Categories
+
+### `dsc category list [<discourse>] [--discourse <discourse>]`
+
+Lists all categories in the specified Discourse install, with their IDs and names.
+
+For consistency with other commands, prefer `--discourse <discourse>` when multiple discourses are configured.
+
+### `dsc category copy --discourse <discourse> <category-id>`
+
+Copies the specified category on the specified Discourse.
+
+Copy behaviour:
+- The copied category  name is set to `Copy of <original category name>`.
+- The copied category slug suffixed with `-copy` (e.g., `staff` -> `staff-copy`).
+- All other category fields should match the source category, except the ID which is assigned automatically by Discourse.
+
+`<category-id>` can be found using `dsc category list --discourse <discourse>`.
+
+### `dsc category pull --discourse <discourse> <category-id> [<local-path>]`
+
+Pulls the specified category into a directory of Markdown files.
+
+If `<local-path>` is omitted, the category is written to a new folder in the current directory (named from the category slug/name). If the path does not exist, it will be created. Files will be named from the topic titles.
+
+### `dsc category push --discourse <discourse> <local-file> <category-id>`
+Pushes the specified local Markdown files up to the specified category in the Discourse install, creating or updating topics as necessary.
+
+---
+
+## Groups
+
+### `dsc group list --discourse <discourse>`
+
+Lists all groups in the specified Discourse install, with their IDs, names, and full names.
+
+If no Discourse is specified, the command will respond with syntax help.
+
+### `dsc group info --discourse <discourse> --group <group-id>`
+
+### `dsc group copy --discourse <source-discourse> [--target <target-discourse>] --group <group-id>`
+
+Copies the specified group from the source Discourse install to the target Discourse install. If no target is specified, it will copy to the same Discourse.
+
+`<group-id>` can be found using `dsc group list --discourse <discourse>`.
+
+Copy behaviour:
+- The copied group name is slugified and suffixed with `-copy` (e.g., `staff` -> `staff-copy`).
+- The copied group full name is set to `Copy of <original full name>`.
+- All other group fields should match the source group, except the ID which is assigned by Discourse.
+
+---
+
+## Backup and Restore
+
+
+
+### `dsc backup create --discourse <discourse>`
+
+Creates a backup on the specified Discourse install.
+It doesn't download the backup, just triggers its creation on the server side.
+
+### `dsc backup list --discourse <discourse>`
+Lists all backups on the specified Discourse install.
+
+### `dsc backup restore --discourse <discourse> <backup-path>`
+
+Restores the specified backup on the specified Discourse install.
+
+NOTES: where are these stored locally?
+`<backup-path>` can be found using `dsc backup list --discourse <discourse>`.
+
+--- 
+
+
+
+## Internals
+
+### dsc.toml Spec
+
+dsc.toml is the configuration file used by dsc.rs to keep track of Discourse installs.
+
+```toml
+[[discourse]]
+name = "myforum"
+baseurl = "https://forum.example.com"
+apikey = "your_api_key_here"
+api_username = "system"
+changelog_topic_id = 123
+tags = ["tag1", "tag2"] # tags are an optional way to organise your installs
+```

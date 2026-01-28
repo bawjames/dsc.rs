@@ -1,0 +1,16 @@
+### Rust / Cargo
+/target/
+**/*.rs.bk
+Cargo.lock
+
+### IDEs / Editors
+.vscode/
+
+### OS junk
+.DS_Store
+Thumbs.db
+
+### Project-specific
+dsc.toml
+test-dsc.toml
+testdsc.toml
