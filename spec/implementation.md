@@ -1,5 +1,9 @@
 # Implementation Plan
 
+## agents
+
+* run tests after all code 
+
 ## Source Spec
 
 - Read and implement the CLI described in `spec/spec.md`.
@@ -11,6 +15,7 @@
 - Every flag should have a shortened alias for convenience (e.g., `--format` -> `-f`).
 - Ensure the CLI syntax adheres to standard conventions and is documented in the Unix style.
 - Tab completion scripts for bash, zsh, and fish should be provided.
+- Distribution note: Rust CLIs commonly use `clap_complete` to generate shell completion scripts (often at build time into `OUT_DIR` for packaging) and/or commit pre-generated scripts for users/packagers. For now, we will generate scripts into `completions/` and refresh them when CLI flags change.
 
 ## Code Comments
 

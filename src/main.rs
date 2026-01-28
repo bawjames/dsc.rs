@@ -1,5 +1,6 @@
 use anyhow::{Context, Result, anyhow};
-use clap::{Parser, Subcommand, ValueEnum};
+use clap::{CommandFactory, Parser, Subcommand, ValueEnum};
+use clap_complete::{generate, shells::{Bash, Fish, Zsh}};
 use dsc::config::{Config, DiscourseConfig, find_discourse, load_config, save_config};
 use dsc::discourse::{DiscourseClient, TopicSummary};
 use dsc::utils::{ensure_dir, read_markdown, resolve_topic_path, slugify, write_markdown};
@@ -60,6 +61,12 @@ enum Commands {
     Backup {
         #[command(subcommand)]
         command: BackupCommand,
+    },
+    Completions {
+        #[arg(value_enum)]
+        shell: CompletionShell,
+        #[arg(long, short = 'd')]
+        dir: Option<PathBuf>,
     },
 }
 
@@ -161,6 +168,13 @@ enum BackupCommand {
         discourse: String,
         backup_path: String,
     },
+}
+
+#[derive(ValueEnum, Clone)]
+enum CompletionShell {
+    Bash,
+    Zsh,
+    Fish,
 }
 
 #[derive(ValueEnum, Clone)]
@@ -285,8 +299,44 @@ fn main() -> Result<()> {
                 backup_path,
             } => backup_restore(&config, &discourse, &backup_path)?,
         },
+        Commands::Completions { shell, dir } => {
+            write_completions(shell, dir.as_deref())?;
+        }
     }
 
+    Ok(())
+}
+
+fn write_completions(shell: CompletionShell, dir: Option<&Path>) -> Result<()> {
+    let mut cmd = Cli::command();
+    let name = cmd.get_name().to_string();
+    match dir {
+        Some(dir) => {
+            ensure_dir(dir)?;
+            let filename = match shell {
+                CompletionShell::Bash => "dsc.bash",
+                CompletionShell::Zsh => "dsc.zsh",
+                CompletionShell::Fish => "dsc.fish",
+            };
+            let path = dir.join(filename);
+            let mut file =
+                fs::File::create(&path).with_context(|| format!("creating {}", path.display()))?;
+            match shell {
+                CompletionShell::Bash => generate(Bash, &mut cmd, name, &mut file),
+                CompletionShell::Zsh => generate(Zsh, &mut cmd, name, &mut file),
+                CompletionShell::Fish => generate(Fish, &mut cmd, name, &mut file),
+            };
+            println!("{}", path.display());
+        }
+        None => {
+            let mut stdout = io::stdout();
+            match shell {
+                CompletionShell::Bash => generate(Bash, &mut cmd, name, &mut stdout),
+                CompletionShell::Zsh => generate(Zsh, &mut cmd, name, &mut stdout),
+                CompletionShell::Fish => generate(Fish, &mut cmd, name, &mut stdout),
+            };
+        }
+    }
     Ok(())
 }
 

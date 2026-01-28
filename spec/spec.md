@@ -50,7 +50,9 @@ If `<path>` is omitted, input is read from stdin.
 ### `dsc update <name|all> [--post-changelog] [--concurrent] [--max <n>]`
 
 Updates the Discourse install identified by `<name>` over SSH.
-Optionally makes a post in the Changelog topic about the update:
+Optionally makes a post in the Changelog topic about the update.
+
+Version and cleanup data should be collected during the update and used to fill the checklist:
 
 ```md
 - [x] Ubuntu OS updated
@@ -72,6 +74,12 @@ Flags:
 Updates all Discourses known to `dsc` over SSH, optionally concurrently.
 
 > SSH credentials are not stored in `dsc.toml`; it is advised to set up SSH keys and use an SSH config file.
+
+### `dsc completions <shell> [--dir <path>]`
+
+Generates shell completion scripts for bash, zsh, or fish.
+
+If `--dir` is provided, writes the completion script to the given directory. Otherwise, writes to stdout.
 
 ## Emoji
 
@@ -196,6 +204,7 @@ name = "myforum"
 baseurl = "https://forum.example.com"
 apikey = "your_api_key_here"
 api_username = "system"
+ssh_host = "myforum" # optional SSH config host name used for updates
 changelog_topic_id = 123
 tags = ["tag1", "tag2"] # tags are an optional way to organise your installs
 ```
