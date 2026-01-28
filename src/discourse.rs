@@ -5,6 +5,7 @@ use reqwest::blocking::{Client, Response};
 use reqwest::header::{HeaderMap, HeaderValue};
 use serde::{Deserialize, Serialize};
 use serde_json::Value;
+use std::collections::HashMap;
 use std::path::Path;
 
 /// HTTP client for the Discourse API.
@@ -116,13 +117,51 @@ impl DiscourseClient {
 
     /// Fetch all categories.
     pub fn fetch_categories(&self) -> Result<Vec<CategoryInfo>> {
-        let response = self.get("/categories.json")?;
+        let response = self.get("/categories.json?include_subcategories=true")?;
         let status = response.status();
         let body: CategoriesResponse = response.json().context("reading categories json")?;
         if !status.is_success() {
             return Err(anyhow!("categories request failed with {}", status));
         }
-        Ok(body.category_list.categories)
+        let mut categories = body.category_list.categories;
+        if let Ok(site_categories) = self.fetch_site_categories() {
+            let mut seen = HashMap::new();
+            for (idx, cat) in categories.iter().enumerate() {
+                if let Some(id) = cat.id {
+                    seen.insert(id, idx);
+                }
+            }
+            for cat in site_categories {
+                if let Some(id) = cat.id {
+                    if !seen.contains_key(&id) {
+                        categories.push(cat);
+                    }
+                }
+            }
+        }
+        Ok(categories)
+    }
+
+    fn fetch_site_categories(&self) -> Result<Vec<CategoryInfo>> {
+        let response = self.get("/site.json")?;
+        let status = response.status();
+        let text = response.text().context("reading site.json response body")?;
+        if !status.is_success() {
+            return Err(anyhow!("site.json request failed with {}: {}", status, text));
+        }
+        let value: Value = serde_json::from_str(&text).context("parsing site.json")?;
+        let array = value
+            .get("categories")
+            .and_then(|v| v.as_array())
+            .or_else(|| value.get("site").and_then(|v| v.get("categories")).and_then(|v| v.as_array()))
+            .ok_or_else(|| anyhow!("site.json missing categories list"))?;
+        let mut categories = Vec::new();
+        for item in array {
+            if let Ok(cat) = serde_json::from_value::<CategoryInfo>(item.clone()) {
+                categories.push(cat);
+            }
+        }
+        Ok(categories)
     }
 
     /// Fetch all groups.
