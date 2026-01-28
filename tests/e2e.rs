@@ -33,6 +33,8 @@ struct TestDiscourse {
     ssh_enabled: Option<bool>,
     emoji_path: Option<String>,
     emoji_name: Option<String>,
+    backup_enabled: Option<bool>,
+    test_backup_path: Option<String>,
 }
 
 fn load_test_config() -> Option<TestConfig> {
@@ -453,7 +455,7 @@ fn e2e_category_list() {
 
 #[test]
 fn e2e_category_copy() {
-    let Some((source, target)) = test_discourse_pair() else {
+    let Some(source) = test_discourse() else {
         return;
     };
     let Some(category_id) = source.test_category_id else {
@@ -476,36 +478,25 @@ fn e2e_category_copy() {
     let config_path = write_temp_config(
         &dir,
         &format!(
-            "[[discourse]]\nname = \"{}\"\nbaseurl = \"{}\"\napikey = \"{}\"\napi_username = \"{}\"\n\n[[discourse]]\nname = \"{}\"\nbaseurl = \"{}\"\napikey = \"{}\"\napi_username = \"{}\"\n",
-            source.name,
-            source.baseurl,
-            source.apikey,
-            source.api_username,
-            target.name,
-            target.baseurl,
-            target.apikey,
-            target.api_username
+            "[[discourse]]\nname = \"{}\"\nbaseurl = \"{}\"\napikey = \"{}\"\napi_username = \"{}\"\n",
+            source.name, source.baseurl, source.apikey, source.api_username
         ),
     );
     let output = run_dsc(
         &[
             "category",
             "copy",
-            "--source",
+            "--discourse",
             &source.name,
-            "--target",
-            &target.name,
             &category_id.to_string(),
         ],
         &config_path,
     );
     assert!(output.status.success(), "category copy failed");
-    let target_client = DiscourseClient::new(&to_config(&target)).expect("client");
-    let target_categories = target_client.fetch_categories().expect("categories");
-    let found = target_categories
-        .iter()
-        .any(|cat| cat.name == source_category.name);
-    assert!(found, "copied category not found on target");
+    let categories = source_client.fetch_categories().expect("categories");
+    let expected_name = format!("Copy of {}", source_category.name);
+    let found = categories.iter().any(|cat| cat.name == expected_name);
+    assert!(found, "copied category not found");
 }
 
 #[test]
@@ -616,6 +607,42 @@ fn e2e_group_list() {
 }
 
 #[test]
+fn e2e_group_info() {
+    let Some(test) = test_discourse() else {
+        return;
+    };
+    let Some(group_id) = test.test_group_id else {
+        return;
+    };
+    let Some(topic_id) = test.test_topic_id else {
+        return;
+    };
+    let marker = Uuid::new_v4().to_string();
+    post_and_verify(&test, topic_id, &marker);
+
+    let dir = TempDir::new().expect("tempdir");
+    let config_path = write_temp_config(
+        &dir,
+        &format!(
+            "[[discourse]]\nname = \"{}\"\nbaseurl = \"{}\"\napikey = \"{}\"\napi_username = \"{}\"\n",
+            test.name, test.baseurl, test.apikey, test.api_username
+        ),
+    );
+    let output = run_dsc(
+        &[
+            "group",
+            "info",
+            "--discourse",
+            &test.name,
+            "--group",
+            &group_id.to_string(),
+        ],
+        &config_path,
+    );
+    assert!(output.status.success(), "group info failed");
+}
+
+#[test]
 fn e2e_group_copy() {
     let Some((source, target)) = test_discourse_pair() else {
         return;
@@ -655,10 +682,11 @@ fn e2e_group_copy() {
         &[
             "group",
             "copy",
-            "--source",
+            "--discourse",
             &source.name,
             "--target",
             &target.name,
+            "--group",
             &group_id.to_string(),
         ],
         &config_path,
@@ -701,6 +729,78 @@ fn e2e_group_copy() {
         expected_fields.insert("full_name".to_string(), format!("Copy of {}", full_name));
     }
     assert_eq!(expected_fields, target_fields, "group settings differ");
+}
+
+#[test]
+fn e2e_backup_list() {
+    let Some(test) = test_discourse() else {
+        return;
+    };
+    if test.backup_enabled != Some(true) {
+        return;
+    }
+    let dir = TempDir::new().expect("tempdir");
+    let config_path = write_temp_config(
+        &dir,
+        &format!(
+            "[[discourse]]\nname = \"{}\"\nbaseurl = \"{}\"\napikey = \"{}\"\napi_username = \"{}\"\n",
+            test.name, test.baseurl, test.apikey, test.api_username
+        ),
+    );
+    let output = run_dsc(&["backup", "list", "--discourse", &test.name], &config_path);
+    assert!(output.status.success(), "backup list failed");
+}
+
+#[test]
+fn e2e_backup_create() {
+    let Some(test) = test_discourse() else {
+        return;
+    };
+    if test.backup_enabled != Some(true) {
+        return;
+    }
+    let dir = TempDir::new().expect("tempdir");
+    let config_path = write_temp_config(
+        &dir,
+        &format!(
+            "[[discourse]]\nname = \"{}\"\nbaseurl = \"{}\"\napikey = \"{}\"\napi_username = \"{}\"\n",
+            test.name, test.baseurl, test.apikey, test.api_username
+        ),
+    );
+    let output = run_dsc(&["backup", "create", "--discourse", &test.name], &config_path);
+    assert!(output.status.success(), "backup create failed");
+}
+
+#[test]
+fn e2e_backup_restore() {
+    let Some(test) = test_discourse() else {
+        return;
+    };
+    if test.backup_enabled != Some(true) {
+        return;
+    }
+    let Some(backup_path) = test.test_backup_path.as_ref() else {
+        return;
+    };
+    let dir = TempDir::new().expect("tempdir");
+    let config_path = write_temp_config(
+        &dir,
+        &format!(
+            "[[discourse]]\nname = \"{}\"\nbaseurl = \"{}\"\napikey = \"{}\"\napi_username = \"{}\"\n",
+            test.name, test.baseurl, test.apikey, test.api_username
+        ),
+    );
+    let output = run_dsc(
+        &[
+            "backup",
+            "restore",
+            "--discourse",
+            &test.name,
+            backup_path,
+        ],
+        &config_path,
+    );
+    assert!(output.status.success(), "backup restore failed");
 }
 
 fn group_settings(detail: &GroupDetail) -> BTreeMap<String, String> {

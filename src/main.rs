@@ -57,6 +57,10 @@ enum Commands {
         #[command(subcommand)]
         command: GroupCommand,
     },
+    Backup {
+        #[command(subcommand)]
+        command: BackupCommand,
+    },
 }
 
 #[derive(Subcommand)]
@@ -102,10 +106,8 @@ enum CategoryCommand {
         discourse: Option<String>,
     },
     Copy {
-        #[arg(long, short = 's')]
-        source: String,
-        #[arg(long, short = 't')]
-        target: Option<String>,
+        #[arg(long, short = 'd', required = true)]
+        discourse: String,
         category_id: u64,
     },
     Pull {
@@ -125,16 +127,39 @@ enum CategoryCommand {
 #[derive(Subcommand)]
 enum GroupCommand {
     List {
-        discourse_name: Option<String>,
-        #[arg(long, short = 'd')]
-        discourse: Option<String>,
+        #[arg(long, short = 'd', required = true)]
+        discourse: String,
+    },
+    Info {
+        #[arg(long, short = 'd', required = true)]
+        discourse: String,
+        #[arg(long, short = 'g', required = true)]
+        group: u64,
     },
     Copy {
-        #[arg(long, short = 's')]
-        source: String,
+        #[arg(long, short = 'd', required = true)]
+        discourse: String,
         #[arg(long, short = 't')]
         target: Option<String>,
-        group_id: u64,
+        #[arg(long, short = 'g', required = true)]
+        group: u64,
+    },
+}
+
+#[derive(Subcommand)]
+enum BackupCommand {
+    Create {
+        #[arg(long, short = 'd', required = true)]
+        discourse: String,
+    },
+    List {
+        #[arg(long, short = 'd', required = true)]
+        discourse: String,
+    },
+    Restore {
+        #[arg(long, short = 'd', required = true)]
+        discourse: String,
+        backup_path: String,
     },
 }
 
@@ -168,7 +193,15 @@ fn main() -> Result<()> {
             max,
             post_changelog,
         } => {
+            if name != "all" && (concurrent || max.is_some()) {
+                return Err(anyhow!(
+                    "--concurrent/--max only apply to 'dsc update all'"
+                ));
+            }
             if name == "all" {
+                if max.is_some() && !concurrent {
+                    return Err(anyhow!("--max requires --concurrent"));
+                }
                 update_all(&config, concurrent, max, post_changelog)?;
             } else {
                 update_one(&config, &name, post_changelog)?;
@@ -214,10 +247,9 @@ fn main() -> Result<()> {
                 discourse,
             } => category_list(&config, discourse_name.as_deref(), discourse.as_deref())?,
             CategoryCommand::Copy {
-                source,
-                target,
+                discourse,
                 category_id,
-            } => category_copy(&config, &source, target.as_deref(), category_id)?,
+            } => category_copy(&config, &discourse, category_id)?,
             CategoryCommand::Pull {
                 category_id,
                 local_path,
@@ -235,15 +267,23 @@ fn main() -> Result<()> {
             } => category_push(&config, category_id, &local_path, discourse.as_deref())?,
         },
         Commands::Group { command } => match command {
-            GroupCommand::List {
-                discourse_name,
-                discourse,
-            } => group_list(&config, discourse_name.as_deref(), discourse.as_deref())?,
+            GroupCommand::List { discourse } => group_list(&config, &discourse)?,
+            GroupCommand::Info { discourse, group } => {
+                group_info(&config, &discourse, group)?
+            }
             GroupCommand::Copy {
-                source,
+                discourse,
                 target,
-                group_id,
-            } => group_copy(&config, &source, target.as_deref(), group_id)?,
+                group,
+            } => group_copy(&config, &discourse, target.as_deref(), group)?,
+        },
+        Commands::Backup { command } => match command {
+            BackupCommand::Create { discourse } => backup_create(&config, &discourse)?,
+            BackupCommand::List { discourse } => backup_list(&config, &discourse)?,
+            BackupCommand::Restore {
+                discourse,
+                backup_path,
+            } => backup_restore(&config, &discourse, &backup_path)?,
         },
     }
 
@@ -379,12 +419,7 @@ fn import_csv(config: &mut Config, raw: &str) -> Result<()> {
         };
         let tags = record
             .get(2)
-            .map(|t| {
-                t.split(';')
-                    .map(|tag| tag.trim().to_string())
-                    .filter(|tag| !tag.is_empty())
-                    .collect::<Vec<_>>()
-            })
+            .map(parse_tags)
             .filter(|t| !t.is_empty());
         config.discourse.push(DiscourseConfig {
             name,
@@ -401,6 +436,13 @@ fn looks_like_csv(raw: &str) -> bool {
     let Some(first) = first else { return false };
     let lower = first.to_ascii_lowercase();
     lower.contains("name") && lower.contains("url") && first.contains(',')
+}
+
+fn parse_tags(raw: &str) -> Vec<String> {
+    raw.split(|ch| ch == ';' || ch == ',')
+        .map(|tag| tag.trim().to_string())
+        .filter(|tag| !tag.is_empty())
+        .collect()
 }
 
 fn fetch_name_from_url(baseurl: &str) -> Result<String> {
@@ -683,41 +725,50 @@ fn category_list(
 
 fn category_copy(
     config: &Config,
-    source: &str,
-    target: Option<&str>,
+    discourse_name: &str,
     category_id: u64,
 ) -> Result<()> {
-    let source_discourse =
-        find_discourse(config, source).ok_or_else(|| anyhow!("unknown discourse {}", source))?;
-    let target_discourse_name = target.unwrap_or(source);
-    let target_discourse = find_discourse(config, target_discourse_name)
-        .ok_or_else(|| anyhow!("unknown discourse {}", target_discourse_name))?;
-
-    let source_client = DiscourseClient::new(source_discourse)?;
-    let categories = source_client.fetch_categories()?;
+    let discourse = find_discourse(config, discourse_name)
+        .ok_or_else(|| anyhow!("unknown discourse {}", discourse_name))?;
+    let client = DiscourseClient::new(discourse)?;
+    let categories = client.fetch_categories()?;
     let category = categories
         .into_iter()
         .find(|cat| cat.id == Some(category_id))
         .ok_or_else(|| anyhow!("category not found"))?;
-
-    let target_client = DiscourseClient::new(target_discourse)?;
-    let new_id = target_client.create_category(&category)?;
+    let mut copied = category.clone();
+    copied.name = format!("Copy of {}", category.name);
+    copied.slug = format!("{}-copy", category.slug);
+    copied.id = None;
+    let new_id = client.create_category(&copied)?;
     println!("{}", new_id);
     Ok(())
 }
 
-fn group_list(
-    config: &Config,
-    discourse_name: Option<&str>,
-    discourse_flag: Option<&str>,
-) -> Result<()> {
-    let discourse = select_discourse(config, merge_discourse_name(discourse_name, discourse_flag))?;
+fn group_list(config: &Config, discourse_name: &str) -> Result<()> {
+    let discourse = find_discourse(config, discourse_name)
+        .ok_or_else(|| anyhow!("unknown discourse {}", discourse_name))?;
     let client = DiscourseClient::new(discourse)?;
     let groups = client.fetch_groups()?;
     for group in groups {
         let full_name = group.full_name.unwrap_or_else(|| "-".to_string());
         println!("{} - {} ({})", group.id, group.name, full_name);
     }
+    Ok(())
+}
+
+fn group_info(config: &Config, discourse_name: &str, group_id: u64) -> Result<()> {
+    let discourse = find_discourse(config, discourse_name)
+        .ok_or_else(|| anyhow!("unknown discourse {}", discourse_name))?;
+    let client = DiscourseClient::new(discourse)?;
+    let groups = client.fetch_groups()?;
+    let group_summary = groups
+        .into_iter()
+        .find(|item| item.id == group_id)
+        .ok_or_else(|| anyhow!("group not found"))?;
+    let group = client.fetch_group_detail(group_summary.id, Some(&group_summary.name))?;
+    let raw = serde_json::to_string_pretty(&group)?;
+    println!("{}", raw);
     Ok(())
 }
 
@@ -744,6 +795,32 @@ fn group_copy(config: &Config, source: &str, target: Option<&str>, group_id: u64
     let target_client = DiscourseClient::new(target_discourse)?;
     let new_id = target_client.create_group(&group)?;
     println!("{}", new_id);
+    Ok(())
+}
+
+fn backup_create(config: &Config, discourse_name: &str) -> Result<()> {
+    let discourse = find_discourse(config, discourse_name)
+        .ok_or_else(|| anyhow!("unknown discourse {}", discourse_name))?;
+    let client = DiscourseClient::new(discourse)?;
+    client.create_backup()?;
+    Ok(())
+}
+
+fn backup_list(config: &Config, discourse_name: &str) -> Result<()> {
+    let discourse = find_discourse(config, discourse_name)
+        .ok_or_else(|| anyhow!("unknown discourse {}", discourse_name))?;
+    let client = DiscourseClient::new(discourse)?;
+    let backups = client.list_backups()?;
+    let raw = serde_json::to_string_pretty(&backups)?;
+    println!("{}", raw);
+    Ok(())
+}
+
+fn backup_restore(config: &Config, discourse_name: &str, backup_path: &str) -> Result<()> {
+    let discourse = find_discourse(config, discourse_name)
+        .ok_or_else(|| anyhow!("unknown discourse {}", discourse_name))?;
+    let client = DiscourseClient::new(discourse)?;
+    client.restore_backup(backup_path)?;
     Ok(())
 }
 

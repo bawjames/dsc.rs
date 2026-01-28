@@ -1,6 +1,8 @@
 # dsc.rs
 
-A Discourse command-line companion that keeps multiple forums in sync from your terminal. It can track installs, run upgrades over SSH, manage emojis, and round-trip topics or categories as local Markdown so you can edit with your own tools.
+dsc.rs is a very cleverly-named Discourse CLI tool written in Rust, which does many of the things I personally want to be able to do with Discourse forums remotely from the command line.
+
+It acts as a command-line companion that keeps multiple forums in sync from your terminal. It can track installs, run upgrades over SSH, manage emojis, perform backups, and save topics or categories as local Markdown so you can edit with your own tools.
 
 Most functionality is provided through interactions with the Discourse REST API, apart from `dsc update` which runs a remote rebuild via SSH.
 
@@ -39,13 +41,12 @@ baseurl = "https://forum.example.com"
 apikey = "your_api_key_here"
 api_username = "system"
 changelog_topic_id = 123
-ssh_user = "root"
 ssh_host = "forum.example.com"
 ```
 
 Notes:
 - `baseurl` should not end with a trailing slash.
-- `ssh_user`/`ssh_host` enable `update` over SSH (`./launcher rebuild app`). Configure keys in your SSH config.
+- `ssh_host` enables `update` over SSH (`./launcher rebuild app`). Configure keys in your SSH config.
 - `changelog_topic_id` is required if you want `--post-changelog` to post a checklist update.
 - `tags` (optional) can label installs; they are emitted in list output formats.
 
@@ -63,6 +64,13 @@ General form: `dsc [--config dsc.toml] <command>`.
 - Topic sync (auto pull or push based on freshest copy): `dsc topic sync <topic-id> <local-path> [--discourse <name>] [--yes]`
 - Category pull: `dsc category pull <category-id> [local-path] [--discourse <name>]`
 - Category push: `dsc category push <local-path> <category-id> [--discourse <name>]`
+- Category copy: `dsc category copy --discourse <name> <category-id>`
+- Group list: `dsc group list --discourse <name>`
+- Group info: `dsc group info --discourse <name> --group <group-id>`
+- Group copy: `dsc group copy --discourse <source> [--target <target>] --group <group-id>`
+- Backup create: `dsc backup create --discourse <name>`
+- Backup list: `dsc backup list --discourse <name>`
+- Backup restore: `dsc backup restore --discourse <name> <backup-path>`
 
 Tips:
 - When multiple installs are configured, supply `--discourse <name>` for topic/category commands.
@@ -109,7 +117,6 @@ baseurl = "https://forum.example.com"
 apikey = "<api key>"
 api_username = "system"
 ssh_host = "forum.example.com"
-ssh_user = "root"
 changelog_topic_id = 123
 EOF
 
