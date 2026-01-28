@@ -1,8 +1,8 @@
 # Implementation Plan
 
-## agents
+## Agents
 
-* run tests after all code 
+* Run tests after all code changes and ensure tests pass
 
 ## Source Spec
 

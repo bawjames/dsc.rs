@@ -17,9 +17,10 @@ Global option:
 
 - `dsc --config <path> <command>` (or `-c <path>`) to select a config file (default: `dsc.toml`).
 
-### `dsc list [--format <format>]`
+### `dsc list [--format <format>] [--tags <tag1,tag2,...>]`
 
-Lists all Discourse installs known to dsc.rs
+Lists all Discourse installs known to dsc.rs, optionally filtered by tags.
+
 List formats:
 
 - `plaintext` (default)
@@ -106,6 +107,7 @@ Pulls the specified topic into a local Markdown file.
 If `<local-path>` is omitted, the topic is written to a new file in the current directory (named from the topic title). If the path does not exist, it will be created.
 
 ### `dsc topic push <local-path> <topic-id> [--discourse <discourse>]`
+
 Pushes the specified local Markdown file up to the specified topic in the Discourse install, updating the topic with the contents of the local file.
 
 ### `dsc topic sync <topic-id> <local-path> [--discourse <discourse>] [--yes]`
@@ -129,7 +131,8 @@ For consistency with other commands, prefer `--discourse <discourse>` when multi
 Copies the specified category on the specified Discourse.
 
 Copy behaviour:
-- The copied category  name is set to `Copy of <original category name>`.
+
+- The copied category name is set to `Copy of <original category name>`.
 - The copied category slug suffixed with `-copy` (e.g., `staff` -> `staff-copy`).
 - All other category fields should match the source category, except the ID which is assigned automatically by Discourse.
 
@@ -142,6 +145,7 @@ Pulls the specified category into a directory of Markdown files.
 If `<local-path>` is omitted, the category is written to a new folder in the current directory (named from the category slug/name). If the path does not exist, it will be created. Files will be named from the topic titles.
 
 ### `dsc category push --discourse <discourse> <local-file> <category-id>`
+
 Pushes the specified local Markdown files up to the specified category in the Discourse install, creating or updating topics as necessary.
 
 ---
@@ -163,6 +167,7 @@ Copies the specified group from the source Discourse install to the target Disco
 `<group-id>` can be found using `dsc group list --discourse <discourse>`.
 
 Copy behaviour:
+
 - The copied group name is slugified and suffixed with `-copy` (e.g., `staff` -> `staff-copy`).
 - The copied group full name is set to `Copy of <original full name>`.
 - All other group fields should match the source group, except the ID which is assigned by Discourse.
@@ -171,14 +176,13 @@ Copy behaviour:
 
 ## Backup and Restore
 
-
-
 ### `dsc backup create --discourse <discourse>`
 
 Creates a backup on the specified Discourse install.
 It doesn't download the backup, just triggers its creation on the server side.
 
 ### `dsc backup list --discourse <discourse>`
+
 Lists all backups on the specified Discourse install.
 
 ### `dsc backup restore --discourse <discourse> <backup-path>`
@@ -188,9 +192,7 @@ Restores the specified backup on the specified Discourse install.
 NOTES: where are these stored locally?
 `<backup-path>` can be found using `dsc backup list --discourse <discourse>`.
 
---- 
-
-
+---
 
 ## Internals
 
