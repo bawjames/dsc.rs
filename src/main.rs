@@ -1,7 +1,7 @@
-use anyhow::{anyhow, Context, Result};
+use anyhow::{Context, Result, anyhow};
 use clap::{CommandFactory, Parser, Subcommand, ValueEnum};
-use clap_complete::{generate, Shell};
-use dsc::config::{find_discourse, load_config, save_config, Config, DiscourseConfig};
+use clap_complete::{Shell, generate};
+use dsc::config::{Config, DiscourseConfig, find_discourse, load_config, save_config};
 use dsc::discourse::{CategoryInfo, DiscourseClient, TopicSummary};
 use dsc::utils::{ensure_dir, read_markdown, resolve_topic_path, slugify, write_markdown};
 use std::fs;
@@ -24,6 +24,8 @@ enum Commands {
     List {
         #[arg(long, short = 'f', value_enum, default_value = "plaintext")]
         format: OutputFormat,
+        #[command(subcommand)]
+        command: Option<ListCommand>,
     },
     Add {
         names: String,
@@ -68,6 +70,13 @@ enum Commands {
         #[arg(long, short = 'd')]
         dir: Option<PathBuf>,
     },
+}
+
+#[derive(Subcommand)]
+enum ListCommand {
+    /// Sort discourse entries by name and rewrite config in-place.
+    /// Also inserts placeholder values for unset template keys.
+    Tidy,
 }
 
 #[derive(Subcommand)]
@@ -186,7 +195,12 @@ fn main() -> Result<()> {
     let mut config = load_config(&cli.config)?;
 
     match cli.command {
-        Commands::List { format } => list_discourses(&config, format)?,
+        Commands::List { format, command } => match command {
+            Some(ListCommand::Tidy) => {
+                list_tidy(&cli.config, &mut config)?;
+            }
+            None => list_discourses(&config, format)?,
+        },
         Commands::Add { names, interactive } => {
             add_discourses(&mut config, &names, interactive)?;
             save_config(&cli.config, &config)?;
@@ -274,6 +288,78 @@ fn main() -> Result<()> {
         },
         Commands::Completions { shell, dir } => {
             write_completions(shell, dir.as_deref())?;
+        }
+    }
+
+    Ok(())
+}
+
+fn list_tidy(config_path: &Path, config: &mut Config) -> Result<()> {
+    // Capture missing fields based on the loaded config *before* we insert placeholders.
+    // Note: `DiscourseConfig` deserializers treat empty strings/0 as None for some fields.
+    let mut missing_report: std::collections::HashMap<String, Vec<&'static str>> =
+        std::collections::HashMap::new();
+    for d in &config.discourse {
+        let mut missing = Vec::new();
+        if d.baseurl.trim().is_empty() {
+            missing.push("baseurl");
+        }
+        if d.apikey.is_none() {
+            missing.push("apikey");
+        }
+        if d.api_username.is_none() {
+            missing.push("api_username");
+        }
+        if d.tags.is_none() {
+            missing.push("tags");
+        }
+        if d.ssh_host.is_none() {
+            missing.push("ssh_host");
+        }
+        if d.changelog_topic_id.is_none() {
+            missing.push("changelog_topic_id");
+        }
+        if !missing.is_empty() {
+            missing_report.insert(d.name.clone(), missing);
+        }
+    }
+
+    // Insert placeholder values for template keys when unset.
+    for d in &mut config.discourse {
+        if d.apikey.is_none() {
+            d.apikey = Some("".to_string());
+        }
+        if d.api_username.is_none() {
+            d.api_username = Some("".to_string());
+        }
+        if d.changelog_path.is_none() {
+            d.changelog_path = Some("".to_string());
+        }
+        if d.tags.is_none() {
+            d.tags = Some(Vec::new());
+        }
+        if d.changelog_topic_id.is_none() {
+            d.changelog_topic_id = Some(0);
+        }
+        if d.ssh_host.is_none() {
+            d.ssh_host = Some("".to_string());
+        }
+    }
+
+    // Sort ascending alphanumeric by name (case-insensitive, with a stable tie-break).
+    config.discourse.sort_by(|a, b| {
+        a.name
+            .to_ascii_lowercase()
+            .cmp(&b.name.to_ascii_lowercase())
+            .then_with(|| a.name.cmp(&b.name))
+    });
+
+    save_config(config_path, config)?;
+
+    // Print missing fields per discourse (do not consider changelog_path missing).
+    for d in &config.discourse {
+        if let Some(fields) = missing_report.get(&d.name) {
+            println!("{}: missing {}", d.name, fields.join(", "));
         }
     }
 

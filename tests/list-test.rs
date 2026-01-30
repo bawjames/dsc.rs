@@ -1,5 +1,6 @@
 mod common;
 use common::*;
+use std::fs;
 use tempfile::TempDir;
 
 #[test]
@@ -12,4 +13,88 @@ fn list() {
     );
     let output = run_dsc(&["list", "-f", "json"], &config_path);
     assert!(output.status.success(), "list failed");
+}
+
+#[test]
+fn list_tidy_sorts_inserts_placeholders_and_reports_missing() {
+    vprintln("e2e_list_tidy: sorting config and inserting placeholders");
+    let dir = TempDir::new().expect("tempdir");
+    let config_path = write_temp_config(
+        &dir,
+        r#"[[discourse]]
+name = "b"
+baseurl = ""
+
+[[discourse]]
+name = "a"
+baseurl = "https://a.example"
+apikey = "abc"
+api_username = "user"
+tags = ["t1"]
+changelog_topic_id = 123
+ssh_host = "a-host"
+"#,
+    );
+
+    let output = run_dsc(&["list", "tidy"], &config_path);
+    assert!(output.status.success(), "list tidy failed");
+
+    let stdout = String::from_utf8_lossy(&output.stdout);
+    assert!(
+        stdout.contains(
+            "b: missing baseurl, apikey, api_username, tags, ssh_host, changelog_topic_id"
+        ),
+        "unexpected missing-fields report: {stdout}"
+    );
+    assert!(
+        !stdout.contains("changelog_path"),
+        "report should not mention changelog_path: {stdout}"
+    );
+    assert!(
+        !stdout.contains("a: missing"),
+        "did not expect discourse 'a' to be reported missing: {stdout}"
+    );
+
+    let raw = fs::read_to_string(&config_path).expect("read rewritten config");
+
+    // Sorted by name: 'a' entry should appear before 'b'.
+    let pos_a = raw.find("name = \"a\"").expect("missing a entry");
+    let pos_b = raw.find("name = \"b\"").expect("missing b entry");
+    assert!(pos_a < pos_b, "config not sorted by name:\n{raw}");
+
+    // Placeholder keys inserted for the discourse with missing fields.
+    assert!(
+        raw.contains("apikey = \"\""),
+        "missing apikey placeholder:\n{raw}"
+    );
+    assert!(
+        raw.contains("api_username = \"\""),
+        "missing api_username placeholder:\n{raw}"
+    );
+    assert!(
+        raw.contains("changelog_path = \"\""),
+        "missing changelog_path placeholder:\n{raw}"
+    );
+    assert!(
+        raw.contains("tags = []"),
+        "missing tags placeholder:\n{raw}"
+    );
+    assert!(
+        raw.contains("changelog_topic_id = 0"),
+        "missing changelog_topic_id placeholder:\n{raw}"
+    );
+    assert!(
+        raw.contains("ssh_host = \"\""),
+        "missing ssh_host placeholder:\n{raw}"
+    );
+
+    // Existing non-empty fields remain as-is.
+    assert!(
+        raw.contains("tags = [\"t1\"]"),
+        "tags overwritten unexpectedly:\n{raw}"
+    );
+    assert!(
+        raw.contains("changelog_topic_id = 123"),
+        "changelog_topic_id overwritten unexpectedly:\n{raw}"
+    );
 }

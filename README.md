@@ -100,9 +100,24 @@ Releases are automated via Git tags and GitHub Actions using cargo-dist.
 Steps:
 
 1. Ensure your working tree is clean and tests pass.
-2. Run `s/release <version>` (for example, `s/release 0.2.0`).
-3. The script commits the version bump, tags `v<version>`, and pushes.
+2. Bump the version in `Cargo.toml` and commit it.
+3. Tag the release as `v<version>` and push the tag.
+
+- If you use `s/release <version>` (for example, `s/release 0.2.0`), it handles the commit + tag + push.
+
 4. The `Release` workflow builds and uploads binaries to GitHub Releases.
+
+Publishing to crates.io (initially manual):
+
+1. Ensure you can publish (you may need to be added as an owner).
+2. Authenticate:
+
+- One-off local login: `cargo login <token>`
+- Or per-command: `CARGO_REGISTRY_TOKEN=<token> cargo publish`
+
+3. Publish: `cargo publish`
+
+If you later want CI to publish to crates.io on tags, add `CARGO_REGISTRY_TOKEN` as a GitHub Actions secret and update the release workflow/cargo-dist config accordingly.
 
 Artifacts include platform-specific archives, checksums, and a shell installer script.
 

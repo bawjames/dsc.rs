@@ -1,6 +1,6 @@
 use crate::config::DiscourseConfig;
 use crate::utils::normalize_baseurl;
-use anyhow::{anyhow, Context, Result};
+use anyhow::{Context, Result, anyhow};
 use reqwest::blocking::{Client, Response};
 use reqwest::header::{HeaderMap, HeaderValue};
 use serde::{Deserialize, Serialize};

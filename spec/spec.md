@@ -222,6 +222,7 @@ api_username = "system"
 changelog_path = "path/to/changelog.md"
 changelog_topic_id = 123
 ssh_host = "myforum" # optional SSH config host name used for updates
+enabled = true # optional; defaults to true
 tags = ["tag1", "tag2"] # optional way to organise installs
 
 # Placeholders are supported for optional fields:
