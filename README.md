@@ -49,15 +49,17 @@ Notes:
 - `ssh_host` enables `update` over SSH (`./launcher rebuild app`). Configure keys in your SSH config.
 - `changelog_topic_id` is required if you want `--post-changelog` to post a checklist update.
 - `tags` (optional) can label installs; they are emitted in list output formats.
+- `dsc add` without `--interactive` appends a full `[[discourse]]` template containing every supported config key, using placeholders like `""`, `[]`, and `0`.
+- Empty strings and `0` values are treated as “unset” (most commands behave as if the key is missing).
 
 ## Usage
 General form: `dsc [--config dsc.toml] <command>`.
 
 - List installs: `dsc list --format plaintext|markdown|markdown-table|json|yaml|csv`
-- Add installs: `dsc add forum-a,forum-b`
+- Add installs: `dsc add forum-a,forum-b [--interactive]`
 - Import installs from file: `dsc import path/to/urls.txt` or `dsc import path/to/forums.csv`
 - Update one install: `dsc update <name> [--post-changelog]`
-- Update all installs (optionally concurrent): `dsc update all --concurrent [--max <N>] [--post-changelog]`
+- Update all installs: `dsc update all --concurrent [--max <N>] [--post-changelog]`
 - Add emoji: `dsc emoji add <emoji.png> <emoji-name> <discourse-name>`
 - Topic pull: `dsc topic pull <topic-id> [local-path] [--discourse <name>]`
 - Topic push: `dsc topic push <local-path> <topic-id> [--discourse <name>]`
@@ -77,6 +79,7 @@ Tips:
 - When multiple installs are configured, supply `--discourse <name>` for topic/category commands.
 - `topic pull`/`category pull` write Markdown files; paths are created as needed.
 - `topic sync` compares local mtime with the remote post timestamp; pass `--yes` to skip the prompt.
+- `dsc update all` writes a progress log named `YYYY.MM.DD-dsc-update-all.log` in the current directory and stops at the first failure; `--concurrent` is disabled for this command.
 
 ## Development
 - Build fast feedback: `cargo build`

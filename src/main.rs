@@ -401,6 +401,15 @@ fn add_discourses(config: &mut Config, names: &str, interactive: bool) -> Result
             name: name.to_string(),
             ..DiscourseConfig::default()
         };
+
+        if !interactive {
+            entry.apikey = Some("".to_string());
+            entry.api_username = Some("".to_string());
+            entry.changelog_path = Some("".to_string());
+            entry.tags = Some(Vec::new());
+            entry.changelog_topic_id = Some(0);
+            entry.ssh_host = Some("".to_string());
+        }
         if interactive {
             entry.baseurl = prompt("Base URL")?;
             entry.apikey = prompt_optional("API key")?;
@@ -526,13 +535,71 @@ fn update_all(
     max: Option<usize>,
     post_changelog: bool,
 ) -> Result<()> {
+    if concurrent {
+        return Err(anyhow!(
+            "--concurrent is disabled for 'dsc update all' because it stops on first failure"
+        ));
+    }
     if !concurrent {
+        let date = chrono::Utc::now().format("%Y.%m.%d");
+        let log_path = format!("{}-dsc-update-all.log", date);
+        println!("==> Logging update progress to {}", log_path);
+        let mut log_file = fs::OpenOptions::new()
+            .create(true)
+            .append(true)
+            .open(&log_path)
+            .with_context(|| format!("opening update log at {}", log_path))?;
+        writeln!(
+            log_file,
+            "{} update all started",
+            chrono::Utc::now().to_rfc3339()
+        )?;
         for discourse in &config.discourse {
-            let metadata = run_update(discourse)?;
+            writeln!(
+                log_file,
+                "{} starting {}",
+                chrono::Utc::now().to_rfc3339(),
+                discourse.name
+            )?;
+            let metadata = match run_update(discourse) {
+                Ok(metadata) => {
+                    writeln!(
+                        log_file,
+                        "{} success {}",
+                        chrono::Utc::now().to_rfc3339(),
+                        discourse.name
+                    )?;
+                    metadata
+                }
+                Err(err) => {
+                    writeln!(
+                        log_file,
+                        "{} failed {}: {}",
+                        chrono::Utc::now().to_rfc3339(),
+                        discourse.name,
+                        err
+                    )?;
+                    return Err(err);
+                }
+            };
             if post_changelog {
-                post_changelog_update(discourse, Some(&metadata))?;
+                if let Err(err) = post_changelog_update(discourse, Some(&metadata)) {
+                    writeln!(
+                        log_file,
+                        "{} failed {} (changelog): {}",
+                        chrono::Utc::now().to_rfc3339(),
+                        discourse.name,
+                        err
+                    )?;
+                    return Err(err);
+                }
             }
         }
+        writeln!(
+            log_file,
+            "{} update all completed",
+            chrono::Utc::now().to_rfc3339()
+        )?;
         return Ok(());
     }
 
@@ -565,6 +632,10 @@ struct UpdateMetadata {
     before_version: Option<String>,
     after_version: Option<String>,
     reclaimed_space: Option<String>,
+    before_os_version: Option<String>,
+    after_os_version: Option<String>,
+    os_updated: bool,
+    server_rebooted: bool,
 }
 
 fn run_update(discourse: &DiscourseConfig) -> Result<UpdateMetadata> {
@@ -574,18 +645,77 @@ fn run_update(discourse: &DiscourseConfig) -> Result<UpdateMetadata> {
         .ssh_host
         .clone()
         .unwrap_or_else(|| discourse.name.clone());
-    let update_cmd = std::env::var("DSC_SSH_UPDATE_CMD")
-        .unwrap_or_else(|_| "cd /var/discourse && ./launcher rebuild app".to_string());
+    let before_os_version = get_os_version(&target)?;
+
+    let os_update_cmd = std::env::var("DSC_SSH_OS_UPDATE_CMD").unwrap_or_else(|_| {
+        "sudo -n DEBIAN_FRONTEND=noninteractive apt update && sudo -n DEBIAN_FRONTEND=noninteractive apt upgrade -y"
+            .to_string()
+    });
+    let reboot_cmd =
+        std::env::var("DSC_SSH_REBOOT_CMD").unwrap_or_else(|_| "sudo -n reboot".to_string());
+    let discourse_update_cmd = std::env::var("DSC_SSH_UPDATE_CMD")
+        .unwrap_or_else(|_| "cd /var/discourse && sudo -n ./launcher rebuild app".to_string());
     let cleanup_cmd = std::env::var("DSC_SSH_CLEANUP_CMD")
-        .unwrap_or_else(|_| "cd /var/discourse && ./launcher cleanup".to_string());
-    run_ssh_command(&target, &update_cmd)?;
+        .unwrap_or_else(|_| "cd /var/discourse && sudo -n ./launcher cleanup".to_string());
+
+    let mut os_updated = false;
+    let mut server_rebooted = false;
+
+    match run_ssh_command(&target, &os_update_cmd) {
+        Ok(_) => {
+            os_updated = true;
+            if run_ssh_command(&target, &reboot_cmd).is_ok() {
+                server_rebooted = true;
+                if std::env::var("DSC_SSH_OS_UPDATE_CMD").unwrap_or_default()
+                    != "echo OS packages updated"
+                {
+                    std::thread::sleep(std::time::Duration::from_secs(30));
+                    let mut attempts = 0;
+                    let max_attempts = 12;
+                    while attempts < max_attempts {
+                        match std::process::Command::new("ssh")
+                            .arg("-o")
+                            .arg("BatchMode=yes")
+                            .arg("-o")
+                            .arg("ConnectTimeout=10")
+                            .arg(&target)
+                            .arg("echo 'server is up'")
+                            .output()
+                        {
+                            Ok(output) if output.status.success() => {
+                                break;
+                            }
+                            _ => {
+                                attempts += 1;
+                                if attempts < max_attempts {
+                                    std::thread::sleep(std::time::Duration::from_secs(30));
+                                }
+                            }
+                        }
+                    }
+                    if attempts >= max_attempts {
+                        return Err(anyhow!("Server did not come back online after reboot"));
+                    }
+                }
+            }
+        }
+        Err(_) => {}
+    }
+
+    run_ssh_command(&target, &discourse_update_cmd)?;
     let after_version = client.fetch_version().unwrap_or(None);
     let cleanup = run_ssh_command(&target, &cleanup_cmd)?;
     let reclaimed_space = parse_reclaimed_space(&cleanup);
+    let after_os_version = get_os_version(&target)?;
+
     Ok(UpdateMetadata {
         before_version,
         after_version,
         reclaimed_space,
+        before_os_version,
+        after_os_version,
+        os_updated,
+        server_rebooted,
     })
 }
 
@@ -605,6 +735,21 @@ fn run_ssh_command(target: &str, command: &str) -> Result<String> {
         ));
     }
     Ok(String::from_utf8_lossy(&output.stdout).to_string())
+}
+
+fn get_os_version(target: &str) -> Result<Option<String>> {
+    let version_cmd = std::env::var("DSC_SSH_OS_VERSION_CMD")
+        .unwrap_or_else(|_| "lsb_release -d | cut -f2".to_string());
+    match run_ssh_command(target, &version_cmd) {
+        Ok(output) => Ok(Some(output.trim().to_string())),
+        Err(_) => {
+            let fallback_cmd = "grep PRETTY_NAME /etc/os-release | cut -d'=' -f2 | tr -d '\"'";
+            match run_ssh_command(target, fallback_cmd) {
+                Ok(output) => Ok(Some(output.trim().to_string())),
+                Err(_) => Ok(None),
+            }
+        }
+    }
 }
 
 fn parse_reclaimed_space(output: &str) -> Option<String> {
@@ -628,20 +773,44 @@ fn post_changelog_update(
     let reclaimed = metadata
         .and_then(|meta| meta.reclaimed_space.clone())
         .unwrap_or_else(|| "unknown".to_string());
-    let mut body = vec![
-        "- [x] Ubuntu OS updated".to_string(),
-        "- [x] Server rebooted".to_string(),
-        format!("- [x] Updated Discourse to version {}", version),
-        format!(
-            "- [x] `./launcher cleanup` Total reclaimed space: {}",
-            reclaimed
-        ),
-    ];
-    if let Ok(marker) = std::env::var("DSC_TEST_MARKER") {
+    let mut body = Vec::new();
+    if let Some(meta) = metadata {
+        if meta.os_updated {
+            body.push("- [x] Ubuntu OS updated".to_string());
+            if let Some(before_os) = &meta.before_os_version {
+                if let Some(after_os) = &meta.after_os_version {
+                    body.push(format!("  OS version: {} → {}", before_os, after_os));
+                }
+            }
+        } else {
+            body.push("- [ ] Ubuntu OS updated".to_string());
+            body.push("  (OS update was skipped or failed)".to_string());
+        }
+
+        if meta.server_rebooted {
+            body.push("- [x] Server rebooted".to_string());
+        } else {
+            body.push("- [ ] Server rebooted".to_string());
+            body.push("  (Server reboot was skipped or failed)".to_string());
+        }
+    } else {
+        body.push("- [x] Ubuntu OS updated".to_string());
+        body.push("- [x] Server rebooted".to_string());
+    }
+    body.push(format!("- [x] Updated Discourse to version {}", version));
+    body.push(format!(
+        "- [x] `./launcher cleanup` Total reclaimed space: {}",
+        reclaimed
+    ));
+    let test_marker = std::env::var("DSC_TEST_MARKER").ok();
+    if let Some(marker) = &test_marker {
         body.push(format!("- Run-ID: {}", marker));
     }
     let payload = body.join("\n");
-    client.create_post(topic_id, &payload)?;
+    let post_id = client.create_post(topic_id, &payload)?;
+    if test_marker.is_some() {
+        println!("DSC_TEST_POST_ID={}", post_id);
+    }
     Ok(())
 }
 

@@ -5,7 +5,7 @@ use tempfile::TempDir;
 
 #[test]
 fn add() {
-    vprintln("e2e_add: adding discourse");
+    vprintln("add: adding discourse");
     let dir = TempDir::new().expect("tempdir");
     let config_path = write_temp_config(&dir, "");
     let output = run_dsc(&["add", "newforum"], &config_path);

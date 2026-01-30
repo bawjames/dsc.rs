@@ -26,15 +26,22 @@ List formats:
 - `plaintext` | `txt`(default)
 - `markdown` | `md`
 - `markdown-table` | `md-table`
-- `json` 
+- `json`
 - `yaml` | `yml`
-- `csv` 
+- `csv`
 
 ### `dsc add <name>,<name>,... [--interactive]`
 
 Adds one or more Discourses to `dsc.toml`, creating one entry per name.
 
-- `--interactive` (or `-i`) prompts for base URL, API key, username, and tags.
+- Default (non-interactive) mode appends a full `[[discourse]]` template entry for each name, including all known fields, using placeholders:
+	- `""` for string fields
+	- `[]` for list fields
+	- `0` for numeric fields
+
+	Empty strings (`""`) and `0` are treated as **unset** when the config is loaded (they are converted to `None` internally), so leaving placeholders in place is equivalent to leaving the field blank.
+
+- `--interactive` (or `-i`) prompts for base URL, API key, username, and tags. Fields not prompted for are left unset and may be omitted from the written TOML.
 
 ### `dsc import [<path>]`
 
@@ -65,14 +72,20 @@ Version and cleanup data should be collected during the update and used to fill 
 Flags:
 
 - `--post-changelog` (or `-p`) posts the checklist to `changelog_topic_id`.
-- `--concurrent` (or `-C`) only applies to `dsc update all`.
-- `--max <n>` (or `-m <n>`) limits concurrency (only with `--concurrent`).
+- `--concurrent` (or `-C`) is disabled for `dsc update all` because updates stop at first failure.
+- `--max <n>` (or `-m <n>`) is ignored when `--concurrent` is disabled.
 
 > SSH credentials are not stored in `dsc.toml`; it is advised to set up SSH keys and use an SSH config file.
 
-### `dsc update all [--concurrent] [--max <n>] [--post-changelog]`
+### `dsc update all [--post-changelog]`
 
-Updates all Discourses known to `dsc` over SSH, optionally concurrently.
+Updates all Discourses known to `dsc` over SSH.
+
+Notes:
+
+- Writes a progress log named `YYYY.MM.DD-dsc-update-all.log` in the current working directory.
+- Stops at the first failure to avoid cascading problems.
+- `--concurrent` is disabled for `dsc update all` because it must stop at the first failure.
 
 > SSH credentials are not stored in `dsc.toml`; it is advised to set up SSH keys and use an SSH config file.
 
@@ -127,9 +140,8 @@ Lists all categories in the specified Discourse install, with their IDs and name
 List formats are the same as `dsc list`.
 
 Flags:
+
 - `--tree` prints categories in a hierarchy, with subcategories indented under parents.
-
-
 
 ### `dsc category copy --discourse <discourse> <category-id>`
 
@@ -211,9 +223,24 @@ dsc.toml is the configuration file used by dsc.rs to keep track of Discourse ins
 [[discourse]]
 name = "myforum"
 baseurl = "https://forum.example.com"
+
+# Optional fields
 apikey = "your_api_key_here"
 api_username = "system"
-ssh_host = "myforum" # optional SSH config host name used for updates
+changelog_path = "path/to/changelog.md"
 changelog_topic_id = 123
-tags = ["tag1", "tag2"] # tags are an optional way to organise your installs
+ssh_host = "myforum" # optional SSH config host name used for updates
+tags = ["tag1", "tag2"] # optional way to organise installs
+
+# Placeholders are supported for optional fields:
+# - "" (empty string) and 0 are treated as unset when loading
+# - [] is an empty tag list
+#
+# Example placeholders (as written by non-interactive `dsc add`):
+# apikey = ""
+# api_username = ""
+# changelog_path = ""
+# changelog_topic_id = 0
+# ssh_host = ""
+# tags = []
 ```
