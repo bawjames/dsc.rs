@@ -1,6 +1,6 @@
 use crate::config::DiscourseConfig;
 use crate::utils::normalize_baseurl;
-use anyhow::{Context, Result, anyhow};
+use anyhow::{anyhow, Context, Result};
 use reqwest::blocking::{Client, Response};
 use reqwest::header::{HeaderMap, HeaderValue};
 use serde::{Deserialize, Serialize};
@@ -67,13 +67,37 @@ impl DiscourseClient {
 
     /// Fetch the Discourse site title.
     pub fn fetch_site_title(&self) -> Result<String> {
-        let response = self.get("/site.json")?;
+        let site_json_error = match self.get("/site.json") {
+            Ok(response) => {
+                let status = response.status();
+                let text = response.text().context("reading site.json response body")?;
+                if status.is_success() {
+                    let body: SiteResponse =
+                        serde_json::from_str(&text).context("parsing site.json")?;
+                    return Ok(body.site.title);
+                }
+                anyhow!("site.json request failed with {}", status)
+            }
+            Err(err) => err,
+        };
+
+        let response = self.get("/")?;
         let status = response.status();
-        let body: SiteResponse = response.json().context("reading site.json")?;
+        let html = response.text().context("reading site HTML")?;
         if !status.is_success() {
-            return Err(anyhow!("site.json request failed with {}", status));
+            return Err(anyhow!(
+                "site title lookup failed (site.json error: {}; HTML request failed with {})",
+                site_json_error,
+                status
+            ));
         }
-        Ok(body.site.title)
+        if let Some(title) = extract_html_title(&html) {
+            return Ok(title);
+        }
+        Err(anyhow!(
+            "site title lookup failed (site.json error: {}; HTML missing <title>)",
+            site_json_error
+        ))
     }
 
     /// Fetch the current Discourse version if exposed via the API.
@@ -542,6 +566,35 @@ impl DiscourseClient {
             .ok_or_else(|| anyhow!("missing group id in response: {}", text))?;
         Ok(id)
     }
+}
+
+fn extract_html_title(html: &str) -> Option<String> {
+    let haystack = html.as_bytes();
+    let mut lower = Vec::with_capacity(haystack.len());
+    for &byte in haystack {
+        lower.push(byte.to_ascii_lowercase());
+    }
+    let open_tag = b"<title>";
+    let close_tag = b"</title>";
+    let start = find_subslice(&lower, open_tag)? + open_tag.len();
+    let end = find_subslice(&lower[start..], close_tag)? + start;
+    let title = String::from_utf8_lossy(&haystack[start..end])
+        .trim()
+        .to_string();
+    if title.is_empty() {
+        None
+    } else {
+        Some(title)
+    }
+}
+
+fn find_subslice(haystack: &[u8], needle: &[u8]) -> Option<usize> {
+    if needle.is_empty() || haystack.len() < needle.len() {
+        return None;
+    }
+    haystack
+        .windows(needle.len())
+        .position(|window| window == needle)
 }
 
 fn push_opt(payload: &mut Vec<(String, String)>, key: &str, value: Option<&str>) {
