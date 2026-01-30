@@ -17,7 +17,7 @@ jobs:
       - name: Install Rust
         uses: dtolnay/rust-toolchain@stable
       - name: Run cargo-dist
-        uses: axodotdev/cargo-dist@v0.11.1
+        uses: axodotdev/cargo-dist@v0.30.3
         with:
           command: release
           tag: ${{ github.ref_name }}
