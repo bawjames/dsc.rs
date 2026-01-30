@@ -295,20 +295,12 @@ _dsc() {
             return 0
             ;;
         dsc__backup__create)
-            opts="-d -h --discourse --help"
+            opts="-h --help <DISCOURSE>"
             if [[ ${cur} == -* || ${COMP_CWORD} -eq 3 ]] ; then
                 COMPREPLY=( $(compgen -W "${opts}" -- "${cur}") )
                 return 0
             fi
             case "${prev}" in
-                --discourse)
-                    COMPREPLY=($(compgen -f "${cur}"))
-                    return 0
-                    ;;
-                -d)
-                    COMPREPLY=($(compgen -f "${cur}"))
-                    return 0
-                    ;;
                 *)
                     COMPREPLY=()
                     ;;
@@ -387,20 +379,12 @@ _dsc() {
             return 0
             ;;
         dsc__backup__list)
-            opts="-d -h --discourse --help"
+            opts="-h --help <DISCOURSE>"
             if [[ ${cur} == -* || ${COMP_CWORD} -eq 3 ]] ; then
                 COMPREPLY=( $(compgen -W "${opts}" -- "${cur}") )
                 return 0
             fi
             case "${prev}" in
-                --discourse)
-                    COMPREPLY=($(compgen -f "${cur}"))
-                    return 0
-                    ;;
-                -d)
-                    COMPREPLY=($(compgen -f "${cur}"))
-                    return 0
-                    ;;
                 *)
                     COMPREPLY=()
                     ;;
@@ -409,20 +393,12 @@ _dsc() {
             return 0
             ;;
         dsc__backup__restore)
-            opts="-d -h --discourse --help <BACKUP_PATH>"
+            opts="-h --help <DISCOURSE> <BACKUP_PATH>"
             if [[ ${cur} == -* || ${COMP_CWORD} -eq 3 ]] ; then
                 COMPREPLY=( $(compgen -W "${opts}" -- "${cur}") )
                 return 0
             fi
             case "${prev}" in
-                --discourse)
-                    COMPREPLY=($(compgen -f "${cur}"))
-                    return 0
-                    ;;
-                -d)
-                    COMPREPLY=($(compgen -f "${cur}"))
-                    return 0
-                    ;;
                 *)
                     COMPREPLY=()
                     ;;
@@ -445,20 +421,12 @@ _dsc() {
             return 0
             ;;
         dsc__category__copy)
-            opts="-d -h --discourse --help <CATEGORY_ID>"
+            opts="-h --help <DISCOURSE> <CATEGORY_ID>"
             if [[ ${cur} == -* || ${COMP_CWORD} -eq 3 ]] ; then
                 COMPREPLY=( $(compgen -W "${opts}" -- "${cur}") )
                 return 0
             fi
             case "${prev}" in
-                --discourse)
-                    COMPREPLY=($(compgen -f "${cur}"))
-                    return 0
-                    ;;
-                -d)
-                    COMPREPLY=($(compgen -f "${cur}"))
-                    return 0
-                    ;;
                 *)
                     COMPREPLY=()
                     ;;
@@ -551,20 +519,12 @@ _dsc() {
             return 0
             ;;
         dsc__category__list)
-            opts="-d -h --discourse --tree --help [DISCOURSE_NAME]"
+            opts="-h --tree --help <DISCOURSE>"
             if [[ ${cur} == -* || ${COMP_CWORD} -eq 3 ]] ; then
                 COMPREPLY=( $(compgen -W "${opts}" -- "${cur}") )
                 return 0
             fi
             case "${prev}" in
-                --discourse)
-                    COMPREPLY=($(compgen -f "${cur}"))
-                    return 0
-                    ;;
-                -d)
-                    COMPREPLY=($(compgen -f "${cur}"))
-                    return 0
-                    ;;
                 *)
                     COMPREPLY=()
                     ;;
@@ -573,20 +533,12 @@ _dsc() {
             return 0
             ;;
         dsc__category__pull)
-            opts="-d -h --discourse --help <CATEGORY_ID> [LOCAL_PATH]"
+            opts="-h --help <DISCOURSE> <CATEGORY_ID> [LOCAL_PATH]"
             if [[ ${cur} == -* || ${COMP_CWORD} -eq 3 ]] ; then
                 COMPREPLY=( $(compgen -W "${opts}" -- "${cur}") )
                 return 0
             fi
             case "${prev}" in
-                --discourse)
-                    COMPREPLY=($(compgen -f "${cur}"))
-                    return 0
-                    ;;
-                -d)
-                    COMPREPLY=($(compgen -f "${cur}"))
-                    return 0
-                    ;;
                 *)
                     COMPREPLY=()
                     ;;
@@ -595,20 +547,12 @@ _dsc() {
             return 0
             ;;
         dsc__category__push)
-            opts="-d -h --discourse --help <LOCAL_PATH> <CATEGORY_ID>"
+            opts="-h --help <DISCOURSE> <LOCAL_PATH> <CATEGORY_ID>"
             if [[ ${cur} == -* || ${COMP_CWORD} -eq 3 ]] ; then
                 COMPREPLY=( $(compgen -W "${opts}" -- "${cur}") )
                 return 0
             fi
             case "${prev}" in
-                --discourse)
-                    COMPREPLY=($(compgen -f "${cur}"))
-                    return 0
-                    ;;
-                -d)
-                    COMPREPLY=($(compgen -f "${cur}"))
-                    return 0
-                    ;;
                 *)
                     COMPREPLY=()
                     ;;
@@ -653,20 +597,12 @@ _dsc() {
             return 0
             ;;
         dsc__emoji__add)
-            opts="-d -h --discourse --help <EMOJI_PATH> <EMOJI_NAME> [DISCOURSE_NAME]"
+            opts="-h --help <DISCOURSE> <EMOJI_PATH> <EMOJI_NAME>"
             if [[ ${cur} == -* || ${COMP_CWORD} -eq 3 ]] ; then
                 COMPREPLY=( $(compgen -W "${opts}" -- "${cur}") )
                 return 0
             fi
             case "${prev}" in
-                --discourse)
-                    COMPREPLY=($(compgen -f "${cur}"))
-                    return 0
-                    ;;
-                -d)
-                    COMPREPLY=($(compgen -f "${cur}"))
-                    return 0
-                    ;;
                 *)
                     COMPREPLY=()
                     ;;
@@ -731,33 +667,17 @@ _dsc() {
             return 0
             ;;
         dsc__group__copy)
-            opts="-d -t -g -h --discourse --target --group --help"
+            opts="-t -h --target --help <DISCOURSE> <GROUP>"
             if [[ ${cur} == -* || ${COMP_CWORD} -eq 3 ]] ; then
                 COMPREPLY=( $(compgen -W "${opts}" -- "${cur}") )
                 return 0
             fi
             case "${prev}" in
-                --discourse)
-                    COMPREPLY=($(compgen -f "${cur}"))
-                    return 0
-                    ;;
-                -d)
-                    COMPREPLY=($(compgen -f "${cur}"))
-                    return 0
-                    ;;
                 --target)
                     COMPREPLY=($(compgen -f "${cur}"))
                     return 0
                     ;;
                 -t)
-                    COMPREPLY=($(compgen -f "${cur}"))
-                    return 0
-                    ;;
-                --group)
-                    COMPREPLY=($(compgen -f "${cur}"))
-                    return 0
-                    ;;
-                -g)
                     COMPREPLY=($(compgen -f "${cur}"))
                     return 0
                     ;;
@@ -839,28 +759,12 @@ _dsc() {
             return 0
             ;;
         dsc__group__info)
-            opts="-d -g -h --discourse --group --help"
+            opts="-h --help <DISCOURSE> <GROUP>"
             if [[ ${cur} == -* || ${COMP_CWORD} -eq 3 ]] ; then
                 COMPREPLY=( $(compgen -W "${opts}" -- "${cur}") )
                 return 0
             fi
             case "${prev}" in
-                --discourse)
-                    COMPREPLY=($(compgen -f "${cur}"))
-                    return 0
-                    ;;
-                -d)
-                    COMPREPLY=($(compgen -f "${cur}"))
-                    return 0
-                    ;;
-                --group)
-                    COMPREPLY=($(compgen -f "${cur}"))
-                    return 0
-                    ;;
-                -g)
-                    COMPREPLY=($(compgen -f "${cur}"))
-                    return 0
-                    ;;
                 *)
                     COMPREPLY=()
                     ;;
@@ -869,20 +773,12 @@ _dsc() {
             return 0
             ;;
         dsc__group__list)
-            opts="-d -h --discourse --help"
+            opts="-h --help <DISCOURSE>"
             if [[ ${cur} == -* || ${COMP_CWORD} -eq 3 ]] ; then
                 COMPREPLY=( $(compgen -W "${opts}" -- "${cur}") )
                 return 0
             fi
             case "${prev}" in
-                --discourse)
-                    COMPREPLY=($(compgen -f "${cur}"))
-                    return 0
-                    ;;
-                -d)
-                    COMPREPLY=($(compgen -f "${cur}"))
-                    return 0
-                    ;;
                 *)
                     COMPREPLY=()
                     ;;
@@ -1375,20 +1271,12 @@ _dsc() {
             return 0
             ;;
         dsc__topic__pull)
-            opts="-d -h --discourse --help <TOPIC_ID> [LOCAL_PATH]"
+            opts="-h --help <DISCOURSE> <TOPIC_ID> [LOCAL_PATH]"
             if [[ ${cur} == -* || ${COMP_CWORD} -eq 3 ]] ; then
                 COMPREPLY=( $(compgen -W "${opts}" -- "${cur}") )
                 return 0
             fi
             case "${prev}" in
-                --discourse)
-                    COMPREPLY=($(compgen -f "${cur}"))
-                    return 0
-                    ;;
-                -d)
-                    COMPREPLY=($(compgen -f "${cur}"))
-                    return 0
-                    ;;
                 *)
                     COMPREPLY=()
                     ;;
@@ -1397,20 +1285,12 @@ _dsc() {
             return 0
             ;;
         dsc__topic__push)
-            opts="-d -h --discourse --help <LOCAL_PATH> <TOPIC_ID>"
+            opts="-h --help <DISCOURSE> <LOCAL_PATH> <TOPIC_ID>"
             if [[ ${cur} == -* || ${COMP_CWORD} -eq 3 ]] ; then
                 COMPREPLY=( $(compgen -W "${opts}" -- "${cur}") )
                 return 0
             fi
             case "${prev}" in
-                --discourse)
-                    COMPREPLY=($(compgen -f "${cur}"))
-                    return 0
-                    ;;
-                -d)
-                    COMPREPLY=($(compgen -f "${cur}"))
-                    return 0
-                    ;;
                 *)
                     COMPREPLY=()
                     ;;
@@ -1419,20 +1299,12 @@ _dsc() {
             return 0
             ;;
         dsc__topic__sync)
-            opts="-d -y -h --discourse --yes --help <TOPIC_ID> <LOCAL_PATH>"
+            opts="-y -h --yes --help <DISCOURSE> <TOPIC_ID> <LOCAL_PATH>"
             if [[ ${cur} == -* || ${COMP_CWORD} -eq 3 ]] ; then
                 COMPREPLY=( $(compgen -W "${opts}" -- "${cur}") )
                 return 0
             fi
             case "${prev}" in
-                --discourse)
-                    COMPREPLY=($(compgen -f "${cur}"))
-                    return 0
-                    ;;
-                -d)
-                    COMPREPLY=($(compgen -f "${cur}"))
-                    return 0
-                    ;;
                 *)
                     COMPREPLY=()
                     ;;

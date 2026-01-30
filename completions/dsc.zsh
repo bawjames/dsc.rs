@@ -81,13 +81,11 @@ _arguments "${_arguments_options[@]}" : \
         case $line[1] in
             (add)
 _arguments "${_arguments_options[@]}" : \
-'-d+[]:DISCOURSE:_default' \
-'--discourse=[]:DISCOURSE:_default' \
 '-h[Print help]' \
 '--help[Print help]' \
+':discourse:_default' \
 ':emoji_path:_files' \
 ':emoji_name:_default' \
-'::discourse_name:_default' \
 && ret=0
 ;;
 (help)
@@ -134,32 +132,29 @@ _arguments "${_arguments_options[@]}" : \
         case $line[1] in
             (pull)
 _arguments "${_arguments_options[@]}" : \
-'-d+[]:DISCOURSE:_default' \
-'--discourse=[]:DISCOURSE:_default' \
 '-h[Print help]' \
 '--help[Print help]' \
+':discourse:_default' \
 ':topic_id:_default' \
 '::local_path:_files' \
 && ret=0
 ;;
 (push)
 _arguments "${_arguments_options[@]}" : \
-'-d+[]:DISCOURSE:_default' \
-'--discourse=[]:DISCOURSE:_default' \
 '-h[Print help]' \
 '--help[Print help]' \
+':discourse:_default' \
 ':local_path:_files' \
 ':topic_id:_default' \
 && ret=0
 ;;
 (sync)
 _arguments "${_arguments_options[@]}" : \
-'-d+[]:DISCOURSE:_default' \
-'--discourse=[]:DISCOURSE:_default' \
 '-y[]' \
 '--yes[]' \
 '-h[Print help]' \
 '--help[Print help]' \
+':discourse:_default' \
 ':topic_id:_default' \
 ':local_path:_files' \
 && ret=0
@@ -216,39 +211,34 @@ _arguments "${_arguments_options[@]}" : \
         case $line[1] in
             (list)
 _arguments "${_arguments_options[@]}" : \
-'-d+[]:DISCOURSE:_default' \
-'--discourse=[]:DISCOURSE:_default' \
 '--tree[]' \
 '-h[Print help]' \
 '--help[Print help]' \
-'::discourse_name:_default' \
+':discourse:_default' \
 && ret=0
 ;;
 (copy)
 _arguments "${_arguments_options[@]}" : \
-'-d+[]:DISCOURSE:_default' \
-'--discourse=[]:DISCOURSE:_default' \
 '-h[Print help]' \
 '--help[Print help]' \
+':discourse:_default' \
 ':category_id:_default' \
 && ret=0
 ;;
 (pull)
 _arguments "${_arguments_options[@]}" : \
-'-d+[]:DISCOURSE:_default' \
-'--discourse=[]:DISCOURSE:_default' \
 '-h[Print help]' \
 '--help[Print help]' \
+':discourse:_default' \
 ':category_id:_default' \
 '::local_path:_files' \
 && ret=0
 ;;
 (push)
 _arguments "${_arguments_options[@]}" : \
-'-d+[]:DISCOURSE:_default' \
-'--discourse=[]:DISCOURSE:_default' \
 '-h[Print help]' \
 '--help[Print help]' \
+':discourse:_default' \
 ':local_path:_files' \
 ':category_id:_default' \
 && ret=0
@@ -309,32 +299,27 @@ _arguments "${_arguments_options[@]}" : \
         case $line[1] in
             (list)
 _arguments "${_arguments_options[@]}" : \
-'-d+[]:DISCOURSE:_default' \
-'--discourse=[]:DISCOURSE:_default' \
 '-h[Print help]' \
 '--help[Print help]' \
+':discourse:_default' \
 && ret=0
 ;;
 (info)
 _arguments "${_arguments_options[@]}" : \
-'-d+[]:DISCOURSE:_default' \
-'--discourse=[]:DISCOURSE:_default' \
-'-g+[]:GROUP:_default' \
-'--group=[]:GROUP:_default' \
 '-h[Print help]' \
 '--help[Print help]' \
+':discourse:_default' \
+':group:_default' \
 && ret=0
 ;;
 (copy)
 _arguments "${_arguments_options[@]}" : \
-'-d+[]:DISCOURSE:_default' \
-'--discourse=[]:DISCOURSE:_default' \
 '-t+[]:TARGET:_default' \
 '--target=[]:TARGET:_default' \
-'-g+[]:GROUP:_default' \
-'--group=[]:GROUP:_default' \
 '-h[Print help]' \
 '--help[Print help]' \
+':discourse:_default' \
+':group:_default' \
 && ret=0
 ;;
 (help)
@@ -389,26 +374,23 @@ _arguments "${_arguments_options[@]}" : \
         case $line[1] in
             (create)
 _arguments "${_arguments_options[@]}" : \
-'-d+[]:DISCOURSE:_default' \
-'--discourse=[]:DISCOURSE:_default' \
 '-h[Print help]' \
 '--help[Print help]' \
+':discourse:_default' \
 && ret=0
 ;;
 (list)
 _arguments "${_arguments_options[@]}" : \
-'-d+[]:DISCOURSE:_default' \
-'--discourse=[]:DISCOURSE:_default' \
 '-h[Print help]' \
 '--help[Print help]' \
+':discourse:_default' \
 && ret=0
 ;;
 (restore)
 _arguments "${_arguments_options[@]}" : \
-'-d+[]:DISCOURSE:_default' \
-'--discourse=[]:DISCOURSE:_default' \
 '-h[Print help]' \
 '--help[Print help]' \
+':discourse:_default' \
 ':backup_path:_default' \
 && ret=0
 ;;
