@@ -82,6 +82,33 @@ General form: `dsc [--config dsc.toml] <command>`.
 - Backup list: `dsc backup list <discourse>`
 - Backup restore: `dsc backup restore <discourse> <backup-path>`
 
+## Shell completions
+
+Generate completions:
+
+```bash
+# Bash
+dsc completions bash --dir /usr/local/share/bash-completion/completions
+
+# Zsh
+dsc completions zsh --dir ~/.zsh/completions
+echo 'fpath=(~/.zsh/completions $fpath)' >> ~/.zshrc
+autoload -Uz compinit && compinit
+
+# Fish
+dsc completions fish --dir ~/.config/fish/completions
+```
+
+If you omit `--dir`, the completion script is printed to stdout so you can redirect it.
+
+Update environment variables (optional overrides for SSH commands):
+
+- `DSC_SSH_OS_UPDATE_CMD` (default: `sudo -n DEBIAN_FRONTEND=noninteractive apt update && sudo -n DEBIAN_FRONTEND=noninteractive apt upgrade -y`)
+- `DSC_SSH_REBOOT_CMD` (default: `sudo -n reboot`)
+- `DSC_SSH_OS_VERSION_CMD` (default: `lsb_release -d | cut -f2`, fallback to `/etc/os-release`)
+- `DSC_SSH_UPDATE_CMD` (default: `cd /var/discourse && sudo -n ./launcher rebuild app`)
+- `DSC_SSH_CLEANUP_CMD` (default: `cd /var/discourse && sudo -n ./launcher cleanup`)
+
 Tips:
 
 - Most commands require the discourse name as the first argument after the subcommand.
@@ -94,6 +121,8 @@ Tips:
 - Build fast feedback: `cargo build`
 - Lint/format (if you have rustfmt/clippy in toolchain): `cargo fmt` then `cargo clippy` (optional but recommended)
 - Run example binary locally: `cargo run -- --help`
+- Verbose e2e output: `DSC_TEST_VERBOSE=1 cargo test -- --nocapture`
+  - Note: `-v` / `--verbose` are not supported by the Rust test harness; they will fail with "no option -v".
 
 ## Release
 
