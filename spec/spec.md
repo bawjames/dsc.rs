@@ -23,11 +23,11 @@ Lists all Discourse installs known to dsc.rs, optionally filtered by tags.
 
 List formats:
 
-- `plaintext` | `txt`(default)
-- `markdown` | `md`
-- `markdown-table` | `md-table`
+- `plaintext` || `txt`(default)
+- `markdown` || `md`
+- `markdown-table` || `md-table`
 - `json`
-- `yaml` | `yml`
+- `yaml` || `yml`
 - `csv`
 
 ### `dsc list tidy`
@@ -79,6 +79,14 @@ Flags:
 - `--post-changelog` (or `-p`) posts the checklist to `changelog_topic_id`.
 - `--concurrent` (or `-C`) is disabled for `dsc update all` because updates stop at first failure.
 - `--max <n>` (or `-m <n>`) is ignored when `--concurrent` is disabled.
+
+Environment variables (optional overrides for SSH commands):
+
+- `DSC_SSH_OS_UPDATE_CMD` (default: `sudo -n DEBIAN_FRONTEND=noninteractive apt update && sudo -n DEBIAN_FRONTEND=noninteractive apt upgrade -y`)
+- `DSC_SSH_REBOOT_CMD` (default: `sudo -n reboot`)
+- `DSC_SSH_OS_VERSION_CMD` (default: `lsb_release -d | cut -f2`, fallback to `/etc/os-release`)
+- `DSC_SSH_UPDATE_CMD` (default: `cd /var/discourse && sudo -n ./launcher rebuild app`)
+- `DSC_SSH_CLEANUP_CMD` (default: `cd /var/discourse && sudo -n ./launcher cleanup`)
 
 > SSH credentials are not stored in `dsc.toml`; it is advised to set up SSH keys and use an SSH config file.
 
@@ -219,7 +227,6 @@ dsc.toml is the configuration file used by dsc.rs to keep track of Discourse ins
 ```toml
 [[discourse]]
 name = "myforum"
-fullname = "My Forum"
 baseurl = "https://forum.example.com"
 
 # Optional fields
