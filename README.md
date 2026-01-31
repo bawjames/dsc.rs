@@ -57,7 +57,6 @@ Notes:
 - `tags` (optional) can label installs; they are emitted in list output formats.
 - Most forum read/write commands require `apikey` and `api_username`. If they are missing, `dsc` will fail with a clear message.
 - `dsc add` without `--interactive` appends a full `[[discourse]]` template containing every supported config key, using placeholders like `""`, `[]`, and `0`.
-- `dsc add --interactive` now prompts for `ssh_host` and `changelog_topic_id` (optional; blank keeps them unset).
 - Empty strings and `0` values are treated as “unset” (most commands behave as if the key is missing).
 
 ## Usage
