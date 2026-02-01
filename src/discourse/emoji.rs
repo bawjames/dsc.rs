@@ -8,29 +8,52 @@ use std::path::Path;
 impl DiscourseClient {
     /// Upload a custom emoji.
     pub fn upload_emoji(&self, emoji_path: &Path, emoji_name: &str) -> Result<()> {
-        let file = std::fs::read(emoji_path)
-            .with_context(|| format!("reading {}", emoji_path.display()))?;
-        let part = reqwest::blocking::multipart::Part::bytes(file)
-            .file_name(
-                emoji_path
-                    .file_name()
-                    .and_then(|s| s.to_str())
-                    .unwrap_or("emoji.png")
-                    .to_string(),
-            )
-            .mime_str("image/png")
-            .context("setting emoji mime")?;
-        let form = reqwest::blocking::multipart::Form::new()
-            .part("emoji[image]", part)
-            .text("emoji[name]", emoji_name.to_string());
+        let make_form = || -> Result<reqwest::blocking::multipart::Form> {
+            let file = std::fs::read(emoji_path)
+                .with_context(|| format!("reading {}", emoji_path.display()))?;
+            let part = reqwest::blocking::multipart::Part::bytes(file)
+                .file_name(
+                    emoji_path
+                        .file_name()
+                        .and_then(|s| s.to_str())
+                        .unwrap_or("emoji.png")
+                        .to_string(),
+                )
+                .mime_str("image/png")
+                .context("setting emoji mime")?;
+            Ok(reqwest::blocking::multipart::Form::new()
+                .part("emoji[image]", part)
+                .text("emoji[name]", emoji_name.to_string()))
+        };
 
-        let response = self
-            .post("/admin/customize/emojis")?
-            .multipart(form)
+        let mut response = self
+            .post("/admin/customize/emojis.json")?
+            .multipart(make_form()?)
             .send()
             .context("uploading emoji")?;
+        if response.status() == StatusCode::NOT_FOUND {
+            response = self
+                .post("/admin/customize/emojis")?
+                .multipart(make_form()?)
+                .send()
+                .context("uploading emoji")?;
+        }
         if !response.status().is_success() {
-            return Err(anyhow!("emoji upload failed with {}", response.status()));
+            let status = response.status();
+            let text = response
+                .text()
+                .unwrap_or_else(|_| "<failed to read response body>".to_string());
+            let hint = if status == StatusCode::NOT_FOUND || status == StatusCode::FORBIDDEN {
+                " (requires an admin API key)"
+            } else {
+                ""
+            };
+            return Err(anyhow!(
+                "emoji upload failed with {}{}: {}",
+                status,
+                hint,
+                text
+            ));
         }
         Ok(())
     }
@@ -38,7 +61,14 @@ impl DiscourseClient {
     /// List custom emojis.
     pub fn list_custom_emojis(&self) -> Result<Vec<CustomEmoji>> {
         if let Ok(emojis) = self.list_admin_emojis() {
-            return Ok(emojis);
+            if !emojis.is_empty() {
+                return Ok(emojis);
+            }
+        }
+        if let Ok(emojis) = self.list_admin_config_emojis() {
+            if !emojis.is_empty() {
+                return Ok(emojis);
+            }
         }
         self.list_public_emojis()
     }
@@ -98,6 +128,30 @@ impl DiscourseClient {
             }
         }
         Ok(out)
+    }
+
+    fn list_admin_config_emojis(&self) -> Result<Vec<CustomEmoji>> {
+        let response = self.get("/admin/config/emoji.json")?;
+        let status = response.status();
+        let text = response
+            .text()
+            .context("reading admin config emoji response")?;
+        if status == StatusCode::NOT_FOUND {
+            return Ok(Vec::new());
+        }
+        if !status.is_success() {
+            return Err(anyhow!(
+                "admin config emoji request failed with {}: {}",
+                status,
+                text
+            ));
+        }
+        let value: Value =
+            serde_json::from_str(&text).context("parsing admin config emoji json")?;
+        if let Some(val) = value.get("emojis") {
+            return Ok(extract_emojis_from_value(val, self.baseurl()));
+        }
+        Ok(extract_emojis_from_value(&value, self.baseurl()))
     }
 }
 

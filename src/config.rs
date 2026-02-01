@@ -38,8 +38,6 @@ pub struct DiscourseConfig {
     pub apikey: Option<String>,
     #[serde(default, deserialize_with = "deserialize_opt_string_empty_as_none")]
     pub api_username: Option<String>,
-    #[serde(default, deserialize_with = "deserialize_opt_string_empty_as_none")]
-    pub changelog_path: Option<String>,
     #[serde(default)]
     pub tags: Option<Vec<String>>,
     #[serde(default, deserialize_with = "deserialize_opt_u64_zero_as_none")]

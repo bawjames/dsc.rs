@@ -99,10 +99,6 @@ ssh_host = "a-host"
         "unexpected missing-fields report: {stdout}"
     );
     assert!(
-        !stdout.contains("changelog_path"),
-        "report should not mention changelog_path: {stdout}"
-    );
-    assert!(
         !stdout.contains("a: missing"),
         "did not expect discourse 'a' to be reported missing: {stdout}"
     );
@@ -122,10 +118,6 @@ ssh_host = "a-host"
     assert!(
         raw.contains("api_username = \"\""),
         "missing api_username placeholder:\n{raw}"
-    );
-    assert!(
-        raw.contains("changelog_path = \"\""),
-        "missing changelog_path placeholder:\n{raw}"
     );
     assert!(
         raw.contains("tags = []"),

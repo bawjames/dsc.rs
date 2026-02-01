@@ -79,10 +79,10 @@ General form: `dsc [--config dsc.toml] <command>`.
 - Category push: `dsc category push <discourse> <local-path> <category-id>`
 - Category copy: `dsc category copy <discourse> <category-id>`
 - Group list: `dsc group list <discourse>`
-- Group info: `dsc group info <discourse> <group-id>`
+- Group info: `dsc group info <discourse> <group-id> [--format json|yaml]`
 - Group copy: `dsc group copy <source> <group-id> [--target <target>]`
 - Backup create: `dsc backup create <discourse>`
-- Backup list: `dsc backup list <discourse>`
+- Backup list: `dsc backup list <discourse> [--format <format>]`
 - Backup restore: `dsc backup restore <discourse> <backup-path>`
 - List filtered by tags: `dsc list --tags alpha,beta`
 
@@ -142,7 +142,9 @@ Tips:
 - `dsc update all` writes a progress log named `YYYY.MM.DD-dsc-update-all.log` in the current directory and stops at the first failure; `--concurrent` is disabled for this command.
 - `all` is reserved for `dsc update all`.
 - `dsc list --tags` accepts comma or semicolon separators and matches any tag (case-insensitive).
+- `dsc backup list --format` supports the same formats as `dsc list`.
 - `dsc emoji add` accepts a file or directory path. Directory uploads all `.png`, `.jpg`, `.jpeg`, `.gif`, `.svg` files using the filename stem as the emoji name.
+- `dsc emoji add`/`dsc emoji list` require an admin API key and username.
 
 ## Development
 

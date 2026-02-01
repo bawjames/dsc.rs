@@ -5,6 +5,7 @@
 - Run tests after all code changes and ensure tests pass.
 - Make regular commits with clear messages reflecting progress.
 - Keep documents in spec/ up to date with any changes or decisions made during implementation.
+- When commencing work, move the relevant item in roadmap.md from "Planned" to "In Progress", and upon completion, move it to "Completed" and check the box.
 
 ## Source Spec
 

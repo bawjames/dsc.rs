@@ -115,6 +115,8 @@ complete -c dsc -n "__fish_dsc_using_subcommand group; and not __fish_seen_subco
 complete -c dsc -n "__fish_dsc_using_subcommand group; and not __fish_seen_subcommand_from list info copy help" -f -a "copy"
 complete -c dsc -n "__fish_dsc_using_subcommand group; and not __fish_seen_subcommand_from list info copy help" -f -a "help" -d 'Print this message or the help of the given subcommand(s)'
 complete -c dsc -n "__fish_dsc_using_subcommand group; and __fish_seen_subcommand_from list" -s h -l help -d 'Print help'
+complete -c dsc -n "__fish_dsc_using_subcommand group; and __fish_seen_subcommand_from info" -s f -l format -r -f -a "json\t''
+yaml\t''"
 complete -c dsc -n "__fish_dsc_using_subcommand group; and __fish_seen_subcommand_from info" -s h -l help -d 'Print help'
 complete -c dsc -n "__fish_dsc_using_subcommand group; and __fish_seen_subcommand_from copy" -s t -l target -r
 complete -c dsc -n "__fish_dsc_using_subcommand group; and __fish_seen_subcommand_from copy" -s h -l help -d 'Print help'
@@ -128,6 +130,12 @@ complete -c dsc -n "__fish_dsc_using_subcommand backup; and not __fish_seen_subc
 complete -c dsc -n "__fish_dsc_using_subcommand backup; and not __fish_seen_subcommand_from create list restore help" -f -a "restore"
 complete -c dsc -n "__fish_dsc_using_subcommand backup; and not __fish_seen_subcommand_from create list restore help" -f -a "help" -d 'Print this message or the help of the given subcommand(s)'
 complete -c dsc -n "__fish_dsc_using_subcommand backup; and __fish_seen_subcommand_from create" -s h -l help -d 'Print help'
+complete -c dsc -n "__fish_dsc_using_subcommand backup; and __fish_seen_subcommand_from list" -s f -l format -r -f -a "plaintext\t''
+markdown\t''
+markdown-table\t''
+json\t''
+yaml\t''
+csv\t''"
 complete -c dsc -n "__fish_dsc_using_subcommand backup; and __fish_seen_subcommand_from list" -s h -l help -d 'Print help'
 complete -c dsc -n "__fish_dsc_using_subcommand backup; and __fish_seen_subcommand_from restore" -s h -l help -d 'Print help'
 complete -c dsc -n "__fish_dsc_using_subcommand backup; and __fish_seen_subcommand_from help" -f -a "create"

@@ -413,6 +413,8 @@ _arguments "${_arguments_options[@]}" : \
 ;;
 (info)
 _arguments "${_arguments_options[@]}" : \
+'-f+[]:FORMAT:(json yaml)' \
+'--format=[]:FORMAT:(json yaml)' \
 '-h[Print help]' \
 '--help[Print help]' \
 ':discourse:_default' \
@@ -488,6 +490,8 @@ _arguments "${_arguments_options[@]}" : \
 ;;
 (list)
 _arguments "${_arguments_options[@]}" : \
+'-f+[]:FORMAT:(plaintext markdown markdown-table json yaml csv)' \
+'--format=[]:FORMAT:(plaintext markdown markdown-table json yaml csv)' \
 '-h[Print help]' \
 '--help[Print help]' \
 ':discourse:_default' \

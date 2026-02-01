@@ -128,6 +128,8 @@ Adds a new emoji to a Discourse install from a local image file. If `emoji-name`
 
 If `emoji-path` is a directory, uploads all `.png`, `.jpg`, `.jpeg`, `.gif`, `.svg` files using the filename stem as the emoji name.
 
+Requires an admin API key and username.
+
 ### `dsc emoji list <discourse>`
 
 Lists custom emojis on a Discourse (name + URL).

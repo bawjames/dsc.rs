@@ -406,12 +406,20 @@ _dsc() {
             return 0
             ;;
         dsc__backup__list)
-            opts="-h --help <DISCOURSE>"
+            opts="-f -h --format --help <DISCOURSE>"
             if [[ ${cur} == -* || ${COMP_CWORD} -eq 3 ]] ; then
                 COMPREPLY=( $(compgen -W "${opts}" -- "${cur}") )
                 return 0
             fi
             case "${prev}" in
+                --format)
+                    COMPREPLY=($(compgen -W "plaintext markdown markdown-table json yaml csv" -- "${cur}"))
+                    return 0
+                    ;;
+                -f)
+                    COMPREPLY=($(compgen -W "plaintext markdown markdown-table json yaml csv" -- "${cur}"))
+                    return 0
+                    ;;
                 *)
                     COMPREPLY=()
                     ;;
@@ -814,12 +822,20 @@ _dsc() {
             return 0
             ;;
         dsc__group__info)
-            opts="-h --help <DISCOURSE> <GROUP>"
+            opts="-f -h --format --help <DISCOURSE> <GROUP>"
             if [[ ${cur} == -* || ${COMP_CWORD} -eq 3 ]] ; then
                 COMPREPLY=( $(compgen -W "${opts}" -- "${cur}") )
                 return 0
             fi
             case "${prev}" in
+                --format)
+                    COMPREPLY=($(compgen -W "json yaml" -- "${cur}"))
+                    return 0
+                    ;;
+                -f)
+                    COMPREPLY=($(compgen -W "json yaml" -- "${cur}"))
+                    return 0
+                    ;;
                 *)
                     COMPREPLY=()
                     ;;
