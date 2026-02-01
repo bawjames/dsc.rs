@@ -7,6 +7,7 @@ mod models;
 mod palettes;
 mod plugins;
 mod settings;
+mod themes;
 mod topics;
 
 pub use client::DiscourseClient;

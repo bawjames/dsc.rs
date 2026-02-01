@@ -10,5 +10,6 @@ pub mod list;
 pub mod palette;
 pub mod plugin;
 pub mod setting;
+pub mod theme;
 pub mod topic;
 pub mod update;

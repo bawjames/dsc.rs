@@ -2,7 +2,7 @@ use anyhow::{anyhow, Result};
 use clap::Parser;
 use dsc::cli::{
     BackupCommand, CategoryCommand, Cli, Commands, EmojiCommand, GroupCommand, ListCommand,
-    PaletteCommand, PluginCommand, SettingCommand, TopicCommand,
+    PaletteCommand, PluginCommand, SettingCommand, ThemeCommand, TopicCommand,
 };
 use dsc::commands;
 use dsc::config::{load_config, save_config};
@@ -162,6 +162,17 @@ fn main() -> Result<()> {
             }
             PluginCommand::Remove { discourse, name } => {
                 commands::plugin::plugin_remove(&config, &discourse, &name)?;
+            }
+        },
+        Commands::Theme { command } => match command {
+            ThemeCommand::List { discourse } => {
+                commands::theme::theme_list(&config, &discourse)?;
+            }
+            ThemeCommand::Install { discourse, url } => {
+                commands::theme::theme_install(&config, &discourse, &url)?;
+            }
+            ThemeCommand::Remove { discourse, name } => {
+                commands::theme::theme_remove(&config, &discourse, &name)?;
             }
         },
         Commands::Setting { command } => match command {

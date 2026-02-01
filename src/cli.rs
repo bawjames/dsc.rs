@@ -68,6 +68,10 @@ pub enum Commands {
         #[command(subcommand)]
         command: PluginCommand,
     },
+    Theme {
+        #[command(subcommand)]
+        command: ThemeCommand,
+    },
     Setting {
         #[command(subcommand)]
         command: SettingCommand,
@@ -197,6 +201,13 @@ pub enum PaletteCommand {
 
 #[derive(Subcommand)]
 pub enum PluginCommand {
+    List { discourse: String },
+    Install { discourse: String, url: String },
+    Remove { discourse: String, name: String },
+}
+
+#[derive(Subcommand)]
+pub enum ThemeCommand {
     List { discourse: String },
     Install { discourse: String, url: String },
     Remove { discourse: String, name: String },

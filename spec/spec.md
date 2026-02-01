@@ -92,6 +92,8 @@ Environment variables (optional overrides for SSH commands):
 - `DSC_SSH_CLEANUP_CMD` (default: `cd /var/discourse && sudo -n ./launcher cleanup`)
 - `DSC_SSH_PLUGIN_INSTALL_CMD` (template command for `dsc plugin install`; supports `{url}` and `{name}`)
 - `DSC_SSH_PLUGIN_REMOVE_CMD` (template command for `dsc plugin remove`; supports `{name}` and `{url}`)
+- `DSC_SSH_THEME_INSTALL_CMD` (template command for `dsc theme install`; supports `{url}` and `{name}`)
+- `DSC_SSH_THEME_REMOVE_CMD` (template command for `dsc theme remove`; supports `{name}` and `{url}`)
 - `DSC_SSH_STRICT_HOST_KEY_CHECKING` (default: `accept-new`; set empty to omit)
 - `DSC_SSH_OPTIONS` (extra ssh options, space-delimited)
 - `DSC_UPDATE_LOG_DIR` (directory for `dsc update all` logs; defaults to current directory)
@@ -231,6 +233,24 @@ Supports `{url}` and `{name}` placeholders in the template.
 ### `dsc plugin remove <discourse> <name>`
 
 Removes a plugin using the SSH command template in `DSC_SSH_PLUGIN_REMOVE_CMD`.
+Supports `{name}` and `{url}` placeholders in the template.
+
+---
+
+## Themes
+
+### `dsc theme list <discourse>`
+
+Lists installed themes on the specified Discourse.
+
+### `dsc theme install <discourse> <url>`
+
+Installs a theme using the SSH command template in `DSC_SSH_THEME_INSTALL_CMD`.
+Supports `{url}` and `{name}` placeholders in the template.
+
+### `dsc theme remove <discourse> <name>`
+
+Removes a theme using the SSH command template in `DSC_SSH_THEME_REMOVE_CMD`.
 Supports `{name}` and `{url}` placeholders in the template.
 
 ---

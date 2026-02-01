@@ -84,6 +84,9 @@ General form: `dsc [--config dsc.toml] <command>`.
 - Plugin list: `dsc plugin list <discourse>`
 - Plugin install: `dsc plugin install <discourse> <url>`
 - Plugin remove: `dsc plugin remove <discourse> <name>`
+- Theme list: `dsc theme list <discourse>`
+- Theme install: `dsc theme install <discourse> <url>`
+- Theme remove: `dsc theme remove <discourse> <name>`
 - Group list: `dsc group list <discourse>`
 - Group info: `dsc group info <discourse> <group-id> [--format json|yaml]`
 - Group copy: `dsc group copy <source> <group-id> [--target <target>]`
@@ -139,6 +142,8 @@ Update environment variables (optional overrides for SSH commands):
 - `DSC_SSH_CLEANUP_CMD` (default: `cd /var/discourse && sudo -n ./launcher cleanup`)
 - `DSC_SSH_PLUGIN_INSTALL_CMD` (template command for `dsc plugin install`; supports `{url}` and `{name}`)
 - `DSC_SSH_PLUGIN_REMOVE_CMD` (template command for `dsc plugin remove`; supports `{name}` and `{url}`)
+- `DSC_SSH_THEME_INSTALL_CMD` (template command for `dsc theme install`; supports `{url}` and `{name}`)
+- `DSC_SSH_THEME_REMOVE_CMD` (template command for `dsc theme remove`; supports `{name}` and `{url}`)
 - `DSC_SSH_STRICT_HOST_KEY_CHECKING` (default: `accept-new`; set empty to omit)
 - `DSC_SSH_OPTIONS` (extra ssh options, space-delimited)
 - `DSC_UPDATE_LOG_DIR` (directory for `dsc update all` logs; defaults to current directory)
@@ -198,6 +203,8 @@ emoji_path = "./smile.png"     # optional; enables emoji add test
 emoji_name = "smile"
 test_plugin_url = "https://github.com/discourse/discourse-reactions"
 test_plugin_name = "discourse-reactions"
+test_theme_url = "https://github.com/discourse/discourse-brand-header"
+test_theme_name = "discourse-brand-header"
 ```
 
 ## Project layout
