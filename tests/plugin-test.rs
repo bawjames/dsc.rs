@@ -1,3 +1,4 @@
+mod common;
 use common::*;
 use std::process::Command;
 use tempfile::TempDir;

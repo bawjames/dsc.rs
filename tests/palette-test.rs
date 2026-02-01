@@ -1,4 +1,6 @@
 use common::*;
+mod common;
+use common::*;
 use dsc::discourse::DiscourseClient;
 use std::fs;
 use tempfile::TempDir;
