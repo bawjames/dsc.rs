@@ -3,6 +3,7 @@ use crate::config::Config;
 use crate::discourse::DiscourseClient;
 use crate::utils::slugify;
 use anyhow::{anyhow, Context, Result};
+use base64::Engine;
 use std::fs;
 use std::path::Path;
 
@@ -55,7 +56,7 @@ pub fn add_emoji(
     Ok(())
 }
 
-pub fn list_emojis(config: &Config, discourse_name: &str) -> Result<()> {
+pub fn list_emojis(config: &Config, discourse_name: &str, inline: bool) -> Result<()> {
     let discourse = select_discourse(config, Some(discourse_name))?;
     ensure_api_credentials(discourse)?;
     let client = DiscourseClient::new(discourse)?;
@@ -67,9 +68,95 @@ pub fn list_emojis(config: &Config, discourse_name: &str) -> Result<()> {
         return Ok(());
     }
 
+    if inline {
+        if let Some(protocol) = detect_inline_protocol() {
+            print_inline_emojis(&emojis, protocol)?;
+        } else {
+            print_emojis_table(&emojis);
+        }
+    } else {
+        print_emojis_table(&emojis);
+    }
+    Ok(())
+}
+
+fn print_emojis_table(emojis: &[crate::discourse::CustomEmoji]) {
     println!("name\turl");
     for emoji in emojis {
         println!("{}\t{}", emoji.name, emoji.url);
+    }
+}
+
+#[derive(Clone, Copy)]
+enum InlineProtocol {
+    Iterm2,
+    Kitty,
+}
+
+fn detect_inline_protocol() -> Option<InlineProtocol> {
+    if let Ok(value) = std::env::var("DSC_EMOJI_INLINE_PROTOCOL") {
+        let value = value.trim().to_ascii_lowercase();
+        if value == "iterm2" || value == "iterm" {
+            return Some(InlineProtocol::Iterm2);
+        }
+        if value == "kitty" {
+            return Some(InlineProtocol::Kitty);
+        }
+        if value == "off" || value == "0" {
+            return None;
+        }
+    }
+    if let Ok(term_program) = std::env::var("TERM_PROGRAM") {
+        if term_program == "iTerm.app" || term_program == "WezTerm" {
+            return Some(InlineProtocol::Iterm2);
+        }
+    }
+    if std::env::var("KITTY_WINDOW_ID").is_ok()
+        || std::env::var("KITTY_SESSION_ID").is_ok()
+        || std::env::var("TERM")
+            .map(|t| t.contains("kitty"))
+            .unwrap_or(false)
+    {
+        return Some(InlineProtocol::Kitty);
+    }
+    None
+}
+
+fn print_inline_emojis(
+    emojis: &[crate::discourse::CustomEmoji],
+    protocol: InlineProtocol,
+) -> Result<()> {
+    let client = reqwest::blocking::Client::new();
+    for emoji in emojis {
+        let image = client.get(&emoji.url).send();
+        let image = match image {
+            Ok(response) if response.status().is_success() => response.bytes(),
+            _ => {
+                println!("{}\t{}", emoji.name, emoji.url);
+                continue;
+            }
+        };
+        let image = match image {
+            Ok(bytes) => bytes,
+            Err(_) => {
+                println!("{}\t{}", emoji.name, emoji.url);
+                continue;
+            }
+        };
+        let encoded = base64::engine::general_purpose::STANDARD.encode(&image);
+        match protocol {
+            InlineProtocol::Iterm2 => {
+                let sequence = format!(
+                    "\u{1b}]1337;File=inline=1;width=1;height=1;preserveAspectRatio=1:{}\u{7}",
+                    encoded
+                );
+                println!("{} {}", emoji.name, sequence);
+            }
+            InlineProtocol::Kitty => {
+                let sequence = format!("\u{1b}_Gf=100,t=d;{}\u{1b}\\", encoded);
+                println!("{} {}", emoji.name, sequence);
+            }
+        }
     }
     Ok(())
 }

@@ -60,8 +60,8 @@ fn main() -> Result<()> {
                 commands::emoji::add_emoji(&config, &discourse, &emoji_path, emoji_name.as_deref())?
             }
 
-            EmojiCommand::List { discourse } => {
-                commands::emoji::list_emojis(&config, &discourse)?;
+            EmojiCommand::List { discourse, inline } => {
+                commands::emoji::list_emojis(&config, &discourse, inline)?;
             }
         },
         Commands::Topic { command } => match command {

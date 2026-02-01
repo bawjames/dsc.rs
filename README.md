@@ -70,7 +70,7 @@ General form: `dsc [--config dsc.toml] <command>`.
 - Update all installs: `dsc update all [--post-changelog]`
   - `--post-changelog` prints the checklist and prompts before posting.
 - Add emoji: `dsc emoji add <discourse> <emoji-path> [emoji-name]`
-- List custom emoji: `dsc emoji list <discourse>`
+- List custom emoji: `dsc emoji list <discourse> [--inline]`
 - Topic pull: `dsc topic pull <discourse> <topic-id> [local-path]`
 - Topic push: `dsc topic push <discourse> <local-path> <topic-id>`
 - Topic sync (auto pull or push based on freshest copy): `dsc topic sync <discourse> <topic-id> <local-path> [--yes]`
@@ -159,6 +159,7 @@ Tips:
 - `dsc backup list --format` supports the same formats as `dsc list`.
 - `dsc emoji add` accepts a file or directory path. Directory uploads all `.png`, `.jpg`, `.jpeg`, `.gif`, `.svg` files using the filename stem as the emoji name.
 - `dsc emoji add`/`dsc emoji list` require an admin API key and username.
+- `dsc emoji list --inline` uses terminal image protocols; set `DSC_EMOJI_INLINE_PROTOCOL=iterm2|kitty|off` to override detection.
 - If your instance requires a `client_id` query parameter for admin emoji endpoints, set `DSC_EMOJI_CLIENT_ID`.
 
 ## Development

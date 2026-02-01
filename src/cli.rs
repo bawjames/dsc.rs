@@ -100,7 +100,11 @@ pub enum EmojiCommand {
     },
 
     /// List custom emojis on a Discourse.
-    List { discourse: String },
+    List {
+        discourse: String,
+        #[arg(long, short = 'i')]
+        inline: bool,
+    },
 }
 
 #[derive(Subcommand)]

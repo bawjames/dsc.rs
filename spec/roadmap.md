@@ -30,6 +30,7 @@ This is a living checklist of the remaining work to fully implement and/or recon
 - [x] Add ability to push and pull colour palettes, as there is no obvious "import" at the moment.
 - [x] Add ability to manage plugins via the CLI - eg list installed plugins, install new plugins, remove plugins.
 - [x] Add ability to manage themes via the CLI - eg list installed themes, install new themes, remove themes.
+- [x] Consider `dsc emoji list --inline` to show emoji images via terminal image protocols (kitty/iTerm2/sixel) with text fallback for unsupported terminals.
 
 ## In Progress
 
@@ -39,4 +40,3 @@ This is a living checklist of the remaining work to fully implement and/or recon
 
 
 ## Future
-- [ ] Consider `dsc emoji list --inline` to show emoji images via terminal image protocols (kitty/iTerm2/sixel) with text fallback for unsupported terminals.

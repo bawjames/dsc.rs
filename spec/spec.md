@@ -145,6 +145,11 @@ Lists custom emojis on a Discourse (name + URL).
 
 Note: this uses an admin endpoint and requires an admin API key and username.
 
+Flags:
+
+- `--inline` (or `-i`) attempts to render emoji images inline in supported terminals.
+  - You can force the protocol with `DSC_EMOJI_INLINE_PROTOCOL=iterm2|kitty|off`.
+
 ## Topics
 
 ### `dsc topic pull <discourse> <topic-id> [<local-path>]`
