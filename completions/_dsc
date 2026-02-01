@@ -186,6 +186,8 @@ _arguments "${_arguments_options[@]}" : \
 ;;
 (list)
 _arguments "${_arguments_options[@]}" : \
+'-i[]' \
+'--inline[]' \
 '-h[Print help]' \
 '--help[Print help]' \
 ':discourse:_default' \
@@ -541,6 +543,278 @@ esac
     ;;
 esac
 ;;
+(palette)
+_arguments "${_arguments_options[@]}" : \
+'-h[Print help]' \
+'--help[Print help]' \
+":: :_dsc__palette_commands" \
+"*::: :->palette" \
+&& ret=0
+
+    case $state in
+    (palette)
+        words=($line[1] "${words[@]}")
+        (( CURRENT += 1 ))
+        curcontext="${curcontext%:*:*}:dsc-palette-command-$line[1]:"
+        case $line[1] in
+            (list)
+_arguments "${_arguments_options[@]}" : \
+'-h[Print help]' \
+'--help[Print help]' \
+':discourse:_default' \
+&& ret=0
+;;
+(pull)
+_arguments "${_arguments_options[@]}" : \
+'-h[Print help]' \
+'--help[Print help]' \
+':discourse:_default' \
+':palette_id:_default' \
+'::local_path:_files' \
+&& ret=0
+;;
+(push)
+_arguments "${_arguments_options[@]}" : \
+'-h[Print help]' \
+'--help[Print help]' \
+':discourse:_default' \
+':local_path:_files' \
+'::palette_id:_default' \
+&& ret=0
+;;
+(help)
+_arguments "${_arguments_options[@]}" : \
+":: :_dsc__palette__help_commands" \
+"*::: :->help" \
+&& ret=0
+
+    case $state in
+    (help)
+        words=($line[1] "${words[@]}")
+        (( CURRENT += 1 ))
+        curcontext="${curcontext%:*:*}:dsc-palette-help-command-$line[1]:"
+        case $line[1] in
+            (list)
+_arguments "${_arguments_options[@]}" : \
+&& ret=0
+;;
+(pull)
+_arguments "${_arguments_options[@]}" : \
+&& ret=0
+;;
+(push)
+_arguments "${_arguments_options[@]}" : \
+&& ret=0
+;;
+(help)
+_arguments "${_arguments_options[@]}" : \
+&& ret=0
+;;
+        esac
+    ;;
+esac
+;;
+        esac
+    ;;
+esac
+;;
+(plugin)
+_arguments "${_arguments_options[@]}" : \
+'-h[Print help]' \
+'--help[Print help]' \
+":: :_dsc__plugin_commands" \
+"*::: :->plugin" \
+&& ret=0
+
+    case $state in
+    (plugin)
+        words=($line[1] "${words[@]}")
+        (( CURRENT += 1 ))
+        curcontext="${curcontext%:*:*}:dsc-plugin-command-$line[1]:"
+        case $line[1] in
+            (list)
+_arguments "${_arguments_options[@]}" : \
+'-h[Print help]' \
+'--help[Print help]' \
+':discourse:_default' \
+&& ret=0
+;;
+(install)
+_arguments "${_arguments_options[@]}" : \
+'-h[Print help]' \
+'--help[Print help]' \
+':discourse:_default' \
+':url:_default' \
+&& ret=0
+;;
+(remove)
+_arguments "${_arguments_options[@]}" : \
+'-h[Print help]' \
+'--help[Print help]' \
+':discourse:_default' \
+':name:_default' \
+&& ret=0
+;;
+(help)
+_arguments "${_arguments_options[@]}" : \
+":: :_dsc__plugin__help_commands" \
+"*::: :->help" \
+&& ret=0
+
+    case $state in
+    (help)
+        words=($line[1] "${words[@]}")
+        (( CURRENT += 1 ))
+        curcontext="${curcontext%:*:*}:dsc-plugin-help-command-$line[1]:"
+        case $line[1] in
+            (list)
+_arguments "${_arguments_options[@]}" : \
+&& ret=0
+;;
+(install)
+_arguments "${_arguments_options[@]}" : \
+&& ret=0
+;;
+(remove)
+_arguments "${_arguments_options[@]}" : \
+&& ret=0
+;;
+(help)
+_arguments "${_arguments_options[@]}" : \
+&& ret=0
+;;
+        esac
+    ;;
+esac
+;;
+        esac
+    ;;
+esac
+;;
+(theme)
+_arguments "${_arguments_options[@]}" : \
+'-h[Print help]' \
+'--help[Print help]' \
+":: :_dsc__theme_commands" \
+"*::: :->theme" \
+&& ret=0
+
+    case $state in
+    (theme)
+        words=($line[1] "${words[@]}")
+        (( CURRENT += 1 ))
+        curcontext="${curcontext%:*:*}:dsc-theme-command-$line[1]:"
+        case $line[1] in
+            (list)
+_arguments "${_arguments_options[@]}" : \
+'-h[Print help]' \
+'--help[Print help]' \
+':discourse:_default' \
+&& ret=0
+;;
+(install)
+_arguments "${_arguments_options[@]}" : \
+'-h[Print help]' \
+'--help[Print help]' \
+':discourse:_default' \
+':url:_default' \
+&& ret=0
+;;
+(remove)
+_arguments "${_arguments_options[@]}" : \
+'-h[Print help]' \
+'--help[Print help]' \
+':discourse:_default' \
+':name:_default' \
+&& ret=0
+;;
+(help)
+_arguments "${_arguments_options[@]}" : \
+":: :_dsc__theme__help_commands" \
+"*::: :->help" \
+&& ret=0
+
+    case $state in
+    (help)
+        words=($line[1] "${words[@]}")
+        (( CURRENT += 1 ))
+        curcontext="${curcontext%:*:*}:dsc-theme-help-command-$line[1]:"
+        case $line[1] in
+            (list)
+_arguments "${_arguments_options[@]}" : \
+&& ret=0
+;;
+(install)
+_arguments "${_arguments_options[@]}" : \
+&& ret=0
+;;
+(remove)
+_arguments "${_arguments_options[@]}" : \
+&& ret=0
+;;
+(help)
+_arguments "${_arguments_options[@]}" : \
+&& ret=0
+;;
+        esac
+    ;;
+esac
+;;
+        esac
+    ;;
+esac
+;;
+(setting)
+_arguments "${_arguments_options[@]}" : \
+'-h[Print help]' \
+'--help[Print help]' \
+":: :_dsc__setting_commands" \
+"*::: :->setting" \
+&& ret=0
+
+    case $state in
+    (setting)
+        words=($line[1] "${words[@]}")
+        (( CURRENT += 1 ))
+        curcontext="${curcontext%:*:*}:dsc-setting-command-$line[1]:"
+        case $line[1] in
+            (set)
+_arguments "${_arguments_options[@]}" : \
+'--tags=[]:tag1,tag2:_default' \
+'-h[Print help]' \
+'--help[Print help]' \
+':setting:_default' \
+':value:_default' \
+&& ret=0
+;;
+(help)
+_arguments "${_arguments_options[@]}" : \
+":: :_dsc__setting__help_commands" \
+"*::: :->help" \
+&& ret=0
+
+    case $state in
+    (help)
+        words=($line[1] "${words[@]}")
+        (( CURRENT += 1 ))
+        curcontext="${curcontext%:*:*}:dsc-setting-help-command-$line[1]:"
+        case $line[1] in
+            (set)
+_arguments "${_arguments_options[@]}" : \
+&& ret=0
+;;
+(help)
+_arguments "${_arguments_options[@]}" : \
+&& ret=0
+;;
+        esac
+    ;;
+esac
+;;
+        esac
+    ;;
+esac
+;;
 (completions)
 _arguments "${_arguments_options[@]}" : \
 '-d+[]:DIR:_files' \
@@ -734,6 +1008,110 @@ _arguments "${_arguments_options[@]}" : \
     ;;
 esac
 ;;
+(palette)
+_arguments "${_arguments_options[@]}" : \
+":: :_dsc__help__palette_commands" \
+"*::: :->palette" \
+&& ret=0
+
+    case $state in
+    (palette)
+        words=($line[1] "${words[@]}")
+        (( CURRENT += 1 ))
+        curcontext="${curcontext%:*:*}:dsc-help-palette-command-$line[1]:"
+        case $line[1] in
+            (list)
+_arguments "${_arguments_options[@]}" : \
+&& ret=0
+;;
+(pull)
+_arguments "${_arguments_options[@]}" : \
+&& ret=0
+;;
+(push)
+_arguments "${_arguments_options[@]}" : \
+&& ret=0
+;;
+        esac
+    ;;
+esac
+;;
+(plugin)
+_arguments "${_arguments_options[@]}" : \
+":: :_dsc__help__plugin_commands" \
+"*::: :->plugin" \
+&& ret=0
+
+    case $state in
+    (plugin)
+        words=($line[1] "${words[@]}")
+        (( CURRENT += 1 ))
+        curcontext="${curcontext%:*:*}:dsc-help-plugin-command-$line[1]:"
+        case $line[1] in
+            (list)
+_arguments "${_arguments_options[@]}" : \
+&& ret=0
+;;
+(install)
+_arguments "${_arguments_options[@]}" : \
+&& ret=0
+;;
+(remove)
+_arguments "${_arguments_options[@]}" : \
+&& ret=0
+;;
+        esac
+    ;;
+esac
+;;
+(theme)
+_arguments "${_arguments_options[@]}" : \
+":: :_dsc__help__theme_commands" \
+"*::: :->theme" \
+&& ret=0
+
+    case $state in
+    (theme)
+        words=($line[1] "${words[@]}")
+        (( CURRENT += 1 ))
+        curcontext="${curcontext%:*:*}:dsc-help-theme-command-$line[1]:"
+        case $line[1] in
+            (list)
+_arguments "${_arguments_options[@]}" : \
+&& ret=0
+;;
+(install)
+_arguments "${_arguments_options[@]}" : \
+&& ret=0
+;;
+(remove)
+_arguments "${_arguments_options[@]}" : \
+&& ret=0
+;;
+        esac
+    ;;
+esac
+;;
+(setting)
+_arguments "${_arguments_options[@]}" : \
+":: :_dsc__help__setting_commands" \
+"*::: :->setting" \
+&& ret=0
+
+    case $state in
+    (setting)
+        words=($line[1] "${words[@]}")
+        (( CURRENT += 1 ))
+        curcontext="${curcontext%:*:*}:dsc-help-setting-command-$line[1]:"
+        case $line[1] in
+            (set)
+_arguments "${_arguments_options[@]}" : \
+&& ret=0
+;;
+        esac
+    ;;
+esac
+;;
 (completions)
 _arguments "${_arguments_options[@]}" : \
 && ret=0
@@ -764,6 +1142,10 @@ _dsc_commands() {
 'category:' \
 'group:' \
 'backup:' \
+'palette:' \
+'plugin:' \
+'theme:' \
+'setting:' \
 'completions:' \
 'help:Print this message or the help of the given subcommand(s)' \
     )
@@ -1011,6 +1393,10 @@ _dsc__help_commands() {
 'category:' \
 'group:' \
 'backup:' \
+'palette:' \
+'plugin:' \
+'theme:' \
+'setting:' \
 'completions:' \
 'help:Print this message or the help of the given subcommand(s)' \
     )
@@ -1144,6 +1530,90 @@ _dsc__help__list__tidy_commands() {
     local commands; commands=()
     _describe -t commands 'dsc help list tidy commands' commands "$@"
 }
+(( $+functions[_dsc__help__palette_commands] )) ||
+_dsc__help__palette_commands() {
+    local commands; commands=(
+'list:' \
+'pull:' \
+'push:' \
+    )
+    _describe -t commands 'dsc help palette commands' commands "$@"
+}
+(( $+functions[_dsc__help__palette__list_commands] )) ||
+_dsc__help__palette__list_commands() {
+    local commands; commands=()
+    _describe -t commands 'dsc help palette list commands' commands "$@"
+}
+(( $+functions[_dsc__help__palette__pull_commands] )) ||
+_dsc__help__palette__pull_commands() {
+    local commands; commands=()
+    _describe -t commands 'dsc help palette pull commands' commands "$@"
+}
+(( $+functions[_dsc__help__palette__push_commands] )) ||
+_dsc__help__palette__push_commands() {
+    local commands; commands=()
+    _describe -t commands 'dsc help palette push commands' commands "$@"
+}
+(( $+functions[_dsc__help__plugin_commands] )) ||
+_dsc__help__plugin_commands() {
+    local commands; commands=(
+'list:' \
+'install:' \
+'remove:' \
+    )
+    _describe -t commands 'dsc help plugin commands' commands "$@"
+}
+(( $+functions[_dsc__help__plugin__install_commands] )) ||
+_dsc__help__plugin__install_commands() {
+    local commands; commands=()
+    _describe -t commands 'dsc help plugin install commands' commands "$@"
+}
+(( $+functions[_dsc__help__plugin__list_commands] )) ||
+_dsc__help__plugin__list_commands() {
+    local commands; commands=()
+    _describe -t commands 'dsc help plugin list commands' commands "$@"
+}
+(( $+functions[_dsc__help__plugin__remove_commands] )) ||
+_dsc__help__plugin__remove_commands() {
+    local commands; commands=()
+    _describe -t commands 'dsc help plugin remove commands' commands "$@"
+}
+(( $+functions[_dsc__help__setting_commands] )) ||
+_dsc__help__setting_commands() {
+    local commands; commands=(
+'set:' \
+    )
+    _describe -t commands 'dsc help setting commands' commands "$@"
+}
+(( $+functions[_dsc__help__setting__set_commands] )) ||
+_dsc__help__setting__set_commands() {
+    local commands; commands=()
+    _describe -t commands 'dsc help setting set commands' commands "$@"
+}
+(( $+functions[_dsc__help__theme_commands] )) ||
+_dsc__help__theme_commands() {
+    local commands; commands=(
+'list:' \
+'install:' \
+'remove:' \
+    )
+    _describe -t commands 'dsc help theme commands' commands "$@"
+}
+(( $+functions[_dsc__help__theme__install_commands] )) ||
+_dsc__help__theme__install_commands() {
+    local commands; commands=()
+    _describe -t commands 'dsc help theme install commands' commands "$@"
+}
+(( $+functions[_dsc__help__theme__list_commands] )) ||
+_dsc__help__theme__list_commands() {
+    local commands; commands=()
+    _describe -t commands 'dsc help theme list commands' commands "$@"
+}
+(( $+functions[_dsc__help__theme__remove_commands] )) ||
+_dsc__help__theme__remove_commands() {
+    local commands; commands=()
+    _describe -t commands 'dsc help theme remove commands' commands "$@"
+}
 (( $+functions[_dsc__help__topic_commands] )) ||
 _dsc__help__topic_commands() {
     local commands; commands=(
@@ -1208,6 +1678,202 @@ _dsc__list__help__tidy_commands() {
 _dsc__list__tidy_commands() {
     local commands; commands=()
     _describe -t commands 'dsc list tidy commands' commands "$@"
+}
+(( $+functions[_dsc__palette_commands] )) ||
+_dsc__palette_commands() {
+    local commands; commands=(
+'list:' \
+'pull:' \
+'push:' \
+'help:Print this message or the help of the given subcommand(s)' \
+    )
+    _describe -t commands 'dsc palette commands' commands "$@"
+}
+(( $+functions[_dsc__palette__help_commands] )) ||
+_dsc__palette__help_commands() {
+    local commands; commands=(
+'list:' \
+'pull:' \
+'push:' \
+'help:Print this message or the help of the given subcommand(s)' \
+    )
+    _describe -t commands 'dsc palette help commands' commands "$@"
+}
+(( $+functions[_dsc__palette__help__help_commands] )) ||
+_dsc__palette__help__help_commands() {
+    local commands; commands=()
+    _describe -t commands 'dsc palette help help commands' commands "$@"
+}
+(( $+functions[_dsc__palette__help__list_commands] )) ||
+_dsc__palette__help__list_commands() {
+    local commands; commands=()
+    _describe -t commands 'dsc palette help list commands' commands "$@"
+}
+(( $+functions[_dsc__palette__help__pull_commands] )) ||
+_dsc__palette__help__pull_commands() {
+    local commands; commands=()
+    _describe -t commands 'dsc palette help pull commands' commands "$@"
+}
+(( $+functions[_dsc__palette__help__push_commands] )) ||
+_dsc__palette__help__push_commands() {
+    local commands; commands=()
+    _describe -t commands 'dsc palette help push commands' commands "$@"
+}
+(( $+functions[_dsc__palette__list_commands] )) ||
+_dsc__palette__list_commands() {
+    local commands; commands=()
+    _describe -t commands 'dsc palette list commands' commands "$@"
+}
+(( $+functions[_dsc__palette__pull_commands] )) ||
+_dsc__palette__pull_commands() {
+    local commands; commands=()
+    _describe -t commands 'dsc palette pull commands' commands "$@"
+}
+(( $+functions[_dsc__palette__push_commands] )) ||
+_dsc__palette__push_commands() {
+    local commands; commands=()
+    _describe -t commands 'dsc palette push commands' commands "$@"
+}
+(( $+functions[_dsc__plugin_commands] )) ||
+_dsc__plugin_commands() {
+    local commands; commands=(
+'list:' \
+'install:' \
+'remove:' \
+'help:Print this message or the help of the given subcommand(s)' \
+    )
+    _describe -t commands 'dsc plugin commands' commands "$@"
+}
+(( $+functions[_dsc__plugin__help_commands] )) ||
+_dsc__plugin__help_commands() {
+    local commands; commands=(
+'list:' \
+'install:' \
+'remove:' \
+'help:Print this message or the help of the given subcommand(s)' \
+    )
+    _describe -t commands 'dsc plugin help commands' commands "$@"
+}
+(( $+functions[_dsc__plugin__help__help_commands] )) ||
+_dsc__plugin__help__help_commands() {
+    local commands; commands=()
+    _describe -t commands 'dsc plugin help help commands' commands "$@"
+}
+(( $+functions[_dsc__plugin__help__install_commands] )) ||
+_dsc__plugin__help__install_commands() {
+    local commands; commands=()
+    _describe -t commands 'dsc plugin help install commands' commands "$@"
+}
+(( $+functions[_dsc__plugin__help__list_commands] )) ||
+_dsc__plugin__help__list_commands() {
+    local commands; commands=()
+    _describe -t commands 'dsc plugin help list commands' commands "$@"
+}
+(( $+functions[_dsc__plugin__help__remove_commands] )) ||
+_dsc__plugin__help__remove_commands() {
+    local commands; commands=()
+    _describe -t commands 'dsc plugin help remove commands' commands "$@"
+}
+(( $+functions[_dsc__plugin__install_commands] )) ||
+_dsc__plugin__install_commands() {
+    local commands; commands=()
+    _describe -t commands 'dsc plugin install commands' commands "$@"
+}
+(( $+functions[_dsc__plugin__list_commands] )) ||
+_dsc__plugin__list_commands() {
+    local commands; commands=()
+    _describe -t commands 'dsc plugin list commands' commands "$@"
+}
+(( $+functions[_dsc__plugin__remove_commands] )) ||
+_dsc__plugin__remove_commands() {
+    local commands; commands=()
+    _describe -t commands 'dsc plugin remove commands' commands "$@"
+}
+(( $+functions[_dsc__setting_commands] )) ||
+_dsc__setting_commands() {
+    local commands; commands=(
+'set:' \
+'help:Print this message or the help of the given subcommand(s)' \
+    )
+    _describe -t commands 'dsc setting commands' commands "$@"
+}
+(( $+functions[_dsc__setting__help_commands] )) ||
+_dsc__setting__help_commands() {
+    local commands; commands=(
+'set:' \
+'help:Print this message or the help of the given subcommand(s)' \
+    )
+    _describe -t commands 'dsc setting help commands' commands "$@"
+}
+(( $+functions[_dsc__setting__help__help_commands] )) ||
+_dsc__setting__help__help_commands() {
+    local commands; commands=()
+    _describe -t commands 'dsc setting help help commands' commands "$@"
+}
+(( $+functions[_dsc__setting__help__set_commands] )) ||
+_dsc__setting__help__set_commands() {
+    local commands; commands=()
+    _describe -t commands 'dsc setting help set commands' commands "$@"
+}
+(( $+functions[_dsc__setting__set_commands] )) ||
+_dsc__setting__set_commands() {
+    local commands; commands=()
+    _describe -t commands 'dsc setting set commands' commands "$@"
+}
+(( $+functions[_dsc__theme_commands] )) ||
+_dsc__theme_commands() {
+    local commands; commands=(
+'list:' \
+'install:' \
+'remove:' \
+'help:Print this message or the help of the given subcommand(s)' \
+    )
+    _describe -t commands 'dsc theme commands' commands "$@"
+}
+(( $+functions[_dsc__theme__help_commands] )) ||
+_dsc__theme__help_commands() {
+    local commands; commands=(
+'list:' \
+'install:' \
+'remove:' \
+'help:Print this message or the help of the given subcommand(s)' \
+    )
+    _describe -t commands 'dsc theme help commands' commands "$@"
+}
+(( $+functions[_dsc__theme__help__help_commands] )) ||
+_dsc__theme__help__help_commands() {
+    local commands; commands=()
+    _describe -t commands 'dsc theme help help commands' commands "$@"
+}
+(( $+functions[_dsc__theme__help__install_commands] )) ||
+_dsc__theme__help__install_commands() {
+    local commands; commands=()
+    _describe -t commands 'dsc theme help install commands' commands "$@"
+}
+(( $+functions[_dsc__theme__help__list_commands] )) ||
+_dsc__theme__help__list_commands() {
+    local commands; commands=()
+    _describe -t commands 'dsc theme help list commands' commands "$@"
+}
+(( $+functions[_dsc__theme__help__remove_commands] )) ||
+_dsc__theme__help__remove_commands() {
+    local commands; commands=()
+    _describe -t commands 'dsc theme help remove commands' commands "$@"
+}
+(( $+functions[_dsc__theme__install_commands] )) ||
+_dsc__theme__install_commands() {
+    local commands; commands=()
+    _describe -t commands 'dsc theme install commands' commands "$@"
+}
+(( $+functions[_dsc__theme__list_commands] )) ||
+_dsc__theme__list_commands() {
+    local commands; commands=()
+    _describe -t commands 'dsc theme list commands' commands "$@"
+}
+(( $+functions[_dsc__theme__remove_commands] )) ||
+_dsc__theme__remove_commands() {
+    local commands; commands=()
+    _describe -t commands 'dsc theme remove commands' commands "$@"
 }
 (( $+functions[_dsc__topic_commands] )) ||
 _dsc__topic_commands() {
