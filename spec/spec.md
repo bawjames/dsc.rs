@@ -96,7 +96,6 @@ Environment variables (optional overrides for SSH commands):
 - `DSC_SSH_THEME_REMOVE_CMD` (template command for `dsc theme remove`; supports `{name}` and `{url}`)
 - `DSC_SSH_STRICT_HOST_KEY_CHECKING` (default: `accept-new`; set empty to omit)
 - `DSC_SSH_OPTIONS` (extra ssh options, space-delimited)
-- `DSC_UPDATE_LOG_DIR` (directory for `dsc update all` logs; defaults to current directory)
 
 > SSH credentials are not stored in `dsc.toml`; it is advised to set up SSH keys and use an SSH config file.
 
@@ -110,7 +109,6 @@ Updates all Discourses known to `dsc` over SSH.
 
 Notes:
 
-- Writes a progress log named `YYYY.MM.DD-dsc-update-all.log` in the current working directory.
 - Stops at the first failure to avoid cascading problems.
 - `--concurrent` is disabled for `dsc update all` because it must stop at the first failure.
 - `all` is reserved for `dsc update all`.

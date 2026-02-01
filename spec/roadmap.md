@@ -20,7 +20,7 @@ This is a living checklist of the remaining work to fully implement and/or recon
 - [x] Harden config file permissions on write to protect API keys.
 - [x] Prevent SSH option injection via `ssh_host` or discourse `name`.
 - [x] Improve first-time SSH host handling (allow `StrictHostKeyChecking=accept-new` or configurable SSH options).
-- [x] Avoid symlink/hijack risk for `dsc update all` log file in CWD.
+- [x] Avoid symlink/hijack risk for `dsc update all` log file in CWD (log removed for now).
 - [x] Discourse name `all` is reserved by `dsc update`; document the behavior.
 - [x] Add a human-friendly output mode for `backup list` (it currently prints raw JSON), or explicitly document JSON as the intended output.
 - [x] Consider adding `--format json|yaml` for `group info` and `backup list` for consistency with `dsc list`.
@@ -40,3 +40,5 @@ This is a living checklist of the remaining work to fully implement and/or recon
 
 
 ## Future
+
+- [ ] Consider reintroducing optional `dsc update all` progress logs behind a flag or config.

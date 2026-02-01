@@ -146,14 +146,13 @@ Update environment variables (optional overrides for SSH commands):
 - `DSC_SSH_THEME_REMOVE_CMD` (template command for `dsc theme remove`; supports `{name}` and `{url}`)
 - `DSC_SSH_STRICT_HOST_KEY_CHECKING` (default: `accept-new`; set empty to omit)
 - `DSC_SSH_OPTIONS` (extra ssh options, space-delimited)
-- `DSC_UPDATE_LOG_DIR` (directory for `dsc update all` logs; defaults to current directory)
 
 Tips:
 
 - Most commands require the discourse name as the first argument after the subcommand.
 - `topic pull`/`category pull` write Markdown files; paths are created as needed.
 - `topic sync` compares local mtime with the remote post timestamp; pass `--yes` to skip the prompt.
-- `dsc update all` writes a progress log named `YYYY.MM.DD-dsc-update-all.log` in the current directory and stops at the first failure; `--concurrent` is disabled for this command.
+- `dsc update all` stops at the first failure; `--concurrent` is disabled for this command.
 - `all` is reserved for `dsc update all`.
 - `dsc list --tags` accepts comma or semicolon separators and matches any tag (case-insensitive).
 - `dsc backup list --format` supports the same formats as `dsc list`.

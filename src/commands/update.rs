@@ -1,18 +1,15 @@
 use crate::commands::common::ensure_api_credentials;
 use crate::config::{find_discourse, Config, DiscourseConfig};
 use crate::discourse::DiscourseClient;
-use crate::utils::ensure_dir;
 use anyhow::{anyhow, Context, Result};
-use std::fs;
 use std::io::{self, Write};
-use std::path::{Path, PathBuf};
 use std::thread;
 
 pub fn update_one(config: &Config, name: &str, post_changelog: bool) -> Result<()> {
     let discourse = find_discourse(config, name).ok_or_else(|| anyhow!("unknown discourse"))?;
     let metadata = run_update(discourse)?;
     if post_changelog {
-        handle_changelog_post(discourse, Some(&metadata), None)?;
+        handle_changelog_post(discourse, Some(&metadata))?;
     }
     Ok(())
 }
@@ -29,51 +26,12 @@ pub fn update_all(
         ));
     }
     if !concurrent {
-        let log_path = update_log_path()?;
-        println!("==> Logging update progress to {}", log_path.display());
-        let mut log_file = open_update_log(&log_path)?;
-        writeln!(
-            log_file,
-            "{} update all started",
-            chrono::Utc::now().to_rfc3339()
-        )?;
         for discourse in &config.discourse {
-            writeln!(
-                log_file,
-                "{} starting {}",
-                chrono::Utc::now().to_rfc3339(),
-                discourse.name
-            )?;
-            let metadata = match run_update(discourse) {
-                Ok(metadata) => {
-                    writeln!(
-                        log_file,
-                        "{} success {}",
-                        chrono::Utc::now().to_rfc3339(),
-                        discourse.name
-                    )?;
-                    metadata
-                }
-                Err(err) => {
-                    writeln!(
-                        log_file,
-                        "{} failed {}: {}",
-                        chrono::Utc::now().to_rfc3339(),
-                        discourse.name,
-                        err
-                    )?;
-                    return Err(err);
-                }
-            };
+            let metadata = run_update(discourse)?;
             if post_changelog {
-                handle_changelog_post(discourse, Some(&metadata), Some(&mut log_file))?;
+                handle_changelog_post(discourse, Some(&metadata))?;
             }
         }
-        writeln!(
-            log_file,
-            "{} update all completed",
-            chrono::Utc::now().to_rfc3339()
-        )?;
         return Ok(());
     }
 
@@ -89,7 +47,7 @@ pub fn update_all(
         handles.push(thread::spawn(move || {
             let metadata = run_update(&discourse)?;
             if do_post {
-                handle_changelog_post(&discourse, Some(&metadata), None)?;
+                handle_changelog_post(&discourse, Some(&metadata))?;
             }
             Ok::<_, anyhow::Error>(())
         }));
@@ -257,42 +215,6 @@ fn ssh_probe(target: &str) -> Result<bool> {
     Ok(output.status.success())
 }
 
-fn update_log_path() -> Result<PathBuf> {
-    let date = chrono::Utc::now().format("%Y.%m.%d");
-    let filename = format!("{}-dsc-update-all.log", date);
-    if let Ok(raw) = std::env::var("DSC_UPDATE_LOG_DIR") {
-        let raw = raw.trim();
-        if !raw.is_empty() {
-            let dir = PathBuf::from(raw);
-            ensure_dir(&dir)?;
-            return Ok(dir.join(filename));
-        }
-    }
-    Ok(PathBuf::from(filename))
-}
-
-fn open_update_log(path: &Path) -> Result<fs::File> {
-    let file = fs::OpenOptions::new()
-        .create_new(true)
-        .append(true)
-        .open(path);
-    match file {
-        Ok(file) => Ok(file),
-        Err(err) if err.kind() == io::ErrorKind::AlreadyExists => {
-            let metadata = fs::symlink_metadata(path)
-                .with_context(|| format!("reading {}", path.display()))?;
-            if metadata.file_type().is_symlink() {
-                return Err(anyhow!("update log path is a symlink: {}", path.display()));
-            }
-            fs::OpenOptions::new()
-                .append(true)
-                .open(path)
-                .with_context(|| format!("opening update log at {}", path.display()))
-        }
-        Err(err) => Err(err).with_context(|| format!("opening update log at {}", path.display())),
-    }
-}
-
 fn get_os_version(target: &str) -> Result<Option<String>> {
     let version_cmd = std::env::var("DSC_SSH_OS_VERSION_CMD")
         .unwrap_or_else(|_| "lsb_release -d | cut -f2".to_string());
@@ -395,62 +317,26 @@ fn confirm_changelog_post() -> Result<bool> {
 fn handle_changelog_post(
     discourse: &DiscourseConfig,
     metadata: Option<&UpdateMetadata>,
-    mut log: Option<&mut dyn Write>,
 ) -> Result<()> {
     let payload = build_changelog_payload(metadata);
     println!("\nChangelog message for {}:\n{}\n", discourse.name, payload);
     if !confirm_changelog_post()? {
         println!("Changelog post skipped.");
-        if let Some(log) = log.as_deref_mut() {
-            writeln!(
-                log,
-                "{} skipped {} (changelog)",
-                chrono::Utc::now().to_rfc3339(),
-                discourse.name
-            )?;
-        }
         return Ok(());
     }
 
     if let Err(err) = ensure_api_credentials(discourse) {
         println!("Changelog post failed: {}", err);
-        if let Some(log) = log.as_deref_mut() {
-            writeln!(
-                log,
-                "{} failed {} (changelog): {}",
-                chrono::Utc::now().to_rfc3339(),
-                discourse.name,
-                err
-            )?;
-        }
         return Err(err);
     }
 
     match post_changelog_update(discourse, &payload) {
         Ok(post_id) => {
             println!("Changelog post created with ID: {}", post_id);
-            if let Some(log) = log.as_deref_mut() {
-                writeln!(
-                    log,
-                    "{} posted {} (changelog id: {})",
-                    chrono::Utc::now().to_rfc3339(),
-                    discourse.name,
-                    post_id
-                )?;
-            }
             Ok(())
         }
         Err(err) => {
             println!("Changelog post failed: {}", err);
-            if let Some(log) = log.as_deref_mut() {
-                writeln!(
-                    log,
-                    "{} failed {} (changelog): {}",
-                    chrono::Utc::now().to_rfc3339(),
-                    discourse.name,
-                    err
-                )?;
-            }
             Err(err)
         }
     }
