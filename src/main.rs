@@ -47,13 +47,14 @@ fn main() -> Result<()> {
             parallel,
             max,
             post_changelog,
+            yes,
         } => match name.as_str() {
             "all" if max.is_some() && !parallel => Err(anyhow!("--max requires --parallel")),
-            "all" => commands::update::update_all(&config, parallel, max, post_changelog),
+            "all" => commands::update::update_all(&config, parallel, max, post_changelog, yes),
             _ if parallel || max.is_some() => {
                 Err(anyhow!("--parallel/--max only apply to 'dsc update all'"))
             }
-            _ => commands::update::update_one(&config, &name, post_changelog),
+            _ => commands::update::update_one(&config, &name, post_changelog, yes),
         },
 
         Commands::Emoji {

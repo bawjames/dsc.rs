@@ -11,13 +11,13 @@ use std::sync::mpsc;
 use std::thread;
 use std::time::Duration;
 
-pub fn update_one(config: &Config, name: &str, post_changelog: bool) -> Result<()> {
+pub fn update_one(config: &Config, name: &str, post_changelog: bool, yes: bool) -> Result<()> {
     let discourse =
         find_discourse(config, name).ok_or_else(|| anyhow!("discourse not found: {}", name))?;
     let metadata = run_update(discourse)?;
     let payload = print_update_summary(discourse, &metadata);
     if post_changelog {
-        handle_changelog_post(discourse, &payload)?;
+        handle_changelog_post(discourse, &payload, yes)?;
     }
     Ok(())
 }
@@ -27,6 +27,7 @@ pub fn update_all(
     parallel: bool,
     max: Option<usize>,
     post_changelog: bool,
+    yes: bool,
 ) -> Result<()> {
     if parallel {
         return Err(anyhow!(
@@ -38,7 +39,7 @@ pub fn update_all(
             let metadata = run_update(discourse)?;
             let payload = print_update_summary(discourse, &metadata);
             if post_changelog {
-                handle_changelog_post(discourse, &payload)?;
+                handle_changelog_post(discourse, &payload, yes)?;
             }
         }
         return Ok(());
@@ -53,11 +54,12 @@ pub fn update_all(
             }
         }
         let do_post = post_changelog;
+        let auto_yes = yes;
         handles.push(thread::spawn(move || {
             let metadata = run_update(&discourse)?;
             let payload = print_update_summary(&discourse, &metadata);
             if do_post {
-                handle_changelog_post(&discourse, &payload)?;
+                handle_changelog_post(&discourse, &payload, auto_yes)?;
             }
             Ok::<_, anyhow::Error>(())
         }));
@@ -681,7 +683,11 @@ fn post_changelog_update(discourse: &DiscourseConfig, payload: &str) -> Result<u
     Ok(post_id)
 }
 
-fn confirm_changelog_post() -> Result<bool> {
+fn confirm_changelog_post(yes: bool) -> Result<bool> {
+    if yes {
+        println!("Post this to changelog? [y/N]: y (--yes)");
+        return Ok(true);
+    }
     if std::env::var("DSC_TEST_MARKER").is_ok() {
         println!("Post this to changelog? [y/N]: y (auto)");
         return Ok(true);
@@ -693,7 +699,7 @@ fn confirm_changelog_post() -> Result<bool> {
     Ok(matches!(input.trim(), "y" | "Y" | "yes" | "YES"))
 }
 
-fn handle_changelog_post(discourse: &DiscourseConfig, payload: &str) -> Result<()> {
+fn handle_changelog_post(discourse: &DiscourseConfig, payload: &str, yes: bool) -> Result<()> {
     let topic_id = discourse.changelog_topic_id;
     if topic_id.is_none() {
         println!(
@@ -708,7 +714,7 @@ fn handle_changelog_post(discourse: &DiscourseConfig, payload: &str) -> Result<(
         return Ok(());
     }
 
-    if !confirm_changelog_post()? {
+    if !confirm_changelog_post(yes)? {
         println!("Changelog post skipped.");
         return Ok(());
     }

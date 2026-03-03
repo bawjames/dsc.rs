@@ -62,7 +62,7 @@ If `<path>` is omitted, input is read from stdin.
 
 `dsc` will attempt to populate the name and fullname fields by querying the Discourse URL for the site title.
 
-### `dsc update <name|all> [--post-changelog] [--concurrent] [--max <n>]`
+### `dsc update <name|all> [--post-changelog] [--yes] [--parallel] [--max <n>]`
 
 Updates the Discourse install identified by `<name>` over SSH.
 Optionally makes a post in the Changelog topic about the update.
@@ -81,9 +81,10 @@ Version and cleanup data should be collected during the update and used to fill 
 
 Flags:
 
-- `--post-changelog` (or `-p`) prints the checklist to stdout and prompts before posting to `changelog_topic_id`.
-- `--concurrent` (or `-C`) is disabled for `dsc update all` because updates stop at first failure.
-- `--max <n>` (or `-m <n>`) is ignored when `--concurrent` is disabled.
+- `--post-changelog` (or `-g`) prints the checklist to stdout and prompts before posting to `changelog_topic_id`.
+- `--yes` (or `-y`) auto-confirms changelog posting; only valid with `--post-changelog`.
+- `--parallel` (or `-p`) is disabled for `dsc update all` because updates stop at first failure.
+- `--max <n>` (or `-m <n>`) is ignored when `--parallel` is disabled.
 
 Environment variables (optional overrides for SSH commands):
 
@@ -107,14 +108,14 @@ If the OS update command fails, `dsc update` aborts after attempting the rollbac
 
 Note: most forum read/write commands require `apikey` and `api_username`; if missing, the command fails with a clear message.
 
-### `dsc update all [--post-changelog]`
+### `dsc update all [--post-changelog] [--yes]`
 
 Updates all Discourses known to `dsc` over SSH.
 
 Notes:
 
 - Stops at the first failure to avoid cascading problems.
-- `--concurrent` is disabled for `dsc update all` because it must stop at the first failure.
+- `--parallel` is disabled for `dsc update all` because it must stop at the first failure.
 - `all` is reserved for `dsc update all`.
 
 > SSH credentials are not stored in `dsc.toml`; it is advised to set up SSH keys and use an SSH config file.

@@ -76,8 +76,8 @@ For the complete command/flag surface, use `dsc --help` and `dsc <command> --hel
 - Tidy/sort config entries: `dsc list tidy`
 - Add installs: `dsc add forum-a,forum-b [--interactive]`
 - Import installs from file: `dsc import path/to/urls.txt` or `dsc import path/to/forums.csv`
-- Update one install: `dsc update <name> [--post-changelog]`
-- Update all installs: `dsc update all [--parallel] [--max <n>] [--post-changelog]`
+- Update one install: `dsc update <name> [--post-changelog] [--yes]`
+- Update all installs: `dsc update all [--parallel] [--max <n>] [--post-changelog] [--yes]`
 
 Environment variables for `dsc update`:
 
@@ -96,6 +96,7 @@ Update summary notes:
 - Version/commit info is extracted from the homepage `<meta name="generator" ...>` tag; the commit hash is printed as a GitHub link when available.
 - If the version fetch fails, the summary includes the reason in-line.
   - `--post-changelog` prints the checklist and prompts before posting.
+  - `--yes` auto-confirms the changelog post prompt (requires `--post-changelog`).
 - Add emoji: `dsc emoji add <discourse> <emoji-path> [emoji-name]`
 - List custom emoji: `dsc emoji list <discourse> [--format text|json|yaml] [--inline]`
 - Topic pull: `dsc topic pull <discourse> <topic-id> [local-path]`

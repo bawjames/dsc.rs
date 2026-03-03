@@ -41,6 +41,8 @@ pub enum Commands {
         max: Option<usize>,
         #[arg(long, short = 'g')]
         post_changelog: bool,
+        #[arg(long, short = 'y', requires = "post_changelog")]
+        yes: bool,
     },
     Emoji {
         #[command(subcommand)]
