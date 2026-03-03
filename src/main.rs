@@ -13,11 +13,15 @@ fn main() -> Result<()> {
         Commands::List {
             command: Some(ListCommand::Tidy),
             tags,
+            open,
             verbose,
             ..
         } => {
             if verbose {
                 return Err(anyhow!("--verbose is not supported with 'dsc list tidy'"));
+            }
+            if open {
+                return Err(anyhow!("--open is not supported with 'dsc list tidy'"));
             }
             match tags {
                 Some(_) => Err(anyhow!("--tags is not supported with 'dsc list tidy'")),
@@ -28,9 +32,10 @@ fn main() -> Result<()> {
         Commands::List {
             format,
             tags,
+            open,
             verbose,
             ..
-        } => commands::list::list_discourses(&config, format, tags.as_deref(), verbose),
+        } => commands::list::list_discourses(&config, format, tags.as_deref(), open, verbose),
 
         Commands::Add { names, interactive } => {
             commands::add::add_discourses(&mut config, &names, interactive)?;

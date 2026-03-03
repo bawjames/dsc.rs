@@ -121,6 +121,23 @@ pub fn run_dsc(args: &[&str], config_path: &Path) -> std::process::Output {
         .expect("run dsc")
 }
 
+pub fn run_dsc_env(
+    args: &[&str],
+    config_path: &Path,
+    envs: &[(&str, &str)],
+) -> std::process::Output {
+    vprintln(&format!(
+        "running dsc {} with env overrides",
+        args.join(" ")
+    ));
+    let mut cmd = Command::new(env!("CARGO_BIN_EXE_dsc"));
+    cmd.arg("-c").arg(config_path).args(args);
+    for (key, value) in envs {
+        cmd.env(key, value);
+    }
+    cmd.output().expect("run dsc")
+}
+
 pub fn write_temp_config(dir: &TempDir, content: &str) -> PathBuf {
     let path = dir.path().join("dsc.toml");
     fs::write(&path, content).expect("write config");

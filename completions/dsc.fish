@@ -24,246 +24,253 @@ function __fish_dsc_using_subcommand
 	contains -- $cmd[1] $argv
 end
 
-complete -c dsc -n "__fish_dsc_needs_command" -s c -l config -r -F
+complete -c dsc -n "__fish_dsc_needs_command" -s c -l config -d 'Path to the config file. If omitted, dsc searches standard locations' -r -F
 complete -c dsc -n "__fish_dsc_needs_command" -s h -l help -d 'Print help'
-complete -c dsc -n "__fish_dsc_needs_command" -f -a "list"
-complete -c dsc -n "__fish_dsc_needs_command" -f -a "ls"
-complete -c dsc -n "__fish_dsc_needs_command" -f -a "add"
-complete -c dsc -n "__fish_dsc_needs_command" -f -a "import"
-complete -c dsc -n "__fish_dsc_needs_command" -f -a "update"
-complete -c dsc -n "__fish_dsc_needs_command" -f -a "emoji"
-complete -c dsc -n "__fish_dsc_needs_command" -f -a "topic"
-complete -c dsc -n "__fish_dsc_needs_command" -f -a "category"
-complete -c dsc -n "__fish_dsc_needs_command" -f -a "group"
-complete -c dsc -n "__fish_dsc_needs_command" -f -a "backup"
-complete -c dsc -n "__fish_dsc_needs_command" -f -a "palette"
-complete -c dsc -n "__fish_dsc_needs_command" -f -a "plugin"
-complete -c dsc -n "__fish_dsc_needs_command" -f -a "theme"
-complete -c dsc -n "__fish_dsc_needs_command" -f -a "setting"
-complete -c dsc -n "__fish_dsc_needs_command" -f -a "completions"
+complete -c dsc -n "__fish_dsc_needs_command" -f -a "list" -d 'List configured Discourses'
+complete -c dsc -n "__fish_dsc_needs_command" -f -a "ls" -d 'List configured Discourses'
+complete -c dsc -n "__fish_dsc_needs_command" -f -a "add" -d 'Add one or more Discourses to the config'
+complete -c dsc -n "__fish_dsc_needs_command" -f -a "import" -d 'Import Discourses from a file or stdin'
+complete -c dsc -n "__fish_dsc_needs_command" -f -a "update" -d 'Run remote OS + Discourse update workflow for one or all Discourses'
+complete -c dsc -n "__fish_dsc_needs_command" -f -a "emoji" -d 'Manage custom emoji'
+complete -c dsc -n "__fish_dsc_needs_command" -f -a "topic" -d 'Pull/push/sync topics as local Markdown'
+complete -c dsc -n "__fish_dsc_needs_command" -f -a "category" -d 'List/copy/pull/push categories'
+complete -c dsc -n "__fish_dsc_needs_command" -f -a "group" -d 'List/inspect/copy groups'
+complete -c dsc -n "__fish_dsc_needs_command" -f -a "backup" -d 'Create/list/restore backups'
+complete -c dsc -n "__fish_dsc_needs_command" -f -a "palette" -d 'List/pull/push color palettes'
+complete -c dsc -n "__fish_dsc_needs_command" -f -a "plugin" -d 'List/install/remove plugins'
+complete -c dsc -n "__fish_dsc_needs_command" -f -a "theme" -d 'List/install/remove themes'
+complete -c dsc -n "__fish_dsc_needs_command" -f -a "setting" -d 'Update site settings'
+complete -c dsc -n "__fish_dsc_needs_command" -f -a "completions" -d 'Generate shell completion scripts'
 complete -c dsc -n "__fish_dsc_needs_command" -f -a "help" -d 'Print this message or the help of the given subcommand(s)'
-complete -c dsc -n "__fish_dsc_using_subcommand list; and not __fish_seen_subcommand_from tidy help" -s f -l format -r -f -a "text\t''
-markdown\t''
-markdown-table\t''
-json\t''
-yaml\t''
-csv\t''"
-complete -c dsc -n "__fish_dsc_using_subcommand list; and not __fish_seen_subcommand_from tidy help" -l tags -r
-complete -c dsc -n "__fish_dsc_using_subcommand list; and not __fish_seen_subcommand_from tidy help" -s v -l verbose
-complete -c dsc -n "__fish_dsc_using_subcommand list; and not __fish_seen_subcommand_from tidy help" -s h -l help -d 'Print help'
+complete -c dsc -n "__fish_dsc_using_subcommand list; and not __fish_seen_subcommand_from tidy help" -s f -l format -d 'Output format for the listing' -r -f -a "text\t'Plain text'
+markdown\t'Markdown list'
+markdown-table\t'Markdown table'
+json\t'Pretty JSON'
+yaml\t'YAML'
+csv\t'CSV'
+urls\t'One base URL per line (pipe-friendly)'"
+complete -c dsc -n "__fish_dsc_using_subcommand list; and not __fish_seen_subcommand_from tidy help" -l tags -d 'Filter by tags (comma/semicolon separated, match-any)' -r
+complete -c dsc -n "__fish_dsc_using_subcommand list; and not __fish_seen_subcommand_from tidy help" -s o -l open -d 'Open each listed Discourse base URL in a browser tab/window'
+complete -c dsc -n "__fish_dsc_using_subcommand list; and not __fish_seen_subcommand_from tidy help" -s v -l verbose -d 'Include empty results and verbose listing details where supported'
+complete -c dsc -n "__fish_dsc_using_subcommand list; and not __fish_seen_subcommand_from tidy help" -s h -l help -d 'Print help (see more with \'--help\')'
 complete -c dsc -n "__fish_dsc_using_subcommand list; and not __fish_seen_subcommand_from tidy help" -f -a "tidy" -d 'Sort discourse entries by name and rewrite config in-place. Also inserts placeholder values for unset template keys'
 complete -c dsc -n "__fish_dsc_using_subcommand list; and not __fish_seen_subcommand_from tidy help" -f -a "help" -d 'Print this message or the help of the given subcommand(s)'
 complete -c dsc -n "__fish_dsc_using_subcommand list; and __fish_seen_subcommand_from tidy" -s h -l help -d 'Print help'
 complete -c dsc -n "__fish_dsc_using_subcommand list; and __fish_seen_subcommand_from help" -f -a "tidy" -d 'Sort discourse entries by name and rewrite config in-place. Also inserts placeholder values for unset template keys'
 complete -c dsc -n "__fish_dsc_using_subcommand list; and __fish_seen_subcommand_from help" -f -a "help" -d 'Print this message or the help of the given subcommand(s)'
-complete -c dsc -n "__fish_dsc_using_subcommand ls; and not __fish_seen_subcommand_from tidy help" -s f -l format -r -f -a "text\t''
-markdown\t''
-markdown-table\t''
-json\t''
-yaml\t''
-csv\t''"
-complete -c dsc -n "__fish_dsc_using_subcommand ls; and not __fish_seen_subcommand_from tidy help" -l tags -r
-complete -c dsc -n "__fish_dsc_using_subcommand ls; and not __fish_seen_subcommand_from tidy help" -s v -l verbose
-complete -c dsc -n "__fish_dsc_using_subcommand ls; and not __fish_seen_subcommand_from tidy help" -s h -l help -d 'Print help'
+complete -c dsc -n "__fish_dsc_using_subcommand ls; and not __fish_seen_subcommand_from tidy help" -s f -l format -d 'Output format for the listing' -r -f -a "text\t'Plain text'
+markdown\t'Markdown list'
+markdown-table\t'Markdown table'
+json\t'Pretty JSON'
+yaml\t'YAML'
+csv\t'CSV'
+urls\t'One base URL per line (pipe-friendly)'"
+complete -c dsc -n "__fish_dsc_using_subcommand ls; and not __fish_seen_subcommand_from tidy help" -l tags -d 'Filter by tags (comma/semicolon separated, match-any)' -r
+complete -c dsc -n "__fish_dsc_using_subcommand ls; and not __fish_seen_subcommand_from tidy help" -s o -l open -d 'Open each listed Discourse base URL in a browser tab/window'
+complete -c dsc -n "__fish_dsc_using_subcommand ls; and not __fish_seen_subcommand_from tidy help" -s v -l verbose -d 'Include empty results and verbose listing details where supported'
+complete -c dsc -n "__fish_dsc_using_subcommand ls; and not __fish_seen_subcommand_from tidy help" -s h -l help -d 'Print help (see more with \'--help\')'
 complete -c dsc -n "__fish_dsc_using_subcommand ls; and not __fish_seen_subcommand_from tidy help" -f -a "tidy" -d 'Sort discourse entries by name and rewrite config in-place. Also inserts placeholder values for unset template keys'
 complete -c dsc -n "__fish_dsc_using_subcommand ls; and not __fish_seen_subcommand_from tidy help" -f -a "help" -d 'Print this message or the help of the given subcommand(s)'
 complete -c dsc -n "__fish_dsc_using_subcommand ls; and __fish_seen_subcommand_from tidy" -s h -l help -d 'Print help'
 complete -c dsc -n "__fish_dsc_using_subcommand ls; and __fish_seen_subcommand_from help" -f -a "tidy" -d 'Sort discourse entries by name and rewrite config in-place. Also inserts placeholder values for unset template keys'
 complete -c dsc -n "__fish_dsc_using_subcommand ls; and __fish_seen_subcommand_from help" -f -a "help" -d 'Print this message or the help of the given subcommand(s)'
-complete -c dsc -n "__fish_dsc_using_subcommand add" -s i -l interactive
+complete -c dsc -n "__fish_dsc_using_subcommand add" -s i -l interactive -d 'Prompt for additional optional fields while adding'
 complete -c dsc -n "__fish_dsc_using_subcommand add" -s h -l help -d 'Print help'
 complete -c dsc -n "__fish_dsc_using_subcommand import" -s h -l help -d 'Print help'
-complete -c dsc -n "__fish_dsc_using_subcommand update" -s m -l max -r
-complete -c dsc -n "__fish_dsc_using_subcommand update" -s p -l parallel
-complete -c dsc -n "__fish_dsc_using_subcommand update" -s g -l post-changelog
+complete -c dsc -n "__fish_dsc_using_subcommand update" -s m -l max -d 'Maximum workers when parallel mode is enabled' -r
+complete -c dsc -n "__fish_dsc_using_subcommand update" -s p -l parallel -d 'Parallel update mode (disabled for \'update all\')'
+complete -c dsc -n "__fish_dsc_using_subcommand update" -l no-changelog -d 'Disable changelog posting (posting prompt is on by default)'
+complete -c dsc -n "__fish_dsc_using_subcommand update" -s y -l yes -d 'Auto-confirm changelog posting prompt (non-interactive mode)'
 complete -c dsc -n "__fish_dsc_using_subcommand update" -s h -l help -d 'Print help'
 complete -c dsc -n "__fish_dsc_using_subcommand emoji; and not __fish_seen_subcommand_from add list help" -s h -l help -d 'Print help'
-complete -c dsc -n "__fish_dsc_using_subcommand emoji; and not __fish_seen_subcommand_from add list help" -f -a "add"
+complete -c dsc -n "__fish_dsc_using_subcommand emoji; and not __fish_seen_subcommand_from add list help" -f -a "add" -d 'Upload one emoji file, or bulk-upload from a directory'
 complete -c dsc -n "__fish_dsc_using_subcommand emoji; and not __fish_seen_subcommand_from add list help" -f -a "list" -d 'List custom emojis on a Discourse'
 complete -c dsc -n "__fish_dsc_using_subcommand emoji; and not __fish_seen_subcommand_from add list help" -f -a "help" -d 'Print this message or the help of the given subcommand(s)'
 complete -c dsc -n "__fish_dsc_using_subcommand emoji; and __fish_seen_subcommand_from add" -s h -l help -d 'Print help'
-complete -c dsc -n "__fish_dsc_using_subcommand emoji; and __fish_seen_subcommand_from list" -s f -l format -r -f -a "text\t''
-json\t''
-yaml\t''"
-complete -c dsc -n "__fish_dsc_using_subcommand emoji; and __fish_seen_subcommand_from list" -s v -l verbose
-complete -c dsc -n "__fish_dsc_using_subcommand emoji; and __fish_seen_subcommand_from list" -s i -l inline
-complete -c dsc -n "__fish_dsc_using_subcommand emoji; and __fish_seen_subcommand_from list" -s h -l help -d 'Print help'
-complete -c dsc -n "__fish_dsc_using_subcommand emoji; and __fish_seen_subcommand_from help" -f -a "add"
+complete -c dsc -n "__fish_dsc_using_subcommand emoji; and __fish_seen_subcommand_from list" -s f -l format -d 'Output format' -r -f -a "text\t'Plain text'
+json\t'Pretty JSON'
+yaml\t'YAML'"
+complete -c dsc -n "__fish_dsc_using_subcommand emoji; and __fish_seen_subcommand_from list" -s v -l verbose -d 'Include additional fields where supported'
+complete -c dsc -n "__fish_dsc_using_subcommand emoji; and __fish_seen_subcommand_from list" -s i -l inline -d 'Render inline images when terminal protocol support is available'
+complete -c dsc -n "__fish_dsc_using_subcommand emoji; and __fish_seen_subcommand_from list" -s h -l help -d 'Print help (see more with \'--help\')'
+complete -c dsc -n "__fish_dsc_using_subcommand emoji; and __fish_seen_subcommand_from help" -f -a "add" -d 'Upload one emoji file, or bulk-upload from a directory'
 complete -c dsc -n "__fish_dsc_using_subcommand emoji; and __fish_seen_subcommand_from help" -f -a "list" -d 'List custom emojis on a Discourse'
 complete -c dsc -n "__fish_dsc_using_subcommand emoji; and __fish_seen_subcommand_from help" -f -a "help" -d 'Print this message or the help of the given subcommand(s)'
 complete -c dsc -n "__fish_dsc_using_subcommand topic; and not __fish_seen_subcommand_from pull push sync help" -s h -l help -d 'Print help'
-complete -c dsc -n "__fish_dsc_using_subcommand topic; and not __fish_seen_subcommand_from pull push sync help" -f -a "pull"
-complete -c dsc -n "__fish_dsc_using_subcommand topic; and not __fish_seen_subcommand_from pull push sync help" -f -a "push"
-complete -c dsc -n "__fish_dsc_using_subcommand topic; and not __fish_seen_subcommand_from pull push sync help" -f -a "sync"
+complete -c dsc -n "__fish_dsc_using_subcommand topic; and not __fish_seen_subcommand_from pull push sync help" -f -a "pull" -d 'Pull a topic to a local Markdown file'
+complete -c dsc -n "__fish_dsc_using_subcommand topic; and not __fish_seen_subcommand_from pull push sync help" -f -a "push" -d 'Push a local Markdown file to a topic'
+complete -c dsc -n "__fish_dsc_using_subcommand topic; and not __fish_seen_subcommand_from pull push sync help" -f -a "sync" -d 'Sync a topic and local Markdown file using newest timestamp'
 complete -c dsc -n "__fish_dsc_using_subcommand topic; and not __fish_seen_subcommand_from pull push sync help" -f -a "help" -d 'Print this message or the help of the given subcommand(s)'
 complete -c dsc -n "__fish_dsc_using_subcommand topic; and __fish_seen_subcommand_from pull" -s h -l help -d 'Print help'
 complete -c dsc -n "__fish_dsc_using_subcommand topic; and __fish_seen_subcommand_from push" -s h -l help -d 'Print help'
-complete -c dsc -n "__fish_dsc_using_subcommand topic; and __fish_seen_subcommand_from sync" -s y -l yes
+complete -c dsc -n "__fish_dsc_using_subcommand topic; and __fish_seen_subcommand_from sync" -s y -l yes -d 'Skip sync confirmation prompt'
 complete -c dsc -n "__fish_dsc_using_subcommand topic; and __fish_seen_subcommand_from sync" -s h -l help -d 'Print help'
-complete -c dsc -n "__fish_dsc_using_subcommand topic; and __fish_seen_subcommand_from help" -f -a "pull"
-complete -c dsc -n "__fish_dsc_using_subcommand topic; and __fish_seen_subcommand_from help" -f -a "push"
-complete -c dsc -n "__fish_dsc_using_subcommand topic; and __fish_seen_subcommand_from help" -f -a "sync"
+complete -c dsc -n "__fish_dsc_using_subcommand topic; and __fish_seen_subcommand_from help" -f -a "pull" -d 'Pull a topic to a local Markdown file'
+complete -c dsc -n "__fish_dsc_using_subcommand topic; and __fish_seen_subcommand_from help" -f -a "push" -d 'Push a local Markdown file to a topic'
+complete -c dsc -n "__fish_dsc_using_subcommand topic; and __fish_seen_subcommand_from help" -f -a "sync" -d 'Sync a topic and local Markdown file using newest timestamp'
 complete -c dsc -n "__fish_dsc_using_subcommand topic; and __fish_seen_subcommand_from help" -f -a "help" -d 'Print this message or the help of the given subcommand(s)'
 complete -c dsc -n "__fish_dsc_using_subcommand category; and not __fish_seen_subcommand_from list copy pull push help" -s h -l help -d 'Print help'
-complete -c dsc -n "__fish_dsc_using_subcommand category; and not __fish_seen_subcommand_from list copy pull push help" -f -a "list"
-complete -c dsc -n "__fish_dsc_using_subcommand category; and not __fish_seen_subcommand_from list copy pull push help" -f -a "copy"
-complete -c dsc -n "__fish_dsc_using_subcommand category; and not __fish_seen_subcommand_from list copy pull push help" -f -a "pull"
-complete -c dsc -n "__fish_dsc_using_subcommand category; and not __fish_seen_subcommand_from list copy pull push help" -f -a "push"
+complete -c dsc -n "__fish_dsc_using_subcommand category; and not __fish_seen_subcommand_from list copy pull push help" -f -a "list" -d 'List categories'
+complete -c dsc -n "__fish_dsc_using_subcommand category; and not __fish_seen_subcommand_from list copy pull push help" -f -a "copy" -d 'Copy a category to another Discourse'
+complete -c dsc -n "__fish_dsc_using_subcommand category; and not __fish_seen_subcommand_from list copy pull push help" -f -a "pull" -d 'Pull all topics from a category into local Markdown files'
+complete -c dsc -n "__fish_dsc_using_subcommand category; and not __fish_seen_subcommand_from list copy pull push help" -f -a "push" -d 'Push local Markdown files into a category'
 complete -c dsc -n "__fish_dsc_using_subcommand category; and not __fish_seen_subcommand_from list copy pull push help" -f -a "help" -d 'Print this message or the help of the given subcommand(s)'
-complete -c dsc -n "__fish_dsc_using_subcommand category; and __fish_seen_subcommand_from list" -s f -l format -r -f -a "text\t''
-json\t''
-yaml\t''"
-complete -c dsc -n "__fish_dsc_using_subcommand category; and __fish_seen_subcommand_from list" -s v -l verbose
-complete -c dsc -n "__fish_dsc_using_subcommand category; and __fish_seen_subcommand_from list" -l tree
-complete -c dsc -n "__fish_dsc_using_subcommand category; and __fish_seen_subcommand_from list" -s h -l help -d 'Print help'
-complete -c dsc -n "__fish_dsc_using_subcommand category; and __fish_seen_subcommand_from copy" -s t -l target -r
+complete -c dsc -n "__fish_dsc_using_subcommand category; and __fish_seen_subcommand_from list" -s f -l format -d 'Output format' -r -f -a "text\t'Plain text'
+json\t'Pretty JSON'
+yaml\t'YAML'"
+complete -c dsc -n "__fish_dsc_using_subcommand category; and __fish_seen_subcommand_from list" -s v -l verbose -d 'Include additional fields where supported'
+complete -c dsc -n "__fish_dsc_using_subcommand category; and __fish_seen_subcommand_from list" -l tree -d 'Show category hierarchy tree'
+complete -c dsc -n "__fish_dsc_using_subcommand category; and __fish_seen_subcommand_from list" -s h -l help -d 'Print help (see more with \'--help\')'
+complete -c dsc -n "__fish_dsc_using_subcommand category; and __fish_seen_subcommand_from copy" -s t -l target -d 'Target discourse name (defaults to source when omitted)' -r
 complete -c dsc -n "__fish_dsc_using_subcommand category; and __fish_seen_subcommand_from copy" -s h -l help -d 'Print help'
 complete -c dsc -n "__fish_dsc_using_subcommand category; and __fish_seen_subcommand_from pull" -s h -l help -d 'Print help'
 complete -c dsc -n "__fish_dsc_using_subcommand category; and __fish_seen_subcommand_from push" -s h -l help -d 'Print help'
-complete -c dsc -n "__fish_dsc_using_subcommand category; and __fish_seen_subcommand_from help" -f -a "list"
-complete -c dsc -n "__fish_dsc_using_subcommand category; and __fish_seen_subcommand_from help" -f -a "copy"
-complete -c dsc -n "__fish_dsc_using_subcommand category; and __fish_seen_subcommand_from help" -f -a "pull"
-complete -c dsc -n "__fish_dsc_using_subcommand category; and __fish_seen_subcommand_from help" -f -a "push"
+complete -c dsc -n "__fish_dsc_using_subcommand category; and __fish_seen_subcommand_from help" -f -a "list" -d 'List categories'
+complete -c dsc -n "__fish_dsc_using_subcommand category; and __fish_seen_subcommand_from help" -f -a "copy" -d 'Copy a category to another Discourse'
+complete -c dsc -n "__fish_dsc_using_subcommand category; and __fish_seen_subcommand_from help" -f -a "pull" -d 'Pull all topics from a category into local Markdown files'
+complete -c dsc -n "__fish_dsc_using_subcommand category; and __fish_seen_subcommand_from help" -f -a "push" -d 'Push local Markdown files into a category'
 complete -c dsc -n "__fish_dsc_using_subcommand category; and __fish_seen_subcommand_from help" -f -a "help" -d 'Print this message or the help of the given subcommand(s)'
 complete -c dsc -n "__fish_dsc_using_subcommand group; and not __fish_seen_subcommand_from list info members copy help" -s h -l help -d 'Print help'
-complete -c dsc -n "__fish_dsc_using_subcommand group; and not __fish_seen_subcommand_from list info members copy help" -f -a "list"
-complete -c dsc -n "__fish_dsc_using_subcommand group; and not __fish_seen_subcommand_from list info members copy help" -f -a "info"
-complete -c dsc -n "__fish_dsc_using_subcommand group; and not __fish_seen_subcommand_from list info members copy help" -f -a "members"
-complete -c dsc -n "__fish_dsc_using_subcommand group; and not __fish_seen_subcommand_from list info members copy help" -f -a "copy"
+complete -c dsc -n "__fish_dsc_using_subcommand group; and not __fish_seen_subcommand_from list info members copy help" -f -a "list" -d 'List groups'
+complete -c dsc -n "__fish_dsc_using_subcommand group; and not __fish_seen_subcommand_from list info members copy help" -f -a "info" -d 'Show group details'
+complete -c dsc -n "__fish_dsc_using_subcommand group; and not __fish_seen_subcommand_from list info members copy help" -f -a "members" -d 'List members of a group'
+complete -c dsc -n "__fish_dsc_using_subcommand group; and not __fish_seen_subcommand_from list info members copy help" -f -a "copy" -d 'Copy a group to another Discourse'
 complete -c dsc -n "__fish_dsc_using_subcommand group; and not __fish_seen_subcommand_from list info members copy help" -f -a "help" -d 'Print this message or the help of the given subcommand(s)'
-complete -c dsc -n "__fish_dsc_using_subcommand group; and __fish_seen_subcommand_from list" -s f -l format -r -f -a "text\t''
-json\t''
-yaml\t''"
-complete -c dsc -n "__fish_dsc_using_subcommand group; and __fish_seen_subcommand_from list" -s v -l verbose
-complete -c dsc -n "__fish_dsc_using_subcommand group; and __fish_seen_subcommand_from list" -s h -l help -d 'Print help'
-complete -c dsc -n "__fish_dsc_using_subcommand group; and __fish_seen_subcommand_from info" -s f -l format -r -f -a "json\t''
-yaml\t''"
-complete -c dsc -n "__fish_dsc_using_subcommand group; and __fish_seen_subcommand_from info" -s h -l help -d 'Print help'
-complete -c dsc -n "__fish_dsc_using_subcommand group; and __fish_seen_subcommand_from members" -s f -l format -r -f -a "json\t''
-yaml\t''"
-complete -c dsc -n "__fish_dsc_using_subcommand group; and __fish_seen_subcommand_from members" -s h -l help -d 'Print help'
-complete -c dsc -n "__fish_dsc_using_subcommand group; and __fish_seen_subcommand_from copy" -s t -l target -r
+complete -c dsc -n "__fish_dsc_using_subcommand group; and __fish_seen_subcommand_from list" -s f -l format -d 'Output format' -r -f -a "text\t'Plain text'
+json\t'Pretty JSON'
+yaml\t'YAML'"
+complete -c dsc -n "__fish_dsc_using_subcommand group; and __fish_seen_subcommand_from list" -s v -l verbose -d 'Include additional fields where supported'
+complete -c dsc -n "__fish_dsc_using_subcommand group; and __fish_seen_subcommand_from list" -s h -l help -d 'Print help (see more with \'--help\')'
+complete -c dsc -n "__fish_dsc_using_subcommand group; and __fish_seen_subcommand_from info" -s f -l format -d 'Output format' -r -f -a "json\t'Pretty JSON'
+yaml\t'YAML'"
+complete -c dsc -n "__fish_dsc_using_subcommand group; and __fish_seen_subcommand_from info" -s h -l help -d 'Print help (see more with \'--help\')'
+complete -c dsc -n "__fish_dsc_using_subcommand group; and __fish_seen_subcommand_from members" -s f -l format -d 'Output format' -r -f -a "text\t'Plain text'
+json\t'Pretty JSON'
+yaml\t'YAML'"
+complete -c dsc -n "__fish_dsc_using_subcommand group; and __fish_seen_subcommand_from members" -s h -l help -d 'Print help (see more with \'--help\')'
+complete -c dsc -n "__fish_dsc_using_subcommand group; and __fish_seen_subcommand_from copy" -s t -l target -d 'Target discourse name (defaults to source when omitted)' -r
 complete -c dsc -n "__fish_dsc_using_subcommand group; and __fish_seen_subcommand_from copy" -s h -l help -d 'Print help'
-complete -c dsc -n "__fish_dsc_using_subcommand group; and __fish_seen_subcommand_from help" -f -a "list"
-complete -c dsc -n "__fish_dsc_using_subcommand group; and __fish_seen_subcommand_from help" -f -a "info"
-complete -c dsc -n "__fish_dsc_using_subcommand group; and __fish_seen_subcommand_from help" -f -a "members"
-complete -c dsc -n "__fish_dsc_using_subcommand group; and __fish_seen_subcommand_from help" -f -a "copy"
+complete -c dsc -n "__fish_dsc_using_subcommand group; and __fish_seen_subcommand_from help" -f -a "list" -d 'List groups'
+complete -c dsc -n "__fish_dsc_using_subcommand group; and __fish_seen_subcommand_from help" -f -a "info" -d 'Show group details'
+complete -c dsc -n "__fish_dsc_using_subcommand group; and __fish_seen_subcommand_from help" -f -a "members" -d 'List members of a group'
+complete -c dsc -n "__fish_dsc_using_subcommand group; and __fish_seen_subcommand_from help" -f -a "copy" -d 'Copy a group to another Discourse'
 complete -c dsc -n "__fish_dsc_using_subcommand group; and __fish_seen_subcommand_from help" -f -a "help" -d 'Print this message or the help of the given subcommand(s)'
 complete -c dsc -n "__fish_dsc_using_subcommand backup; and not __fish_seen_subcommand_from create list restore help" -s h -l help -d 'Print help'
-complete -c dsc -n "__fish_dsc_using_subcommand backup; and not __fish_seen_subcommand_from create list restore help" -f -a "create"
-complete -c dsc -n "__fish_dsc_using_subcommand backup; and not __fish_seen_subcommand_from create list restore help" -f -a "list"
-complete -c dsc -n "__fish_dsc_using_subcommand backup; and not __fish_seen_subcommand_from create list restore help" -f -a "restore"
+complete -c dsc -n "__fish_dsc_using_subcommand backup; and not __fish_seen_subcommand_from create list restore help" -f -a "create" -d 'Create a new backup'
+complete -c dsc -n "__fish_dsc_using_subcommand backup; and not __fish_seen_subcommand_from create list restore help" -f -a "list" -d 'List backups'
+complete -c dsc -n "__fish_dsc_using_subcommand backup; and not __fish_seen_subcommand_from create list restore help" -f -a "restore" -d 'Restore a backup'
 complete -c dsc -n "__fish_dsc_using_subcommand backup; and not __fish_seen_subcommand_from create list restore help" -f -a "help" -d 'Print this message or the help of the given subcommand(s)'
 complete -c dsc -n "__fish_dsc_using_subcommand backup; and __fish_seen_subcommand_from create" -s h -l help -d 'Print help'
-complete -c dsc -n "__fish_dsc_using_subcommand backup; and __fish_seen_subcommand_from list" -s f -l format -r -f -a "text\t''
-markdown\t''
-markdown-table\t''
-json\t''
-yaml\t''
-csv\t''"
-complete -c dsc -n "__fish_dsc_using_subcommand backup; and __fish_seen_subcommand_from list" -s v -l verbose
-complete -c dsc -n "__fish_dsc_using_subcommand backup; and __fish_seen_subcommand_from list" -s h -l help -d 'Print help'
+complete -c dsc -n "__fish_dsc_using_subcommand backup; and __fish_seen_subcommand_from list" -s f -l format -d 'Output format' -r -f -a "text\t'Plain text'
+markdown\t'Markdown list'
+markdown-table\t'Markdown table'
+json\t'Pretty JSON'
+yaml\t'YAML'
+csv\t'CSV'
+urls\t'One base URL per line (pipe-friendly)'"
+complete -c dsc -n "__fish_dsc_using_subcommand backup; and __fish_seen_subcommand_from list" -s v -l verbose -d 'Include additional fields where supported'
+complete -c dsc -n "__fish_dsc_using_subcommand backup; and __fish_seen_subcommand_from list" -s h -l help -d 'Print help (see more with \'--help\')'
 complete -c dsc -n "__fish_dsc_using_subcommand backup; and __fish_seen_subcommand_from restore" -s h -l help -d 'Print help'
-complete -c dsc -n "__fish_dsc_using_subcommand backup; and __fish_seen_subcommand_from help" -f -a "create"
-complete -c dsc -n "__fish_dsc_using_subcommand backup; and __fish_seen_subcommand_from help" -f -a "list"
-complete -c dsc -n "__fish_dsc_using_subcommand backup; and __fish_seen_subcommand_from help" -f -a "restore"
+complete -c dsc -n "__fish_dsc_using_subcommand backup; and __fish_seen_subcommand_from help" -f -a "create" -d 'Create a new backup'
+complete -c dsc -n "__fish_dsc_using_subcommand backup; and __fish_seen_subcommand_from help" -f -a "list" -d 'List backups'
+complete -c dsc -n "__fish_dsc_using_subcommand backup; and __fish_seen_subcommand_from help" -f -a "restore" -d 'Restore a backup'
 complete -c dsc -n "__fish_dsc_using_subcommand backup; and __fish_seen_subcommand_from help" -f -a "help" -d 'Print this message or the help of the given subcommand(s)'
 complete -c dsc -n "__fish_dsc_using_subcommand palette; and not __fish_seen_subcommand_from list pull push help" -s h -l help -d 'Print help'
-complete -c dsc -n "__fish_dsc_using_subcommand palette; and not __fish_seen_subcommand_from list pull push help" -f -a "list"
-complete -c dsc -n "__fish_dsc_using_subcommand palette; and not __fish_seen_subcommand_from list pull push help" -f -a "pull"
-complete -c dsc -n "__fish_dsc_using_subcommand palette; and not __fish_seen_subcommand_from list pull push help" -f -a "push"
+complete -c dsc -n "__fish_dsc_using_subcommand palette; and not __fish_seen_subcommand_from list pull push help" -f -a "list" -d 'List color palettes'
+complete -c dsc -n "__fish_dsc_using_subcommand palette; and not __fish_seen_subcommand_from list pull push help" -f -a "pull" -d 'Pull a palette to local JSON'
+complete -c dsc -n "__fish_dsc_using_subcommand palette; and not __fish_seen_subcommand_from list pull push help" -f -a "push" -d 'Push local JSON to create or update a palette'
 complete -c dsc -n "__fish_dsc_using_subcommand palette; and not __fish_seen_subcommand_from list pull push help" -f -a "help" -d 'Print this message or the help of the given subcommand(s)'
-complete -c dsc -n "__fish_dsc_using_subcommand palette; and __fish_seen_subcommand_from list" -s f -l format -r -f -a "text\t''
-json\t''
-yaml\t''"
-complete -c dsc -n "__fish_dsc_using_subcommand palette; and __fish_seen_subcommand_from list" -s v -l verbose
-complete -c dsc -n "__fish_dsc_using_subcommand palette; and __fish_seen_subcommand_from list" -s h -l help -d 'Print help'
+complete -c dsc -n "__fish_dsc_using_subcommand palette; and __fish_seen_subcommand_from list" -s f -l format -d 'Output format' -r -f -a "text\t'Plain text'
+json\t'Pretty JSON'
+yaml\t'YAML'"
+complete -c dsc -n "__fish_dsc_using_subcommand palette; and __fish_seen_subcommand_from list" -s v -l verbose -d 'Include additional fields where supported'
+complete -c dsc -n "__fish_dsc_using_subcommand palette; and __fish_seen_subcommand_from list" -s h -l help -d 'Print help (see more with \'--help\')'
 complete -c dsc -n "__fish_dsc_using_subcommand palette; and __fish_seen_subcommand_from pull" -s h -l help -d 'Print help'
 complete -c dsc -n "__fish_dsc_using_subcommand palette; and __fish_seen_subcommand_from push" -s h -l help -d 'Print help'
-complete -c dsc -n "__fish_dsc_using_subcommand palette; and __fish_seen_subcommand_from help" -f -a "list"
-complete -c dsc -n "__fish_dsc_using_subcommand palette; and __fish_seen_subcommand_from help" -f -a "pull"
-complete -c dsc -n "__fish_dsc_using_subcommand palette; and __fish_seen_subcommand_from help" -f -a "push"
+complete -c dsc -n "__fish_dsc_using_subcommand palette; and __fish_seen_subcommand_from help" -f -a "list" -d 'List color palettes'
+complete -c dsc -n "__fish_dsc_using_subcommand palette; and __fish_seen_subcommand_from help" -f -a "pull" -d 'Pull a palette to local JSON'
+complete -c dsc -n "__fish_dsc_using_subcommand palette; and __fish_seen_subcommand_from help" -f -a "push" -d 'Push local JSON to create or update a palette'
 complete -c dsc -n "__fish_dsc_using_subcommand palette; and __fish_seen_subcommand_from help" -f -a "help" -d 'Print this message or the help of the given subcommand(s)'
 complete -c dsc -n "__fish_dsc_using_subcommand plugin; and not __fish_seen_subcommand_from list install remove help" -s h -l help -d 'Print help'
-complete -c dsc -n "__fish_dsc_using_subcommand plugin; and not __fish_seen_subcommand_from list install remove help" -f -a "list"
-complete -c dsc -n "__fish_dsc_using_subcommand plugin; and not __fish_seen_subcommand_from list install remove help" -f -a "install"
-complete -c dsc -n "__fish_dsc_using_subcommand plugin; and not __fish_seen_subcommand_from list install remove help" -f -a "remove"
+complete -c dsc -n "__fish_dsc_using_subcommand plugin; and not __fish_seen_subcommand_from list install remove help" -f -a "list" -d 'List installed plugins'
+complete -c dsc -n "__fish_dsc_using_subcommand plugin; and not __fish_seen_subcommand_from list install remove help" -f -a "install" -d 'Install a plugin from URL'
+complete -c dsc -n "__fish_dsc_using_subcommand plugin; and not __fish_seen_subcommand_from list install remove help" -f -a "remove" -d 'Remove a plugin by name'
 complete -c dsc -n "__fish_dsc_using_subcommand plugin; and not __fish_seen_subcommand_from list install remove help" -f -a "help" -d 'Print this message or the help of the given subcommand(s)'
-complete -c dsc -n "__fish_dsc_using_subcommand plugin; and __fish_seen_subcommand_from list" -s f -l format -r -f -a "text\t''
-json\t''
-yaml\t''"
-complete -c dsc -n "__fish_dsc_using_subcommand plugin; and __fish_seen_subcommand_from list" -s v -l verbose
-complete -c dsc -n "__fish_dsc_using_subcommand plugin; and __fish_seen_subcommand_from list" -s h -l help -d 'Print help'
+complete -c dsc -n "__fish_dsc_using_subcommand plugin; and __fish_seen_subcommand_from list" -s f -l format -d 'Output format' -r -f -a "text\t'Plain text'
+json\t'Pretty JSON'
+yaml\t'YAML'"
+complete -c dsc -n "__fish_dsc_using_subcommand plugin; and __fish_seen_subcommand_from list" -s v -l verbose -d 'Include additional fields where supported'
+complete -c dsc -n "__fish_dsc_using_subcommand plugin; and __fish_seen_subcommand_from list" -s h -l help -d 'Print help (see more with \'--help\')'
 complete -c dsc -n "__fish_dsc_using_subcommand plugin; and __fish_seen_subcommand_from install" -s h -l help -d 'Print help'
 complete -c dsc -n "__fish_dsc_using_subcommand plugin; and __fish_seen_subcommand_from remove" -s h -l help -d 'Print help'
-complete -c dsc -n "__fish_dsc_using_subcommand plugin; and __fish_seen_subcommand_from help" -f -a "list"
-complete -c dsc -n "__fish_dsc_using_subcommand plugin; and __fish_seen_subcommand_from help" -f -a "install"
-complete -c dsc -n "__fish_dsc_using_subcommand plugin; and __fish_seen_subcommand_from help" -f -a "remove"
+complete -c dsc -n "__fish_dsc_using_subcommand plugin; and __fish_seen_subcommand_from help" -f -a "list" -d 'List installed plugins'
+complete -c dsc -n "__fish_dsc_using_subcommand plugin; and __fish_seen_subcommand_from help" -f -a "install" -d 'Install a plugin from URL'
+complete -c dsc -n "__fish_dsc_using_subcommand plugin; and __fish_seen_subcommand_from help" -f -a "remove" -d 'Remove a plugin by name'
 complete -c dsc -n "__fish_dsc_using_subcommand plugin; and __fish_seen_subcommand_from help" -f -a "help" -d 'Print this message or the help of the given subcommand(s)'
 complete -c dsc -n "__fish_dsc_using_subcommand theme; and not __fish_seen_subcommand_from list install remove help" -s h -l help -d 'Print help'
-complete -c dsc -n "__fish_dsc_using_subcommand theme; and not __fish_seen_subcommand_from list install remove help" -f -a "list"
-complete -c dsc -n "__fish_dsc_using_subcommand theme; and not __fish_seen_subcommand_from list install remove help" -f -a "install"
-complete -c dsc -n "__fish_dsc_using_subcommand theme; and not __fish_seen_subcommand_from list install remove help" -f -a "remove"
+complete -c dsc -n "__fish_dsc_using_subcommand theme; and not __fish_seen_subcommand_from list install remove help" -f -a "list" -d 'List installed themes'
+complete -c dsc -n "__fish_dsc_using_subcommand theme; and not __fish_seen_subcommand_from list install remove help" -f -a "install" -d 'Install a theme from URL'
+complete -c dsc -n "__fish_dsc_using_subcommand theme; and not __fish_seen_subcommand_from list install remove help" -f -a "remove" -d 'Remove a theme by name'
 complete -c dsc -n "__fish_dsc_using_subcommand theme; and not __fish_seen_subcommand_from list install remove help" -f -a "help" -d 'Print this message or the help of the given subcommand(s)'
-complete -c dsc -n "__fish_dsc_using_subcommand theme; and __fish_seen_subcommand_from list" -s f -l format -r -f -a "text\t''
-json\t''
-yaml\t''"
-complete -c dsc -n "__fish_dsc_using_subcommand theme; and __fish_seen_subcommand_from list" -s v -l verbose
-complete -c dsc -n "__fish_dsc_using_subcommand theme; and __fish_seen_subcommand_from list" -s h -l help -d 'Print help'
+complete -c dsc -n "__fish_dsc_using_subcommand theme; and __fish_seen_subcommand_from list" -s f -l format -d 'Output format' -r -f -a "text\t'Plain text'
+json\t'Pretty JSON'
+yaml\t'YAML'"
+complete -c dsc -n "__fish_dsc_using_subcommand theme; and __fish_seen_subcommand_from list" -s v -l verbose -d 'Include additional fields where supported'
+complete -c dsc -n "__fish_dsc_using_subcommand theme; and __fish_seen_subcommand_from list" -s h -l help -d 'Print help (see more with \'--help\')'
 complete -c dsc -n "__fish_dsc_using_subcommand theme; and __fish_seen_subcommand_from install" -s h -l help -d 'Print help'
 complete -c dsc -n "__fish_dsc_using_subcommand theme; and __fish_seen_subcommand_from remove" -s h -l help -d 'Print help'
-complete -c dsc -n "__fish_dsc_using_subcommand theme; and __fish_seen_subcommand_from help" -f -a "list"
-complete -c dsc -n "__fish_dsc_using_subcommand theme; and __fish_seen_subcommand_from help" -f -a "install"
-complete -c dsc -n "__fish_dsc_using_subcommand theme; and __fish_seen_subcommand_from help" -f -a "remove"
+complete -c dsc -n "__fish_dsc_using_subcommand theme; and __fish_seen_subcommand_from help" -f -a "list" -d 'List installed themes'
+complete -c dsc -n "__fish_dsc_using_subcommand theme; and __fish_seen_subcommand_from help" -f -a "install" -d 'Install a theme from URL'
+complete -c dsc -n "__fish_dsc_using_subcommand theme; and __fish_seen_subcommand_from help" -f -a "remove" -d 'Remove a theme by name'
 complete -c dsc -n "__fish_dsc_using_subcommand theme; and __fish_seen_subcommand_from help" -f -a "help" -d 'Print this message or the help of the given subcommand(s)'
 complete -c dsc -n "__fish_dsc_using_subcommand setting; and not __fish_seen_subcommand_from set help" -s h -l help -d 'Print help'
-complete -c dsc -n "__fish_dsc_using_subcommand setting; and not __fish_seen_subcommand_from set help" -f -a "set"
+complete -c dsc -n "__fish_dsc_using_subcommand setting; and not __fish_seen_subcommand_from set help" -f -a "set" -d 'Set a site setting across configured Discourses (optionally filtered by tags)'
 complete -c dsc -n "__fish_dsc_using_subcommand setting; and not __fish_seen_subcommand_from set help" -f -a "help" -d 'Print this message or the help of the given subcommand(s)'
-complete -c dsc -n "__fish_dsc_using_subcommand setting; and __fish_seen_subcommand_from set" -l tags -r
+complete -c dsc -n "__fish_dsc_using_subcommand setting; and __fish_seen_subcommand_from set" -l tags -d 'Optional tag filter (comma/semicolon separated, match-any)' -r
 complete -c dsc -n "__fish_dsc_using_subcommand setting; and __fish_seen_subcommand_from set" -s h -l help -d 'Print help'
-complete -c dsc -n "__fish_dsc_using_subcommand setting; and __fish_seen_subcommand_from help" -f -a "set"
+complete -c dsc -n "__fish_dsc_using_subcommand setting; and __fish_seen_subcommand_from help" -f -a "set" -d 'Set a site setting across configured Discourses (optionally filtered by tags)'
 complete -c dsc -n "__fish_dsc_using_subcommand setting; and __fish_seen_subcommand_from help" -f -a "help" -d 'Print this message or the help of the given subcommand(s)'
-complete -c dsc -n "__fish_dsc_using_subcommand completions" -s d -l dir -r -F
-complete -c dsc -n "__fish_dsc_using_subcommand completions" -s h -l help -d 'Print help'
-complete -c dsc -n "__fish_dsc_using_subcommand help; and not __fish_seen_subcommand_from list add import update emoji topic category group backup palette plugin theme setting completions help" -f -a "list"
-complete -c dsc -n "__fish_dsc_using_subcommand help; and not __fish_seen_subcommand_from list add import update emoji topic category group backup palette plugin theme setting completions help" -f -a "add"
-complete -c dsc -n "__fish_dsc_using_subcommand help; and not __fish_seen_subcommand_from list add import update emoji topic category group backup palette plugin theme setting completions help" -f -a "import"
-complete -c dsc -n "__fish_dsc_using_subcommand help; and not __fish_seen_subcommand_from list add import update emoji topic category group backup palette plugin theme setting completions help" -f -a "update"
-complete -c dsc -n "__fish_dsc_using_subcommand help; and not __fish_seen_subcommand_from list add import update emoji topic category group backup palette plugin theme setting completions help" -f -a "emoji"
-complete -c dsc -n "__fish_dsc_using_subcommand help; and not __fish_seen_subcommand_from list add import update emoji topic category group backup palette plugin theme setting completions help" -f -a "topic"
-complete -c dsc -n "__fish_dsc_using_subcommand help; and not __fish_seen_subcommand_from list add import update emoji topic category group backup palette plugin theme setting completions help" -f -a "category"
-complete -c dsc -n "__fish_dsc_using_subcommand help; and not __fish_seen_subcommand_from list add import update emoji topic category group backup palette plugin theme setting completions help" -f -a "group"
-complete -c dsc -n "__fish_dsc_using_subcommand help; and not __fish_seen_subcommand_from list add import update emoji topic category group backup palette plugin theme setting completions help" -f -a "backup"
-complete -c dsc -n "__fish_dsc_using_subcommand help; and not __fish_seen_subcommand_from list add import update emoji topic category group backup palette plugin theme setting completions help" -f -a "palette"
-complete -c dsc -n "__fish_dsc_using_subcommand help; and not __fish_seen_subcommand_from list add import update emoji topic category group backup palette plugin theme setting completions help" -f -a "plugin"
-complete -c dsc -n "__fish_dsc_using_subcommand help; and not __fish_seen_subcommand_from list add import update emoji topic category group backup palette plugin theme setting completions help" -f -a "theme"
-complete -c dsc -n "__fish_dsc_using_subcommand help; and not __fish_seen_subcommand_from list add import update emoji topic category group backup palette plugin theme setting completions help" -f -a "setting"
-complete -c dsc -n "__fish_dsc_using_subcommand help; and not __fish_seen_subcommand_from list add import update emoji topic category group backup palette plugin theme setting completions help" -f -a "completions"
+complete -c dsc -n "__fish_dsc_using_subcommand completions" -s d -l dir -d 'Output directory. Prints to stdout when omitted' -r -F
+complete -c dsc -n "__fish_dsc_using_subcommand completions" -s h -l help -d 'Print help (see more with \'--help\')'
+complete -c dsc -n "__fish_dsc_using_subcommand help; and not __fish_seen_subcommand_from list add import update emoji topic category group backup palette plugin theme setting completions help" -f -a "list" -d 'List configured Discourses'
+complete -c dsc -n "__fish_dsc_using_subcommand help; and not __fish_seen_subcommand_from list add import update emoji topic category group backup palette plugin theme setting completions help" -f -a "add" -d 'Add one or more Discourses to the config'
+complete -c dsc -n "__fish_dsc_using_subcommand help; and not __fish_seen_subcommand_from list add import update emoji topic category group backup palette plugin theme setting completions help" -f -a "import" -d 'Import Discourses from a file or stdin'
+complete -c dsc -n "__fish_dsc_using_subcommand help; and not __fish_seen_subcommand_from list add import update emoji topic category group backup palette plugin theme setting completions help" -f -a "update" -d 'Run remote OS + Discourse update workflow for one or all Discourses'
+complete -c dsc -n "__fish_dsc_using_subcommand help; and not __fish_seen_subcommand_from list add import update emoji topic category group backup palette plugin theme setting completions help" -f -a "emoji" -d 'Manage custom emoji'
+complete -c dsc -n "__fish_dsc_using_subcommand help; and not __fish_seen_subcommand_from list add import update emoji topic category group backup palette plugin theme setting completions help" -f -a "topic" -d 'Pull/push/sync topics as local Markdown'
+complete -c dsc -n "__fish_dsc_using_subcommand help; and not __fish_seen_subcommand_from list add import update emoji topic category group backup palette plugin theme setting completions help" -f -a "category" -d 'List/copy/pull/push categories'
+complete -c dsc -n "__fish_dsc_using_subcommand help; and not __fish_seen_subcommand_from list add import update emoji topic category group backup palette plugin theme setting completions help" -f -a "group" -d 'List/inspect/copy groups'
+complete -c dsc -n "__fish_dsc_using_subcommand help; and not __fish_seen_subcommand_from list add import update emoji topic category group backup palette plugin theme setting completions help" -f -a "backup" -d 'Create/list/restore backups'
+complete -c dsc -n "__fish_dsc_using_subcommand help; and not __fish_seen_subcommand_from list add import update emoji topic category group backup palette plugin theme setting completions help" -f -a "palette" -d 'List/pull/push color palettes'
+complete -c dsc -n "__fish_dsc_using_subcommand help; and not __fish_seen_subcommand_from list add import update emoji topic category group backup palette plugin theme setting completions help" -f -a "plugin" -d 'List/install/remove plugins'
+complete -c dsc -n "__fish_dsc_using_subcommand help; and not __fish_seen_subcommand_from list add import update emoji topic category group backup palette plugin theme setting completions help" -f -a "theme" -d 'List/install/remove themes'
+complete -c dsc -n "__fish_dsc_using_subcommand help; and not __fish_seen_subcommand_from list add import update emoji topic category group backup palette plugin theme setting completions help" -f -a "setting" -d 'Update site settings'
+complete -c dsc -n "__fish_dsc_using_subcommand help; and not __fish_seen_subcommand_from list add import update emoji topic category group backup palette plugin theme setting completions help" -f -a "completions" -d 'Generate shell completion scripts'
 complete -c dsc -n "__fish_dsc_using_subcommand help; and not __fish_seen_subcommand_from list add import update emoji topic category group backup palette plugin theme setting completions help" -f -a "help" -d 'Print this message or the help of the given subcommand(s)'
 complete -c dsc -n "__fish_dsc_using_subcommand help; and __fish_seen_subcommand_from list" -f -a "tidy" -d 'Sort discourse entries by name and rewrite config in-place. Also inserts placeholder values for unset template keys'
-complete -c dsc -n "__fish_dsc_using_subcommand help; and __fish_seen_subcommand_from emoji" -f -a "add"
+complete -c dsc -n "__fish_dsc_using_subcommand help; and __fish_seen_subcommand_from emoji" -f -a "add" -d 'Upload one emoji file, or bulk-upload from a directory'
 complete -c dsc -n "__fish_dsc_using_subcommand help; and __fish_seen_subcommand_from emoji" -f -a "list" -d 'List custom emojis on a Discourse'
-complete -c dsc -n "__fish_dsc_using_subcommand help; and __fish_seen_subcommand_from topic" -f -a "pull"
-complete -c dsc -n "__fish_dsc_using_subcommand help; and __fish_seen_subcommand_from topic" -f -a "push"
-complete -c dsc -n "__fish_dsc_using_subcommand help; and __fish_seen_subcommand_from topic" -f -a "sync"
-complete -c dsc -n "__fish_dsc_using_subcommand help; and __fish_seen_subcommand_from category" -f -a "list"
-complete -c dsc -n "__fish_dsc_using_subcommand help; and __fish_seen_subcommand_from category" -f -a "copy"
-complete -c dsc -n "__fish_dsc_using_subcommand help; and __fish_seen_subcommand_from category" -f -a "pull"
-complete -c dsc -n "__fish_dsc_using_subcommand help; and __fish_seen_subcommand_from category" -f -a "push"
-complete -c dsc -n "__fish_dsc_using_subcommand help; and __fish_seen_subcommand_from group" -f -a "list"
-complete -c dsc -n "__fish_dsc_using_subcommand help; and __fish_seen_subcommand_from group" -f -a "info"
-complete -c dsc -n "__fish_dsc_using_subcommand help; and __fish_seen_subcommand_from group" -f -a "members"
-complete -c dsc -n "__fish_dsc_using_subcommand help; and __fish_seen_subcommand_from group" -f -a "copy"
-complete -c dsc -n "__fish_dsc_using_subcommand help; and __fish_seen_subcommand_from backup" -f -a "create"
-complete -c dsc -n "__fish_dsc_using_subcommand help; and __fish_seen_subcommand_from backup" -f -a "list"
-complete -c dsc -n "__fish_dsc_using_subcommand help; and __fish_seen_subcommand_from backup" -f -a "restore"
-complete -c dsc -n "__fish_dsc_using_subcommand help; and __fish_seen_subcommand_from palette" -f -a "list"
-complete -c dsc -n "__fish_dsc_using_subcommand help; and __fish_seen_subcommand_from palette" -f -a "pull"
-complete -c dsc -n "__fish_dsc_using_subcommand help; and __fish_seen_subcommand_from palette" -f -a "push"
-complete -c dsc -n "__fish_dsc_using_subcommand help; and __fish_seen_subcommand_from plugin" -f -a "list"
-complete -c dsc -n "__fish_dsc_using_subcommand help; and __fish_seen_subcommand_from plugin" -f -a "install"
-complete -c dsc -n "__fish_dsc_using_subcommand help; and __fish_seen_subcommand_from plugin" -f -a "remove"
-complete -c dsc -n "__fish_dsc_using_subcommand help; and __fish_seen_subcommand_from theme" -f -a "list"
-complete -c dsc -n "__fish_dsc_using_subcommand help; and __fish_seen_subcommand_from theme" -f -a "install"
-complete -c dsc -n "__fish_dsc_using_subcommand help; and __fish_seen_subcommand_from theme" -f -a "remove"
-complete -c dsc -n "__fish_dsc_using_subcommand help; and __fish_seen_subcommand_from setting" -f -a "set"
+complete -c dsc -n "__fish_dsc_using_subcommand help; and __fish_seen_subcommand_from topic" -f -a "pull" -d 'Pull a topic to a local Markdown file'
+complete -c dsc -n "__fish_dsc_using_subcommand help; and __fish_seen_subcommand_from topic" -f -a "push" -d 'Push a local Markdown file to a topic'
+complete -c dsc -n "__fish_dsc_using_subcommand help; and __fish_seen_subcommand_from topic" -f -a "sync" -d 'Sync a topic and local Markdown file using newest timestamp'
+complete -c dsc -n "__fish_dsc_using_subcommand help; and __fish_seen_subcommand_from category" -f -a "list" -d 'List categories'
+complete -c dsc -n "__fish_dsc_using_subcommand help; and __fish_seen_subcommand_from category" -f -a "copy" -d 'Copy a category to another Discourse'
+complete -c dsc -n "__fish_dsc_using_subcommand help; and __fish_seen_subcommand_from category" -f -a "pull" -d 'Pull all topics from a category into local Markdown files'
+complete -c dsc -n "__fish_dsc_using_subcommand help; and __fish_seen_subcommand_from category" -f -a "push" -d 'Push local Markdown files into a category'
+complete -c dsc -n "__fish_dsc_using_subcommand help; and __fish_seen_subcommand_from group" -f -a "list" -d 'List groups'
+complete -c dsc -n "__fish_dsc_using_subcommand help; and __fish_seen_subcommand_from group" -f -a "info" -d 'Show group details'
+complete -c dsc -n "__fish_dsc_using_subcommand help; and __fish_seen_subcommand_from group" -f -a "members" -d 'List members of a group'
+complete -c dsc -n "__fish_dsc_using_subcommand help; and __fish_seen_subcommand_from group" -f -a "copy" -d 'Copy a group to another Discourse'
+complete -c dsc -n "__fish_dsc_using_subcommand help; and __fish_seen_subcommand_from backup" -f -a "create" -d 'Create a new backup'
+complete -c dsc -n "__fish_dsc_using_subcommand help; and __fish_seen_subcommand_from backup" -f -a "list" -d 'List backups'
+complete -c dsc -n "__fish_dsc_using_subcommand help; and __fish_seen_subcommand_from backup" -f -a "restore" -d 'Restore a backup'
+complete -c dsc -n "__fish_dsc_using_subcommand help; and __fish_seen_subcommand_from palette" -f -a "list" -d 'List color palettes'
+complete -c dsc -n "__fish_dsc_using_subcommand help; and __fish_seen_subcommand_from palette" -f -a "pull" -d 'Pull a palette to local JSON'
+complete -c dsc -n "__fish_dsc_using_subcommand help; and __fish_seen_subcommand_from palette" -f -a "push" -d 'Push local JSON to create or update a palette'
+complete -c dsc -n "__fish_dsc_using_subcommand help; and __fish_seen_subcommand_from plugin" -f -a "list" -d 'List installed plugins'
+complete -c dsc -n "__fish_dsc_using_subcommand help; and __fish_seen_subcommand_from plugin" -f -a "install" -d 'Install a plugin from URL'
+complete -c dsc -n "__fish_dsc_using_subcommand help; and __fish_seen_subcommand_from plugin" -f -a "remove" -d 'Remove a plugin by name'
+complete -c dsc -n "__fish_dsc_using_subcommand help; and __fish_seen_subcommand_from theme" -f -a "list" -d 'List installed themes'
+complete -c dsc -n "__fish_dsc_using_subcommand help; and __fish_seen_subcommand_from theme" -f -a "install" -d 'Install a theme from URL'
+complete -c dsc -n "__fish_dsc_using_subcommand help; and __fish_seen_subcommand_from theme" -f -a "remove" -d 'Remove a theme by name'
+complete -c dsc -n "__fish_dsc_using_subcommand help; and __fish_seen_subcommand_from setting" -f -a "set" -d 'Set a site setting across configured Discourses (optionally filtered by tags)'

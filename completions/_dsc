@@ -38,8 +38,8 @@ _dsc() {
 
     local context curcontext="$curcontext" state line
     _arguments "${_arguments_options[@]}" : \
-'-c+[]:CONFIG:_files' \
-'--config=[]:CONFIG:_files' \
+'-c+[Path to the config file. If omitted, dsc searches standard locations]:CONFIG:_files' \
+'--config=[Path to the config file. If omitted, dsc searches standard locations]:CONFIG:_files' \
 '-h[Print help]' \
 '--help[Print help]' \
 ":: :_dsc_commands" \
@@ -53,13 +53,27 @@ _dsc() {
         case $line[1] in
             (list)
 _arguments "${_arguments_options[@]}" : \
-'-f+[]:FORMAT:(text markdown markdown-table json yaml csv)' \
-'--format=[]:FORMAT:(text markdown markdown-table json yaml csv)' \
-'--tags=[]:tag1,tag2:_default' \
-'-v[]' \
-'--verbose[]' \
-'-h[Print help]' \
-'--help[Print help]' \
+'-f+[Output format for the listing]:FORMAT:((text\:"Plain text"
+markdown\:"Markdown list"
+markdown-table\:"Markdown table"
+json\:"Pretty JSON"
+yaml\:"YAML"
+csv\:"CSV"
+urls\:"One base URL per line (pipe-friendly)"))' \
+'--format=[Output format for the listing]:FORMAT:((text\:"Plain text"
+markdown\:"Markdown list"
+markdown-table\:"Markdown table"
+json\:"Pretty JSON"
+yaml\:"YAML"
+csv\:"CSV"
+urls\:"One base URL per line (pipe-friendly)"))' \
+'--tags=[Filter by tags (comma/semicolon separated, match-any)]:tag1,tag2:_default' \
+'-o[Open each listed Discourse base URL in a browser tab/window]' \
+'--open[Open each listed Discourse base URL in a browser tab/window]' \
+'-v[Include empty results and verbose listing details where supported]' \
+'--verbose[Include empty results and verbose listing details where supported]' \
+'-h[Print help (see more with '\''--help'\'')]' \
+'--help[Print help (see more with '\''--help'\'')]' \
 ":: :_dsc__list_commands" \
 "*::: :->list" \
 && ret=0
@@ -106,13 +120,27 @@ esac
 ;;
 (ls)
 _arguments "${_arguments_options[@]}" : \
-'-f+[]:FORMAT:(text markdown markdown-table json yaml csv)' \
-'--format=[]:FORMAT:(text markdown markdown-table json yaml csv)' \
-'--tags=[]:tag1,tag2:_default' \
-'-v[]' \
-'--verbose[]' \
-'-h[Print help]' \
-'--help[Print help]' \
+'-f+[Output format for the listing]:FORMAT:((text\:"Plain text"
+markdown\:"Markdown list"
+markdown-table\:"Markdown table"
+json\:"Pretty JSON"
+yaml\:"YAML"
+csv\:"CSV"
+urls\:"One base URL per line (pipe-friendly)"))' \
+'--format=[Output format for the listing]:FORMAT:((text\:"Plain text"
+markdown\:"Markdown list"
+markdown-table\:"Markdown table"
+json\:"Pretty JSON"
+yaml\:"YAML"
+csv\:"CSV"
+urls\:"One base URL per line (pipe-friendly)"))' \
+'--tags=[Filter by tags (comma/semicolon separated, match-any)]:tag1,tag2:_default' \
+'-o[Open each listed Discourse base URL in a browser tab/window]' \
+'--open[Open each listed Discourse base URL in a browser tab/window]' \
+'-v[Include empty results and verbose listing details where supported]' \
+'--verbose[Include empty results and verbose listing details where supported]' \
+'-h[Print help (see more with '\''--help'\'')]' \
+'--help[Print help (see more with '\''--help'\'')]' \
 ":: :_dsc__list_commands" \
 "*::: :->list" \
 && ret=0
@@ -159,31 +187,32 @@ esac
 ;;
 (add)
 _arguments "${_arguments_options[@]}" : \
-'-i[]' \
-'--interactive[]' \
+'-i[Prompt for additional optional fields while adding]' \
+'--interactive[Prompt for additional optional fields while adding]' \
 '-h[Print help]' \
 '--help[Print help]' \
-':names:_default' \
+':names -- Comma-separated discourse names to add:_default' \
 && ret=0
 ;;
 (import)
 _arguments "${_arguments_options[@]}" : \
 '-h[Print help]' \
 '--help[Print help]' \
-'::path:_files' \
+'::path -- Path to import input (text/CSV). Reads stdin when omitted:_files' \
 && ret=0
 ;;
 (update)
 _arguments "${_arguments_options[@]}" : \
-'-m+[]:MAX:_default' \
-'--max=[]:MAX:_default' \
-'-p[]' \
-'--parallel[]' \
-'-g[]' \
-'--post-changelog[]' \
+'-m+[Maximum workers when parallel mode is enabled]:MAX:_default' \
+'--max=[Maximum workers when parallel mode is enabled]:MAX:_default' \
+'-p[Parallel update mode (disabled for '\''update all'\'')]' \
+'--parallel[Parallel update mode (disabled for '\''update all'\'')]' \
+'--no-changelog[Disable changelog posting (posting prompt is on by default)]' \
+'-y[Auto-confirm changelog posting prompt (non-interactive mode)]' \
+'--yes[Auto-confirm changelog posting prompt (non-interactive mode)]' \
 '-h[Print help]' \
 '--help[Print help]' \
-':name:_dsc_discourse_names' \
+':name -- Discourse name, or '\''all'\'' to update every configured Discourse:_default' \
 && ret=0
 ;;
 (emoji)
@@ -204,22 +233,26 @@ _arguments "${_arguments_options[@]}" : \
 _arguments "${_arguments_options[@]}" : \
 '-h[Print help]' \
 '--help[Print help]' \
-':discourse:_default' \
-':emoji_path:_files' \
-'::emoji_name:_default' \
+':discourse -- Discourse name:_default' \
+':emoji_path -- Local file or directory path:_files' \
+'::emoji_name -- Optional emoji name (file uploads only):_default' \
 && ret=0
 ;;
 (list)
 _arguments "${_arguments_options[@]}" : \
-'-f+[]:FORMAT:(text json yaml)' \
-'--format=[]:FORMAT:(text json yaml)' \
-'-v[]' \
-'--verbose[]' \
-'-i[]' \
-'--inline[]' \
-'-h[Print help]' \
-'--help[Print help]' \
-':discourse:_default' \
+'-f+[Output format]:FORMAT:((text\:"Plain text"
+json\:"Pretty JSON"
+yaml\:"YAML"))' \
+'--format=[Output format]:FORMAT:((text\:"Plain text"
+json\:"Pretty JSON"
+yaml\:"YAML"))' \
+'-v[Include additional fields where supported]' \
+'--verbose[Include additional fields where supported]' \
+'-i[Render inline images when terminal protocol support is available]' \
+'--inline[Render inline images when terminal protocol support is available]' \
+'-h[Print help (see more with '\''--help'\'')]' \
+'--help[Print help (see more with '\''--help'\'')]' \
+':discourse -- Discourse name:_default' \
 && ret=0
 ;;
 (help)
@@ -272,29 +305,29 @@ _arguments "${_arguments_options[@]}" : \
 _arguments "${_arguments_options[@]}" : \
 '-h[Print help]' \
 '--help[Print help]' \
-':discourse:_default' \
-':topic_id:_default' \
-'::local_path:_files' \
+':discourse -- Discourse name:_default' \
+':topic_id -- Topic ID:_default' \
+'::local_path -- Destination file or directory (auto-derived when omitted):_files' \
 && ret=0
 ;;
 (push)
 _arguments "${_arguments_options[@]}" : \
 '-h[Print help]' \
 '--help[Print help]' \
-':discourse:_default' \
-':local_path:_files' \
-':topic_id:_default' \
+':discourse -- Discourse name:_default' \
+':local_path -- Local Markdown file path:_files' \
+':topic_id -- Topic ID:_default' \
 && ret=0
 ;;
 (sync)
 _arguments "${_arguments_options[@]}" : \
-'-y[]' \
-'--yes[]' \
+'-y[Skip sync confirmation prompt]' \
+'--yes[Skip sync confirmation prompt]' \
 '-h[Print help]' \
 '--help[Print help]' \
-':discourse:_default' \
-':topic_id:_default' \
-':local_path:_files' \
+':discourse -- Discourse name:_default' \
+':topic_id -- Topic ID:_default' \
+':local_path -- Local Markdown file path:_files' \
 && ret=0
 ;;
 (help)
@@ -349,42 +382,46 @@ _arguments "${_arguments_options[@]}" : \
         case $line[1] in
             (list)
 _arguments "${_arguments_options[@]}" : \
-'-f+[]:FORMAT:(text json yaml)' \
-'--format=[]:FORMAT:(text json yaml)' \
-'-v[]' \
-'--verbose[]' \
-'--tree[]' \
-'-h[Print help]' \
-'--help[Print help]' \
-':discourse:_default' \
+'-f+[Output format]:FORMAT:((text\:"Plain text"
+json\:"Pretty JSON"
+yaml\:"YAML"))' \
+'--format=[Output format]:FORMAT:((text\:"Plain text"
+json\:"Pretty JSON"
+yaml\:"YAML"))' \
+'-v[Include additional fields where supported]' \
+'--verbose[Include additional fields where supported]' \
+'--tree[Show category hierarchy tree]' \
+'-h[Print help (see more with '\''--help'\'')]' \
+'--help[Print help (see more with '\''--help'\'')]' \
+':discourse -- Discourse name:_default' \
 && ret=0
 ;;
 (copy)
 _arguments "${_arguments_options[@]}" : \
-'-t+[]:TARGET:_default' \
-'--target=[]:TARGET:_default' \
+'-t+[Target discourse name (defaults to source when omitted)]:TARGET:_default' \
+'--target=[Target discourse name (defaults to source when omitted)]:TARGET:_default' \
 '-h[Print help]' \
 '--help[Print help]' \
-':discourse:_default' \
-':category_id:_default' \
+':discourse -- Source discourse name:_default' \
+':category -- Category ID or slug:_default' \
 && ret=0
 ;;
 (pull)
 _arguments "${_arguments_options[@]}" : \
 '-h[Print help]' \
 '--help[Print help]' \
-':discourse:_default' \
-':category_id:_default' \
-'::local_path:_files' \
+':discourse -- Discourse name:_default' \
+':category -- Category ID or slug:_default' \
+'::local_path -- Destination directory (auto-derived when omitted):_files' \
 && ret=0
 ;;
 (push)
 _arguments "${_arguments_options[@]}" : \
 '-h[Print help]' \
 '--help[Print help]' \
-':discourse:_default' \
-':local_path:_files' \
-':category_id:_default' \
+':discourse -- Discourse name:_default' \
+':local_path -- Local directory containing Markdown files:_files' \
+':category -- Category ID or slug:_default' \
 && ret=0
 ;;
 (help)
@@ -443,43 +480,53 @@ _arguments "${_arguments_options[@]}" : \
         case $line[1] in
             (list)
 _arguments "${_arguments_options[@]}" : \
-'-f+[]:FORMAT:(text json yaml)' \
-'--format=[]:FORMAT:(text json yaml)' \
-'-v[]' \
-'--verbose[]' \
-'-h[Print help]' \
-'--help[Print help]' \
-':discourse:_default' \
+'-f+[Output format]:FORMAT:((text\:"Plain text"
+json\:"Pretty JSON"
+yaml\:"YAML"))' \
+'--format=[Output format]:FORMAT:((text\:"Plain text"
+json\:"Pretty JSON"
+yaml\:"YAML"))' \
+'-v[Include additional fields where supported]' \
+'--verbose[Include additional fields where supported]' \
+'-h[Print help (see more with '\''--help'\'')]' \
+'--help[Print help (see more with '\''--help'\'')]' \
+':discourse -- Discourse name:_default' \
 && ret=0
 ;;
 (info)
 _arguments "${_arguments_options[@]}" : \
-'-f+[]:FORMAT:(json yaml)' \
-'--format=[]:FORMAT:(json yaml)' \
-'-h[Print help]' \
-'--help[Print help]' \
-':discourse:_default' \
-':group:_default' \
+'-f+[Output format]:FORMAT:((json\:"Pretty JSON"
+yaml\:"YAML"))' \
+'--format=[Output format]:FORMAT:((json\:"Pretty JSON"
+yaml\:"YAML"))' \
+'-h[Print help (see more with '\''--help'\'')]' \
+'--help[Print help (see more with '\''--help'\'')]' \
+':discourse -- Discourse name:_default' \
+':group -- Group ID:_default' \
 && ret=0
 ;;
 (members)
 _arguments "${_arguments_options[@]}" : \
-'-f+[]:FORMAT:(json yaml)' \
-'--format=[]:FORMAT:(json yaml)' \
-'-h[Print help]' \
-'--help[Print help]' \
-':discourse:_default' \
-':group:_default' \
+'-f+[Output format]:FORMAT:((text\:"Plain text"
+json\:"Pretty JSON"
+yaml\:"YAML"))' \
+'--format=[Output format]:FORMAT:((text\:"Plain text"
+json\:"Pretty JSON"
+yaml\:"YAML"))' \
+'-h[Print help (see more with '\''--help'\'')]' \
+'--help[Print help (see more with '\''--help'\'')]' \
+':discourse -- Discourse name:_default' \
+':group -- Group ID:_default' \
 && ret=0
 ;;
 (copy)
 _arguments "${_arguments_options[@]}" : \
-'-t+[]:TARGET:_default' \
-'--target=[]:TARGET:_default' \
+'-t+[Target discourse name (defaults to source when omitted)]:TARGET:_default' \
+'--target=[Target discourse name (defaults to source when omitted)]:TARGET:_default' \
 '-h[Print help]' \
 '--help[Print help]' \
-':discourse:_default' \
-':group:_default' \
+':discourse -- Source discourse name:_default' \
+':group -- Group ID:_default' \
 && ret=0
 ;;
 (help)
@@ -540,26 +587,38 @@ _arguments "${_arguments_options[@]}" : \
 _arguments "${_arguments_options[@]}" : \
 '-h[Print help]' \
 '--help[Print help]' \
-':discourse:_default' \
+':discourse -- Discourse name:_default' \
 && ret=0
 ;;
 (list)
 _arguments "${_arguments_options[@]}" : \
-'-f+[]:FORMAT:(text markdown markdown-table json yaml csv)' \
-'--format=[]:FORMAT:(text markdown markdown-table json yaml csv)' \
-'-v[]' \
-'--verbose[]' \
-'-h[Print help]' \
-'--help[Print help]' \
-':discourse:_default' \
+'-f+[Output format]:FORMAT:((text\:"Plain text"
+markdown\:"Markdown list"
+markdown-table\:"Markdown table"
+json\:"Pretty JSON"
+yaml\:"YAML"
+csv\:"CSV"
+urls\:"One base URL per line (pipe-friendly)"))' \
+'--format=[Output format]:FORMAT:((text\:"Plain text"
+markdown\:"Markdown list"
+markdown-table\:"Markdown table"
+json\:"Pretty JSON"
+yaml\:"YAML"
+csv\:"CSV"
+urls\:"One base URL per line (pipe-friendly)"))' \
+'-v[Include additional fields where supported]' \
+'--verbose[Include additional fields where supported]' \
+'-h[Print help (see more with '\''--help'\'')]' \
+'--help[Print help (see more with '\''--help'\'')]' \
+':discourse -- Discourse name:_default' \
 && ret=0
 ;;
 (restore)
 _arguments "${_arguments_options[@]}" : \
 '-h[Print help]' \
 '--help[Print help]' \
-':discourse:_default' \
-':backup_path:_default' \
+':discourse -- Discourse name:_default' \
+':backup_path -- Backup filename/path on the target system:_default' \
 && ret=0
 ;;
 (help)
@@ -614,31 +673,35 @@ _arguments "${_arguments_options[@]}" : \
         case $line[1] in
             (list)
 _arguments "${_arguments_options[@]}" : \
-'-f+[]:FORMAT:(text json yaml)' \
-'--format=[]:FORMAT:(text json yaml)' \
-'-v[]' \
-'--verbose[]' \
-'-h[Print help]' \
-'--help[Print help]' \
-':discourse:_default' \
+'-f+[Output format]:FORMAT:((text\:"Plain text"
+json\:"Pretty JSON"
+yaml\:"YAML"))' \
+'--format=[Output format]:FORMAT:((text\:"Plain text"
+json\:"Pretty JSON"
+yaml\:"YAML"))' \
+'-v[Include additional fields where supported]' \
+'--verbose[Include additional fields where supported]' \
+'-h[Print help (see more with '\''--help'\'')]' \
+'--help[Print help (see more with '\''--help'\'')]' \
+':discourse -- Discourse name:_default' \
 && ret=0
 ;;
 (pull)
 _arguments "${_arguments_options[@]}" : \
 '-h[Print help]' \
 '--help[Print help]' \
-':discourse:_default' \
-':palette_id:_default' \
-'::local_path:_files' \
+':discourse -- Discourse name:_default' \
+':palette_id -- Palette ID:_default' \
+'::local_path -- Destination file path (auto-derived when omitted):_files' \
 && ret=0
 ;;
 (push)
 _arguments "${_arguments_options[@]}" : \
 '-h[Print help]' \
 '--help[Print help]' \
-':discourse:_default' \
-':local_path:_files' \
-'::palette_id:_default' \
+':discourse -- Discourse name:_default' \
+':local_path -- Local JSON file path:_files' \
+'::palette_id -- Palette ID to update (creates a new palette when omitted):_default' \
 && ret=0
 ;;
 (help)
@@ -693,29 +756,33 @@ _arguments "${_arguments_options[@]}" : \
         case $line[1] in
             (list)
 _arguments "${_arguments_options[@]}" : \
-'-f+[]:FORMAT:(text json yaml)' \
-'--format=[]:FORMAT:(text json yaml)' \
-'-v[]' \
-'--verbose[]' \
-'-h[Print help]' \
-'--help[Print help]' \
-':discourse:_default' \
+'-f+[Output format]:FORMAT:((text\:"Plain text"
+json\:"Pretty JSON"
+yaml\:"YAML"))' \
+'--format=[Output format]:FORMAT:((text\:"Plain text"
+json\:"Pretty JSON"
+yaml\:"YAML"))' \
+'-v[Include additional fields where supported]' \
+'--verbose[Include additional fields where supported]' \
+'-h[Print help (see more with '\''--help'\'')]' \
+'--help[Print help (see more with '\''--help'\'')]' \
+':discourse -- Discourse name:_default' \
 && ret=0
 ;;
 (install)
 _arguments "${_arguments_options[@]}" : \
 '-h[Print help]' \
 '--help[Print help]' \
-':discourse:_default' \
-':url:_default' \
+':discourse -- Discourse name:_default' \
+':url -- Plugin repository URL:_default' \
 && ret=0
 ;;
 (remove)
 _arguments "${_arguments_options[@]}" : \
 '-h[Print help]' \
 '--help[Print help]' \
-':discourse:_default' \
-':name:_default' \
+':discourse -- Discourse name:_default' \
+':name -- Plugin name:_default' \
 && ret=0
 ;;
 (help)
@@ -770,29 +837,33 @@ _arguments "${_arguments_options[@]}" : \
         case $line[1] in
             (list)
 _arguments "${_arguments_options[@]}" : \
-'-f+[]:FORMAT:(text json yaml)' \
-'--format=[]:FORMAT:(text json yaml)' \
-'-v[]' \
-'--verbose[]' \
-'-h[Print help]' \
-'--help[Print help]' \
-':discourse:_default' \
+'-f+[Output format]:FORMAT:((text\:"Plain text"
+json\:"Pretty JSON"
+yaml\:"YAML"))' \
+'--format=[Output format]:FORMAT:((text\:"Plain text"
+json\:"Pretty JSON"
+yaml\:"YAML"))' \
+'-v[Include additional fields where supported]' \
+'--verbose[Include additional fields where supported]' \
+'-h[Print help (see more with '\''--help'\'')]' \
+'--help[Print help (see more with '\''--help'\'')]' \
+':discourse -- Discourse name:_default' \
 && ret=0
 ;;
 (install)
 _arguments "${_arguments_options[@]}" : \
 '-h[Print help]' \
 '--help[Print help]' \
-':discourse:_default' \
-':url:_default' \
+':discourse -- Discourse name:_default' \
+':url -- Theme repository URL:_default' \
 && ret=0
 ;;
 (remove)
 _arguments "${_arguments_options[@]}" : \
 '-h[Print help]' \
 '--help[Print help]' \
-':discourse:_default' \
-':name:_default' \
+':discourse -- Discourse name:_default' \
+':name -- Theme name:_default' \
 && ret=0
 ;;
 (help)
@@ -847,11 +918,11 @@ _arguments "${_arguments_options[@]}" : \
         case $line[1] in
             (set)
 _arguments "${_arguments_options[@]}" : \
-'--tags=[]:tag1,tag2:_default' \
+'--tags=[Optional tag filter (comma/semicolon separated, match-any)]:tag1,tag2:_default' \
 '-h[Print help]' \
 '--help[Print help]' \
-':setting:_default' \
-':value:_default' \
+':setting -- Setting key:_default' \
+':value -- Setting value:_default' \
 && ret=0
 ;;
 (help)
@@ -884,11 +955,13 @@ esac
 ;;
 (completions)
 _arguments "${_arguments_options[@]}" : \
-'-d+[]:DIR:_files' \
-'--dir=[]:DIR:_files' \
-'-h[Print help]' \
-'--help[Print help]' \
-':shell:(bash zsh fish)' \
+'-d+[Output directory. Prints to stdout when omitted]:DIR:_files' \
+'--dir=[Output directory. Prints to stdout when omitted]:DIR:_files' \
+'-h[Print help (see more with '\''--help'\'')]' \
+'--help[Print help (see more with '\''--help'\'')]' \
+':shell -- Target shell:((bash\:"Bash shell"
+zsh\:"Zsh shell"
+fish\:"Fish shell"))' \
 && ret=0
 ;;
 (help)
@@ -1203,21 +1276,21 @@ esac
 (( $+functions[_dsc_commands] )) ||
 _dsc_commands() {
     local commands; commands=(
-'list:' \
-'ls:' \
-'add:' \
-'import:' \
-'update:' \
-'emoji:' \
-'topic:' \
-'category:' \
-'group:' \
-'backup:' \
-'palette:' \
-'plugin:' \
-'theme:' \
-'setting:' \
-'completions:' \
+'list:List configured Discourses' \
+'ls:List configured Discourses' \
+'add:Add one or more Discourses to the config' \
+'import:Import Discourses from a file or stdin' \
+'update:Run remote OS + Discourse update workflow for one or all Discourses' \
+'emoji:Manage custom emoji' \
+'topic:Pull/push/sync topics as local Markdown' \
+'category:List/copy/pull/push categories' \
+'group:List/inspect/copy groups' \
+'backup:Create/list/restore backups' \
+'palette:List/pull/push color palettes' \
+'plugin:List/install/remove plugins' \
+'theme:List/install/remove themes' \
+'setting:Update site settings' \
+'completions:Generate shell completion scripts' \
 'help:Print this message or the help of the given subcommand(s)' \
     )
     _describe -t commands 'dsc commands' commands "$@"
@@ -1230,9 +1303,9 @@ _dsc__add_commands() {
 (( $+functions[_dsc__backup_commands] )) ||
 _dsc__backup_commands() {
     local commands; commands=(
-'create:' \
-'list:' \
-'restore:' \
+'create:Create a new backup' \
+'list:List backups' \
+'restore:Restore a backup' \
 'help:Print this message or the help of the given subcommand(s)' \
     )
     _describe -t commands 'dsc backup commands' commands "$@"
@@ -1245,9 +1318,9 @@ _dsc__backup__create_commands() {
 (( $+functions[_dsc__backup__help_commands] )) ||
 _dsc__backup__help_commands() {
     local commands; commands=(
-'create:' \
-'list:' \
-'restore:' \
+'create:Create a new backup' \
+'list:List backups' \
+'restore:Restore a backup' \
 'help:Print this message or the help of the given subcommand(s)' \
     )
     _describe -t commands 'dsc backup help commands' commands "$@"
@@ -1285,10 +1358,10 @@ _dsc__backup__restore_commands() {
 (( $+functions[_dsc__category_commands] )) ||
 _dsc__category_commands() {
     local commands; commands=(
-'list:' \
-'copy:' \
-'pull:' \
-'push:' \
+'list:List categories' \
+'copy:Copy a category to another Discourse' \
+'pull:Pull all topics from a category into local Markdown files' \
+'push:Push local Markdown files into a category' \
 'help:Print this message or the help of the given subcommand(s)' \
     )
     _describe -t commands 'dsc category commands' commands "$@"
@@ -1301,10 +1374,10 @@ _dsc__category__copy_commands() {
 (( $+functions[_dsc__category__help_commands] )) ||
 _dsc__category__help_commands() {
     local commands; commands=(
-'list:' \
-'copy:' \
-'pull:' \
-'push:' \
+'list:List categories' \
+'copy:Copy a category to another Discourse' \
+'pull:Pull all topics from a category into local Markdown files' \
+'push:Push local Markdown files into a category' \
 'help:Print this message or the help of the given subcommand(s)' \
     )
     _describe -t commands 'dsc category help commands' commands "$@"
@@ -1357,7 +1430,7 @@ _dsc__completions_commands() {
 (( $+functions[_dsc__emoji_commands] )) ||
 _dsc__emoji_commands() {
     local commands; commands=(
-'add:' \
+'add:Upload one emoji file, or bulk-upload from a directory' \
 'list:List custom emojis on a Discourse' \
 'help:Print this message or the help of the given subcommand(s)' \
     )
@@ -1371,7 +1444,7 @@ _dsc__emoji__add_commands() {
 (( $+functions[_dsc__emoji__help_commands] )) ||
 _dsc__emoji__help_commands() {
     local commands; commands=(
-'add:' \
+'add:Upload one emoji file, or bulk-upload from a directory' \
 'list:List custom emojis on a Discourse' \
 'help:Print this message or the help of the given subcommand(s)' \
     )
@@ -1400,10 +1473,10 @@ _dsc__emoji__list_commands() {
 (( $+functions[_dsc__group_commands] )) ||
 _dsc__group_commands() {
     local commands; commands=(
-'list:' \
-'info:' \
-'members:' \
-'copy:' \
+'list:List groups' \
+'info:Show group details' \
+'members:List members of a group' \
+'copy:Copy a group to another Discourse' \
 'help:Print this message or the help of the given subcommand(s)' \
     )
     _describe -t commands 'dsc group commands' commands "$@"
@@ -1416,10 +1489,10 @@ _dsc__group__copy_commands() {
 (( $+functions[_dsc__group__help_commands] )) ||
 _dsc__group__help_commands() {
     local commands; commands=(
-'list:' \
-'info:' \
-'members:' \
-'copy:' \
+'list:List groups' \
+'info:Show group details' \
+'members:List members of a group' \
+'copy:Copy a group to another Discourse' \
 'help:Print this message or the help of the given subcommand(s)' \
     )
     _describe -t commands 'dsc group help commands' commands "$@"
@@ -1467,20 +1540,20 @@ _dsc__group__members_commands() {
 (( $+functions[_dsc__help_commands] )) ||
 _dsc__help_commands() {
     local commands; commands=(
-'list:' \
-'add:' \
-'import:' \
-'update:' \
-'emoji:' \
-'topic:' \
-'category:' \
-'group:' \
-'backup:' \
-'palette:' \
-'plugin:' \
-'theme:' \
-'setting:' \
-'completions:' \
+'list:List configured Discourses' \
+'add:Add one or more Discourses to the config' \
+'import:Import Discourses from a file or stdin' \
+'update:Run remote OS + Discourse update workflow for one or all Discourses' \
+'emoji:Manage custom emoji' \
+'topic:Pull/push/sync topics as local Markdown' \
+'category:List/copy/pull/push categories' \
+'group:List/inspect/copy groups' \
+'backup:Create/list/restore backups' \
+'palette:List/pull/push color palettes' \
+'plugin:List/install/remove plugins' \
+'theme:List/install/remove themes' \
+'setting:Update site settings' \
+'completions:Generate shell completion scripts' \
 'help:Print this message or the help of the given subcommand(s)' \
     )
     _describe -t commands 'dsc help commands' commands "$@"
@@ -1493,9 +1566,9 @@ _dsc__help__add_commands() {
 (( $+functions[_dsc__help__backup_commands] )) ||
 _dsc__help__backup_commands() {
     local commands; commands=(
-'create:' \
-'list:' \
-'restore:' \
+'create:Create a new backup' \
+'list:List backups' \
+'restore:Restore a backup' \
     )
     _describe -t commands 'dsc help backup commands' commands "$@"
 }
@@ -1517,10 +1590,10 @@ _dsc__help__backup__restore_commands() {
 (( $+functions[_dsc__help__category_commands] )) ||
 _dsc__help__category_commands() {
     local commands; commands=(
-'list:' \
-'copy:' \
-'pull:' \
-'push:' \
+'list:List categories' \
+'copy:Copy a category to another Discourse' \
+'pull:Pull all topics from a category into local Markdown files' \
+'push:Push local Markdown files into a category' \
     )
     _describe -t commands 'dsc help category commands' commands "$@"
 }
@@ -1552,7 +1625,7 @@ _dsc__help__completions_commands() {
 (( $+functions[_dsc__help__emoji_commands] )) ||
 _dsc__help__emoji_commands() {
     local commands; commands=(
-'add:' \
+'add:Upload one emoji file, or bulk-upload from a directory' \
 'list:List custom emojis on a Discourse' \
     )
     _describe -t commands 'dsc help emoji commands' commands "$@"
@@ -1570,10 +1643,10 @@ _dsc__help__emoji__list_commands() {
 (( $+functions[_dsc__help__group_commands] )) ||
 _dsc__help__group_commands() {
     local commands; commands=(
-'list:' \
-'info:' \
-'members:' \
-'copy:' \
+'list:List groups' \
+'info:Show group details' \
+'members:List members of a group' \
+'copy:Copy a group to another Discourse' \
     )
     _describe -t commands 'dsc help group commands' commands "$@"
 }
@@ -1622,9 +1695,9 @@ _dsc__help__list__tidy_commands() {
 (( $+functions[_dsc__help__palette_commands] )) ||
 _dsc__help__palette_commands() {
     local commands; commands=(
-'list:' \
-'pull:' \
-'push:' \
+'list:List color palettes' \
+'pull:Pull a palette to local JSON' \
+'push:Push local JSON to create or update a palette' \
     )
     _describe -t commands 'dsc help palette commands' commands "$@"
 }
@@ -1646,9 +1719,9 @@ _dsc__help__palette__push_commands() {
 (( $+functions[_dsc__help__plugin_commands] )) ||
 _dsc__help__plugin_commands() {
     local commands; commands=(
-'list:' \
-'install:' \
-'remove:' \
+'list:List installed plugins' \
+'install:Install a plugin from URL' \
+'remove:Remove a plugin by name' \
     )
     _describe -t commands 'dsc help plugin commands' commands "$@"
 }
@@ -1670,7 +1743,7 @@ _dsc__help__plugin__remove_commands() {
 (( $+functions[_dsc__help__setting_commands] )) ||
 _dsc__help__setting_commands() {
     local commands; commands=(
-'set:' \
+'set:Set a site setting across configured Discourses (optionally filtered by tags)' \
     )
     _describe -t commands 'dsc help setting commands' commands "$@"
 }
@@ -1682,9 +1755,9 @@ _dsc__help__setting__set_commands() {
 (( $+functions[_dsc__help__theme_commands] )) ||
 _dsc__help__theme_commands() {
     local commands; commands=(
-'list:' \
-'install:' \
-'remove:' \
+'list:List installed themes' \
+'install:Install a theme from URL' \
+'remove:Remove a theme by name' \
     )
     _describe -t commands 'dsc help theme commands' commands "$@"
 }
@@ -1706,9 +1779,9 @@ _dsc__help__theme__remove_commands() {
 (( $+functions[_dsc__help__topic_commands] )) ||
 _dsc__help__topic_commands() {
     local commands; commands=(
-'pull:' \
-'push:' \
-'sync:' \
+'pull:Pull a topic to a local Markdown file' \
+'push:Push a local Markdown file to a topic' \
+'sync:Sync a topic and local Markdown file using newest timestamp' \
     )
     _describe -t commands 'dsc help topic commands' commands "$@"
 }
@@ -1771,9 +1844,9 @@ _dsc__list__tidy_commands() {
 (( $+functions[_dsc__palette_commands] )) ||
 _dsc__palette_commands() {
     local commands; commands=(
-'list:' \
-'pull:' \
-'push:' \
+'list:List color palettes' \
+'pull:Pull a palette to local JSON' \
+'push:Push local JSON to create or update a palette' \
 'help:Print this message or the help of the given subcommand(s)' \
     )
     _describe -t commands 'dsc palette commands' commands "$@"
@@ -1781,9 +1854,9 @@ _dsc__palette_commands() {
 (( $+functions[_dsc__palette__help_commands] )) ||
 _dsc__palette__help_commands() {
     local commands; commands=(
-'list:' \
-'pull:' \
-'push:' \
+'list:List color palettes' \
+'pull:Pull a palette to local JSON' \
+'push:Push local JSON to create or update a palette' \
 'help:Print this message or the help of the given subcommand(s)' \
     )
     _describe -t commands 'dsc palette help commands' commands "$@"
@@ -1826,9 +1899,9 @@ _dsc__palette__push_commands() {
 (( $+functions[_dsc__plugin_commands] )) ||
 _dsc__plugin_commands() {
     local commands; commands=(
-'list:' \
-'install:' \
-'remove:' \
+'list:List installed plugins' \
+'install:Install a plugin from URL' \
+'remove:Remove a plugin by name' \
 'help:Print this message or the help of the given subcommand(s)' \
     )
     _describe -t commands 'dsc plugin commands' commands "$@"
@@ -1836,9 +1909,9 @@ _dsc__plugin_commands() {
 (( $+functions[_dsc__plugin__help_commands] )) ||
 _dsc__plugin__help_commands() {
     local commands; commands=(
-'list:' \
-'install:' \
-'remove:' \
+'list:List installed plugins' \
+'install:Install a plugin from URL' \
+'remove:Remove a plugin by name' \
 'help:Print this message or the help of the given subcommand(s)' \
     )
     _describe -t commands 'dsc plugin help commands' commands "$@"
@@ -1881,7 +1954,7 @@ _dsc__plugin__remove_commands() {
 (( $+functions[_dsc__setting_commands] )) ||
 _dsc__setting_commands() {
     local commands; commands=(
-'set:' \
+'set:Set a site setting across configured Discourses (optionally filtered by tags)' \
 'help:Print this message or the help of the given subcommand(s)' \
     )
     _describe -t commands 'dsc setting commands' commands "$@"
@@ -1889,7 +1962,7 @@ _dsc__setting_commands() {
 (( $+functions[_dsc__setting__help_commands] )) ||
 _dsc__setting__help_commands() {
     local commands; commands=(
-'set:' \
+'set:Set a site setting across configured Discourses (optionally filtered by tags)' \
 'help:Print this message or the help of the given subcommand(s)' \
     )
     _describe -t commands 'dsc setting help commands' commands "$@"
@@ -1912,9 +1985,9 @@ _dsc__setting__set_commands() {
 (( $+functions[_dsc__theme_commands] )) ||
 _dsc__theme_commands() {
     local commands; commands=(
-'list:' \
-'install:' \
-'remove:' \
+'list:List installed themes' \
+'install:Install a theme from URL' \
+'remove:Remove a theme by name' \
 'help:Print this message or the help of the given subcommand(s)' \
     )
     _describe -t commands 'dsc theme commands' commands "$@"
@@ -1922,9 +1995,9 @@ _dsc__theme_commands() {
 (( $+functions[_dsc__theme__help_commands] )) ||
 _dsc__theme__help_commands() {
     local commands; commands=(
-'list:' \
-'install:' \
-'remove:' \
+'list:List installed themes' \
+'install:Install a theme from URL' \
+'remove:Remove a theme by name' \
 'help:Print this message or the help of the given subcommand(s)' \
     )
     _describe -t commands 'dsc theme help commands' commands "$@"
@@ -1967,9 +2040,9 @@ _dsc__theme__remove_commands() {
 (( $+functions[_dsc__topic_commands] )) ||
 _dsc__topic_commands() {
     local commands; commands=(
-'pull:' \
-'push:' \
-'sync:' \
+'pull:Pull a topic to a local Markdown file' \
+'push:Push a local Markdown file to a topic' \
+'sync:Sync a topic and local Markdown file using newest timestamp' \
 'help:Print this message or the help of the given subcommand(s)' \
     )
     _describe -t commands 'dsc topic commands' commands "$@"
@@ -1977,9 +2050,9 @@ _dsc__topic_commands() {
 (( $+functions[_dsc__topic__help_commands] )) ||
 _dsc__topic__help_commands() {
     local commands; commands=(
-'pull:' \
-'push:' \
-'sync:' \
+'pull:Pull a topic to a local Markdown file' \
+'push:Push a local Markdown file to a topic' \
+'sync:Sync a topic and local Markdown file using newest timestamp' \
 'help:Print this message or the help of the given subcommand(s)' \
     )
     _describe -t commands 'dsc topic help commands' commands "$@"

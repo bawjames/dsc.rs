@@ -24,6 +24,9 @@ pub enum Commands {
         /// Filter by tags (comma/semicolon separated, match-any).
         #[arg(long, value_name = "tag1,tag2")]
         tags: Option<String>,
+        /// Open each listed Discourse base URL in a browser tab/window.
+        #[arg(long, short = 'o')]
+        open: bool,
         /// Include empty results and verbose listing details where supported.
         #[arg(long, short = 'v')]
         verbose: bool,
@@ -444,6 +447,9 @@ pub enum OutputFormat {
     Yaml,
     /// CSV.
     Csv,
+    /// One base URL per line (pipe-friendly).
+    #[value(alias = "url")]
+    Urls,
 }
 
 #[derive(ValueEnum, Clone, Copy)]

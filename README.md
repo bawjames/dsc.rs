@@ -72,7 +72,8 @@ General form: `dsc [--config <path>] <command>`.
 
 For the complete command/flag surface, use `dsc --help` and `dsc <command> --help`.
 
-- List installs: `dsc list --format text|markdown|markdown-table|json|yaml|csv`
+- List installs: `dsc list --format text|markdown|markdown-table|json|yaml|csv|urls`
+- Open listed install URLs in browser tabs/windows: `dsc list --open [--tags alpha,beta]`
 - Tidy/sort config entries: `dsc list tidy`
 - Add installs: `dsc add forum-a,forum-b [--interactive]`
 - Import installs from file: `dsc import path/to/urls.txt` or `dsc import path/to/forums.csv`
@@ -186,6 +187,7 @@ Tips:
 - `dsc update all` stops at the first failure; `--parallel` is disabled for this command.
 - `all` is reserved for `dsc update all`.
 - `dsc list --tags` accepts comma or semicolon separators and matches any tag (case-insensitive).
+- `dsc list --format urls` prints one base URL per line, useful for piping (for example: `dsc list -f urls --tags alpha | xargs -n1 xdg-open`).
 - `dsc backup list --format` supports the same formats as `dsc list`.
 - `dsc emoji add` accepts a file or directory path. Directory uploads all `.png`, `.jpg`, `.jpeg`, `.gif`, `.svg` files using the filename stem as the emoji name.
 - `dsc emoji add`/`dsc emoji list` require an admin API key and username.

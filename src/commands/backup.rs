@@ -2,7 +2,7 @@ use crate::api::DiscourseClient;
 use crate::cli::OutputFormat;
 use crate::commands::common::{ensure_api_credentials, select_discourse};
 use crate::config::Config;
-use anyhow::Result;
+use anyhow::{Result, anyhow};
 use std::io;
 
 pub fn backup_create(config: &Config, discourse_name: &str) -> Result<()> {
@@ -128,6 +128,11 @@ pub fn backup_list(
                 writer.write_record([filename, created_at, &size, &location])?;
             }
             writer.flush()?;
+        }
+        OutputFormat::Urls => {
+            return Err(anyhow!(
+                "'backup list' does not support '--format urls'; use text/markdown/json/yaml/csv"
+            ));
         }
     }
     Ok(())

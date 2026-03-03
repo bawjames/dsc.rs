@@ -560,11 +560,11 @@ _dsc() {
             fi
             case "${prev}" in
                 --format)
-                    COMPREPLY=($(compgen -W "text markdown markdown-table json yaml csv" -- "${cur}"))
+                    COMPREPLY=($(compgen -W "text markdown markdown-table json yaml csv urls" -- "${cur}"))
                     return 0
                     ;;
                 -f)
-                    COMPREPLY=($(compgen -W "text markdown markdown-table json yaml csv" -- "${cur}"))
+                    COMPREPLY=($(compgen -W "text markdown markdown-table json yaml csv urls" -- "${cur}"))
                     return 0
                     ;;
                 *)
@@ -603,7 +603,7 @@ _dsc() {
             return 0
             ;;
         dsc__category__copy)
-            opts="-t -h --target --help <DISCOURSE> <CATEGORY_ID>"
+            opts="-t -h --target --help <DISCOURSE> <CATEGORY>"
             if [[ ${cur} == -* || ${COMP_CWORD} -eq 3 ]] ; then
                 COMPREPLY=( $(compgen -W "${opts}" -- "${cur}") )
                 return 0
@@ -731,7 +731,7 @@ _dsc() {
             return 0
             ;;
         dsc__category__pull)
-            opts="-h --help <DISCOURSE> <CATEGORY_ID> [LOCAL_PATH]"
+            opts="-h --help <DISCOURSE> <CATEGORY> [LOCAL_PATH]"
             if [[ ${cur} == -* || ${COMP_CWORD} -eq 3 ]] ; then
                 COMPREPLY=( $(compgen -W "${opts}" -- "${cur}") )
                 return 0
@@ -745,7 +745,7 @@ _dsc() {
             return 0
             ;;
         dsc__category__push)
-            opts="-h --help <DISCOURSE> <LOCAL_PATH> <CATEGORY_ID>"
+            opts="-h --help <DISCOURSE> <LOCAL_PATH> <CATEGORY>"
             if [[ ${cur} == -* || ${COMP_CWORD} -eq 3 ]] ; then
                 COMPREPLY=( $(compgen -W "${opts}" -- "${cur}") )
                 return 0
@@ -1058,11 +1058,11 @@ _dsc() {
             fi
             case "${prev}" in
                 --format)
-                    COMPREPLY=($(compgen -W "json yaml" -- "${cur}"))
+                    COMPREPLY=($(compgen -W "text json yaml" -- "${cur}"))
                     return 0
                     ;;
                 -f)
-                    COMPREPLY=($(compgen -W "json yaml" -- "${cur}"))
+                    COMPREPLY=($(compgen -W "text json yaml" -- "${cur}"))
                     return 0
                     ;;
                 *)
@@ -1689,18 +1689,18 @@ _dsc() {
             return 0
             ;;
         dsc__list)
-            opts="-f -v -h --format --tags --verbose --help tidy help"
+            opts="-f -o -v -h --format --tags --open --verbose --help tidy help"
             if [[ ${cur} == -* || ${COMP_CWORD} -eq 2 ]] ; then
                 COMPREPLY=( $(compgen -W "${opts}" -- "${cur}") )
                 return 0
             fi
             case "${prev}" in
                 --format)
-                    COMPREPLY=($(compgen -W "text markdown markdown-table json yaml csv" -- "${cur}"))
+                    COMPREPLY=($(compgen -W "text markdown markdown-table json yaml csv urls" -- "${cur}"))
                     return 0
                     ;;
                 -f)
-                    COMPREPLY=($(compgen -W "text markdown markdown-table json yaml csv" -- "${cur}"))
+                    COMPREPLY=($(compgen -W "text markdown markdown-table json yaml csv urls" -- "${cur}"))
                     return 0
                     ;;
                 --tags)
@@ -2373,7 +2373,7 @@ _dsc() {
             return 0
             ;;
         dsc__update)
-            opts="-p -m -g -h --parallel --max --post-changelog --help <NAME>"
+            opts="-p -m -y -h --parallel --max --no-changelog --yes --help <NAME>"
             if [[ ${cur} == -* || ${COMP_CWORD} -eq 2 ]] ; then
                 COMPREPLY=( $(compgen -W "${opts}" -- "${cur}") )
                 return 0

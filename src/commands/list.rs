@@ -1,10 +1,11 @@
 use crate::cli::OutputFormat;
 use crate::commands::common::{fetch_fullname_from_url, parse_tags};
 use crate::config::{Config, DiscourseConfig, save_config};
-use anyhow::Result;
+use anyhow::{Context, Result, anyhow};
 use std::collections::HashMap;
 use std::io;
 use std::path::Path;
+use std::process::Command;
 
 pub fn list_tidy(config_path: &Path, config: &mut Config) -> Result<()> {
     // Capture missing fields based on the loaded config *before* we insert placeholders.
@@ -81,6 +82,7 @@ pub fn list_discourses(
     config: &Config,
     format: OutputFormat,
     tags: Option<&str>,
+    open: bool,
     verbose: bool,
 ) -> Result<()> {
     let filter = tags.map(parse_tags).unwrap_or_default();
@@ -107,6 +109,10 @@ pub fn list_discourses(
         .iter()
         .filter(|d| matches_filter(d))
         .collect();
+
+    if open {
+        open_discourse_urls(&filtered)?;
+    }
 
     match format {
         OutputFormat::Text => {
@@ -159,6 +165,50 @@ pub fn list_discourses(
             }
             writer.flush()?;
         }
+        OutputFormat::Urls => {
+            for d in filtered.iter().copied() {
+                println!("{}", d.baseurl);
+            }
+        }
     }
     Ok(())
+}
+
+fn open_discourse_urls(discourses: &[&DiscourseConfig]) -> Result<()> {
+    for discourse in discourses {
+        open_url(&discourse.baseurl)
+            .with_context(|| format!("opening browser for '{}'", discourse.baseurl))?;
+    }
+    Ok(())
+}
+
+fn open_url(url: &str) -> Result<()> {
+    if url.trim().is_empty() {
+        return Err(anyhow!("cannot open empty base URL"));
+    }
+
+    let mut cmd = if let Ok(opener) = std::env::var("DSC_BROWSER_OPENER") {
+        let mut cmd = Command::new(opener);
+        cmd.arg(url);
+        cmd
+    } else if cfg!(target_os = "macos") {
+        let mut cmd = Command::new("open");
+        cmd.arg(url);
+        cmd
+    } else if cfg!(target_os = "windows") {
+        let mut cmd = Command::new("cmd");
+        cmd.args(["/C", "start", "", url]);
+        cmd
+    } else {
+        let mut cmd = Command::new("xdg-open");
+        cmd.arg(url);
+        cmd
+    };
+
+    let status = cmd.status().context("failed to launch browser opener")?;
+    if status.success() {
+        Ok(())
+    } else {
+        Err(anyhow!("browser opener exited with status {}", status))
+    }
 }

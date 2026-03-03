@@ -68,6 +68,60 @@ baseurl = "https://three.example"
 }
 
 #[test]
+fn list_urls_format_and_tags_are_pipe_friendly() {
+    vprintln("e2e_list_urls: list base urls line-by-line");
+    let dir = TempDir::new().expect("tempdir");
+    let config_path = write_temp_config(
+        &dir,
+        r#"[[discourse]]
+name = "one"
+baseurl = "https://one.example"
+tags = ["alpha", "beta"]
+
+[[discourse]]
+name = "two"
+baseurl = "https://two.example"
+tags = ["gamma"]
+
+[[discourse]]
+name = "three"
+baseurl = "https://three.example"
+"#,
+    );
+    let output = run_dsc(&["list", "--tags", "gamma", "-f", "urls"], &config_path);
+    assert!(output.status.success(), "list urls with tags failed");
+    let raw = String::from_utf8_lossy(&output.stdout);
+    assert_eq!(raw.trim(), "https://two.example");
+}
+
+#[test]
+fn list_open_uses_tag_filter() {
+    vprintln("e2e_list_open: open only matching tag urls");
+    let dir = TempDir::new().expect("tempdir");
+    let config_path = write_temp_config(
+        &dir,
+        r#"[[discourse]]
+name = "one"
+baseurl = "https://one.example"
+tags = ["alpha"]
+
+[[discourse]]
+name = "two"
+baseurl = "https://two.example"
+tags = ["gamma"]
+"#,
+    );
+    let output = run_dsc_env(
+        &["list", "--tags", "gamma", "--open", "-f", "urls"],
+        &config_path,
+        &[("DSC_BROWSER_OPENER", "true")],
+    );
+    assert!(output.status.success(), "list --open with tags failed");
+    let raw = String::from_utf8_lossy(&output.stdout);
+    assert_eq!(raw.trim(), "https://two.example");
+}
+
+#[test]
 fn list_tidy_sorts_inserts_placeholders_and_reports_missing() {
     vprintln("e2e_list_tidy: sorting config and inserting placeholders");
     let dir = TempDir::new().expect("tempdir");
