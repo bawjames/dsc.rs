@@ -1,8 +1,8 @@
 use crate::api::{CategoryInfo, DiscourseClient, TopicSummary};
 use crate::cli::ListFormat;
-use crate::commands::common::{ensure_api_credentials, select_discourse};
+use crate::commands::common::{ensure_api_credentials, not_found, select_discourse};
 use crate::config::Config;
-use crate::utils::{ensure_dir, read_markdown, slugify, write_markdown};
+use crate::utils::{ensure_dir, normalize_baseurl, read_markdown, slugify, write_markdown};
 use anyhow::{Context, Result, anyhow};
 use std::fs;
 use std::path::Path;
@@ -79,14 +79,19 @@ pub fn category_copy(
     let category = categories
         .into_iter()
         .find(|cat| cat.id == Some(category_id))
-        .ok_or_else(|| anyhow!("category not found: {}", category_id))?;
+        .ok_or_else(|| not_found("category", category_id))?;
     let mut copied = category.clone();
     copied.name = format!("Copy of {}", category.name);
     copied.slug = format!("{}-copy", category.slug);
     copied.id = None;
     let target_client = DiscourseClient::new(target_discourse)?;
     let new_id = target_client.create_category(&copied)?;
-    println!("Category copied successfully with new ID: {}", new_id);
+    let url = format!(
+        "{}/c/{}",
+        normalize_baseurl(&target_discourse.baseurl),
+        new_id
+    );
+    println!("{}", url);
     Ok(())
 }
 
@@ -124,7 +129,7 @@ pub fn category_pull(
         let filename = format!("{}.md", slugify(&topic.title));
         write_markdown(&dir.join(filename), &raw)?;
     }
-    println!("Category topics pulled to: {}", dir.display());
+    println!("{}", dir.display());
     Ok(())
 }
 
@@ -185,10 +190,8 @@ fn resolve_category_id(client: &DiscourseClient, category: &str) -> Result<u64> 
     let category = categories
         .into_iter()
         .find(|cat| cat.slug == slug)
-        .ok_or_else(|| anyhow!("category not found: {}", slug))?;
-    category
-        .id
-        .ok_or_else(|| anyhow!("category not found: {}", slug))
+        .ok_or_else(|| not_found("category", slug))?;
+    category.id.ok_or_else(|| not_found("category", slug))
 }
 
 fn flatten_categories(category: &CategoryInfo, out: &mut Vec<CategoryInfo>) {

@@ -24,7 +24,7 @@ impl DiscourseClient {
         let baseurl = normalize_baseurl(&config.baseurl);
         if baseurl.is_empty() {
             return Err(anyhow!(
-                "missing baseurl for discourse {}; set baseurl in dsc.toml",
+                "missing baseurl for discourse {}; please set baseurl or check your config",
                 config.name
             ));
         }

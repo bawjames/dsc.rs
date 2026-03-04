@@ -9,6 +9,7 @@ use crate::api::DiscourseClient;
 use crate::cli::ListFormat;
 use crate::commands::common::{ensure_api_credentials, select_discourse};
 use crate::config::Config;
+use crate::utils::normalize_baseurl;
 
 #[derive(Debug, Serialize, Deserialize)]
 struct PaletteFile {
@@ -99,7 +100,7 @@ pub fn palette_pull(
         }
     };
     write_palette_file(&path, &palette)?;
-    println!("Palette saved to: {}", path.display());
+    println!("{}", path.display());
     Ok(())
 }
 
@@ -121,7 +122,12 @@ pub fn palette_push(
     let target_id = palette_id.or(palette.id);
     if let Some(target_id) = target_id {
         client.update_color_scheme(target_id, Some(&palette.name), &palette.colors)?;
-        println!("Palette updated successfully with ID: {}", target_id);
+        let url = format!(
+            "{}/admin/customize/colors/{}",
+            normalize_baseurl(&discourse.baseurl),
+            target_id
+        );
+        println!("{}", url);
     } else {
         if palette.name.trim().is_empty() {
             return Err(anyhow!("missing palette name for palette create"));
@@ -129,7 +135,12 @@ pub fn palette_push(
         let new_id = client.create_color_scheme(&palette.name, &palette.colors)?;
         palette.id = Some(new_id);
         write_palette_file(local_path, &palette)?;
-        println!("Palette created successfully with ID: {}", new_id);
+        let url = format!(
+            "{}/admin/customize/colors/{}",
+            normalize_baseurl(&discourse.baseurl),
+            new_id
+        );
+        println!("{}", url);
     }
 
     Ok(())

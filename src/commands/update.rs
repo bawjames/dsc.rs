@@ -1,5 +1,5 @@
 use crate::api::{DiscourseClient, VersionInfo};
-use crate::commands::common::ensure_api_credentials;
+use crate::commands::common::{ensure_api_credentials, missing_config};
 use crate::config::{Config, DiscourseConfig, find_discourse};
 use crate::utils::color_discourse_label;
 use anyhow::{Context, Result, anyhow};
@@ -709,9 +709,10 @@ fn strip_ansi_codes(input: &str) -> String {
 
 fn post_changelog_update(discourse: &DiscourseConfig, payload: &str) -> Result<u64> {
     let topic_id = discourse.changelog_topic_id.ok_or_else(|| {
-        anyhow!(
-            "missing changelog_topic_id for discourse {}; set changelog_topic_id in dsc.toml",
-            discourse.name
+        missing_config(
+            "changelog_topic_id",
+            &format!("discourse {}", discourse.name),
+            "changelog_topic_id",
         )
     })?;
     let client = DiscourseClient::new(discourse)?;

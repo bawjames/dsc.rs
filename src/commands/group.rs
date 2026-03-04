@@ -1,10 +1,10 @@
 use crate::api::DiscourseClient;
 use crate::api::GroupSummary;
 use crate::cli::{ListFormat, StructuredFormat};
-use crate::commands::common::{ensure_api_credentials, select_discourse};
+use crate::commands::common::{ensure_api_credentials, not_found, select_discourse};
 use crate::config::Config;
-use crate::utils::slugify;
-use anyhow::{Result, anyhow};
+use crate::utils::{normalize_baseurl, slugify};
+use anyhow::Result;
 
 pub fn group_list(
     config: &Config,
@@ -121,7 +121,13 @@ pub fn group_copy(
 
     let target_client = DiscourseClient::new(target_discourse)?;
     let new_id = target_client.create_group(&group)?;
-    println!("Group copied successfully with new ID: {}", new_id);
+    let url = format!(
+        "{}/g/{}/{}",
+        normalize_baseurl(&target_discourse.baseurl),
+        group.name,
+        new_id
+    );
+    println!("{}", url);
     Ok(())
 }
 
@@ -130,5 +136,5 @@ fn find_group_summary(client: &DiscourseClient, group_id: u64) -> Result<GroupSu
     groups
         .into_iter()
         .find(|item| item.id == group_id)
-        .ok_or_else(|| anyhow!("group not found: {}", group_id))
+        .ok_or_else(|| not_found("group", group_id))
 }
