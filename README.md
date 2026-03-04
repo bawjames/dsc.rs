@@ -71,6 +71,7 @@ Notes:
 General form: `dsc [--config <path>] <command>`.
 
 For the complete command/flag surface, use `dsc --help` and `dsc <command> --help`.
+The list below is a common-tasks subset; a fuller command reference is included later in this README.
 
 - List installs: `dsc list --format text|markdown|markdown-table|json|yaml|csv|urls`
 - Open listed install URLs in browser tabs/windows: `dsc list --open [--tags alpha,beta]`
@@ -79,6 +80,7 @@ For the complete command/flag surface, use `dsc --help` and `dsc <command> --hel
 - Import installs from file: `dsc import path/to/urls.txt` or `dsc import path/to/forums.csv`
 - Update one install: `dsc update <name> [--no-changelog] [--yes]`
 - Update all installs: `dsc update all [--parallel] [--max <n>] [--no-changelog] [--yes]`
+- Example parallel run: `dsc update all --parallel --max 4 --yes`
 
 Environment variables for `dsc update`:
 
