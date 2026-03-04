@@ -55,6 +55,7 @@ fn main() -> Result<()> {
             yes,
         } => match name.as_str() {
             "all" if max.is_some() && !parallel => Err(anyhow!("--max requires --parallel")),
+            "all" if max == Some(0) => Err(anyhow!("--max must be at least 1")),
             "all" => commands::update::update_all(&config, parallel, max, post_changelog, yes),
             _ if parallel || max.is_some() => {
                 Err(anyhow!("--parallel/--max only apply to 'dsc update all'"))

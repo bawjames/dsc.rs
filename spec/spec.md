@@ -145,8 +145,9 @@ Flags:
 
 - `--no-changelog` skips changelog posting.
 - `--yes` (or `-y`) auto-confirms changelog posting (non-interactive mode).
-- `--parallel` (or `-p`) is disabled for `dsc update all` because updates stop at first failure.
-- `--max <n>` (or `-m <n>`) is ignored when `--parallel` is disabled.
+- `--parallel` (or `-p`) enables concurrent workers for `dsc update all`.
+- `--max <n>` (or `-m <n>`) sets worker count when `--parallel` is enabled.
+- Default worker count for `dsc update all --parallel` is `3` when `--max` is omitted.
 
 Environment variables (optional overrides for SSH commands):
 
@@ -176,8 +177,8 @@ Updates all Discourses known to `dsc` over SSH.
 
 Notes:
 
-- Stops at the first failure to avoid cascading problems.
-- `--parallel` is disabled for `dsc update all` because it must stop at the first failure.
+- In sequential mode (without `--parallel`), updates run one-by-one.
+- In parallel mode, updates run concurrently.
 - `all` is reserved for `dsc update all`.
 
 > SSH credentials are not stored in `dsc.toml`; it is advised to set up SSH keys and use an SSH config file.

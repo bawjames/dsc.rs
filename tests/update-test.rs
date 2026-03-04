@@ -159,3 +159,30 @@ fn extract_test_post_id(output: &std::process::Output) -> Option<u64> {
             .and_then(|value| value.parse::<u64>().ok())
     })
 }
+
+#[test]
+fn update_all_parallel_empty_config_succeeds() {
+    let dir = TempDir::new().expect("tempdir");
+    let config_path = write_temp_config(&dir, "");
+    let output = run_dsc(&["update", "all", "--parallel"], &config_path);
+    assert!(
+        output.status.success(),
+        "update all --parallel should succeed for empty config"
+    );
+}
+
+#[test]
+fn update_all_max_zero_is_rejected() {
+    let dir = TempDir::new().expect("tempdir");
+    let config_path = write_temp_config(&dir, "");
+    let output = run_dsc(&["update", "all", "--parallel", "--max", "0"], &config_path);
+    assert!(
+        !output.status.success(),
+        "update all --parallel --max 0 should fail"
+    );
+    let stderr = String::from_utf8_lossy(&output.stderr);
+    assert!(
+        stderr.contains("--max must be at least 1"),
+        "unexpected stderr: {stderr}"
+    );
+}

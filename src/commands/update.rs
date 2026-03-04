@@ -12,6 +12,8 @@ use std::sync::mpsc;
 use std::thread;
 use std::time::Duration;
 
+const DEFAULT_PARALLEL_UPDATE_WORKERS: usize = 3;
+
 pub fn update_one(config: &Config, name: &str, post_changelog: bool, yes: bool) -> Result<()> {
     let discourse =
         find_discourse(config, name).ok_or_else(|| anyhow!("discourse not found: {}", name))?;
@@ -30,11 +32,6 @@ pub fn update_all(
     post_changelog: bool,
     yes: bool,
 ) -> Result<()> {
-    if parallel {
-        return Err(anyhow!(
-            "--parallel is disabled for 'dsc update all' because it stops on first failure"
-        ));
-    }
     if !parallel {
         for discourse in &config.discourse {
             let metadata = run_update(discourse)?;
@@ -46,7 +43,7 @@ pub fn update_all(
         return Ok(());
     }
 
-    let max_threads = max.unwrap_or_else(|| config.discourse.len().max(1));
+    let max_threads = parallel_worker_count(max, config.discourse.len());
     let mut handles: Vec<thread::JoinHandle<Result<()>>> = Vec::new();
     for discourse in config.discourse.clone() {
         if handles.len() >= max_threads {
@@ -71,6 +68,26 @@ pub fn update_all(
     }
 
     Ok(())
+}
+
+fn parallel_worker_count(max: Option<usize>, discourse_count: usize) -> usize {
+    let requested = max.unwrap_or(DEFAULT_PARALLEL_UPDATE_WORKERS).max(1);
+    requested.min(discourse_count.max(1))
+}
+
+#[cfg(test)]
+mod tests {
+    use super::parallel_worker_count;
+
+    #[test]
+    fn default_parallel_workers_is_three() {
+        assert_eq!(parallel_worker_count(None, 10), 3);
+    }
+
+    #[test]
+    fn max_workers_is_capped_by_discourse_count() {
+        assert_eq!(parallel_worker_count(Some(8), 2), 2);
+    }
 }
 
 struct UpdateMetadata {

@@ -50,10 +50,10 @@ pub enum Commands {
     Update {
         /// Discourse name, or 'all' to update every configured Discourse.
         name: String,
-        /// Parallel update mode (disabled for 'update all').
+        /// Parallel update mode for `dsc update all`.
         #[arg(long, short = 'p')]
         parallel: bool,
-        /// Maximum workers when parallel mode is enabled.
+        /// Maximum workers when parallel mode is enabled (default: 3).
         #[arg(long, short = 'm')]
         max: Option<usize>,
         /// Disable changelog posting (posting prompt is on by default).

@@ -81,6 +81,7 @@ The list below is a common-tasks subset; a fuller command reference is included 
 - Update one install: `dsc update <name> [--no-changelog] [--yes]`
 - Update all installs: `dsc update all [--parallel] [--max <n>] [--no-changelog] [--yes]`
 - Example parallel run: `dsc update all --parallel --max 4 --yes`
+  - When `--parallel` is used without `--max`, `dsc` uses 3 workers by default.
 
 Environment variables for `dsc update`:
 
@@ -186,7 +187,7 @@ Tips:
 - Most commands require the discourse name as the first argument after the subcommand.
 - `topic pull`/`category pull` write Markdown files; paths are created as needed.
 - `topic sync` compares local mtime with the remote post timestamp; pass `--yes` to skip the prompt.
-- `dsc update all` stops at the first failure; `--parallel` is disabled for this command.
+- `dsc update all --parallel` runs updates concurrently; use `--max <n>` to set workers (default: `3`).
 - `all` is reserved for `dsc update all`.
 - `dsc list --tags` accepts comma or semicolon separators and matches any tag (case-insensitive).
 - `dsc list --format urls` prints one base URL per line, useful for piping (for example: `dsc list -f urls --tags alpha | xargs -n1 xdg-open`).
