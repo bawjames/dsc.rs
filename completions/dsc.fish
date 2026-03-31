@@ -77,8 +77,8 @@ complete -c dsc -n "__fish_dsc_using_subcommand ls; and __fish_seen_subcommand_f
 complete -c dsc -n "__fish_dsc_using_subcommand add" -s i -l interactive -d 'Prompt for additional optional fields while adding'
 complete -c dsc -n "__fish_dsc_using_subcommand add" -s h -l help -d 'Print help'
 complete -c dsc -n "__fish_dsc_using_subcommand import" -s h -l help -d 'Print help'
-complete -c dsc -n "__fish_dsc_using_subcommand update" -s m -l max -d 'Maximum workers when parallel mode is enabled' -r
-complete -c dsc -n "__fish_dsc_using_subcommand update" -s p -l parallel -d 'Parallel update mode (disabled for \'update all\')'
+complete -c dsc -n "__fish_dsc_using_subcommand update" -s m -l max -d 'Maximum workers when parallel mode is enabled (default: 3)' -r
+complete -c dsc -n "__fish_dsc_using_subcommand update" -s p -l parallel -d 'Parallel update mode for `dsc update all`'
 complete -c dsc -n "__fish_dsc_using_subcommand update" -l no-changelog -d 'Disable changelog posting (posting prompt is on by default)'
 complete -c dsc -n "__fish_dsc_using_subcommand update" -s y -l yes -d 'Auto-confirm changelog posting prompt (non-interactive mode)'
 complete -c dsc -n "__fish_dsc_using_subcommand update" -s h -l help -d 'Print help'
@@ -223,12 +223,22 @@ complete -c dsc -n "__fish_dsc_using_subcommand theme; and __fish_seen_subcomman
 complete -c dsc -n "__fish_dsc_using_subcommand theme; and __fish_seen_subcommand_from help" -f -a "install" -d 'Install a theme from URL'
 complete -c dsc -n "__fish_dsc_using_subcommand theme; and __fish_seen_subcommand_from help" -f -a "remove" -d 'Remove a theme by name'
 complete -c dsc -n "__fish_dsc_using_subcommand theme; and __fish_seen_subcommand_from help" -f -a "help" -d 'Print this message or the help of the given subcommand(s)'
-complete -c dsc -n "__fish_dsc_using_subcommand setting; and not __fish_seen_subcommand_from set help" -s h -l help -d 'Print help'
-complete -c dsc -n "__fish_dsc_using_subcommand setting; and not __fish_seen_subcommand_from set help" -f -a "set" -d 'Set a site setting across configured Discourses (optionally filtered by tags)'
-complete -c dsc -n "__fish_dsc_using_subcommand setting; and not __fish_seen_subcommand_from set help" -f -a "help" -d 'Print this message or the help of the given subcommand(s)'
-complete -c dsc -n "__fish_dsc_using_subcommand setting; and __fish_seen_subcommand_from set" -l tags -d 'Optional tag filter (comma/semicolon separated, match-any)' -r
+complete -c dsc -n "__fish_dsc_using_subcommand setting; and not __fish_seen_subcommand_from set get list help" -s h -l help -d 'Print help'
+complete -c dsc -n "__fish_dsc_using_subcommand setting; and not __fish_seen_subcommand_from set get list help" -f -a "set" -d 'Set a site setting on a Discourse (or all tagged Discourses)'
+complete -c dsc -n "__fish_dsc_using_subcommand setting; and not __fish_seen_subcommand_from set get list help" -f -a "get" -d 'Get the current value of a site setting'
+complete -c dsc -n "__fish_dsc_using_subcommand setting; and not __fish_seen_subcommand_from set get list help" -f -a "list" -d 'List all site settings'
+complete -c dsc -n "__fish_dsc_using_subcommand setting; and not __fish_seen_subcommand_from set get list help" -f -a "help" -d 'Print this message or the help of the given subcommand(s)'
+complete -c dsc -n "__fish_dsc_using_subcommand setting; and __fish_seen_subcommand_from set" -l tags -d 'Optional tag filter (comma/semicolon separated, match-any). Ignored when discourse is specified' -r
 complete -c dsc -n "__fish_dsc_using_subcommand setting; and __fish_seen_subcommand_from set" -s h -l help -d 'Print help'
-complete -c dsc -n "__fish_dsc_using_subcommand setting; and __fish_seen_subcommand_from help" -f -a "set" -d 'Set a site setting across configured Discourses (optionally filtered by tags)'
+complete -c dsc -n "__fish_dsc_using_subcommand setting; and __fish_seen_subcommand_from get" -s h -l help -d 'Print help'
+complete -c dsc -n "__fish_dsc_using_subcommand setting; and __fish_seen_subcommand_from list" -s f -l format -d 'Output format' -r -f -a "text\t'Plain text'
+json\t'Pretty JSON'
+yaml\t'YAML'"
+complete -c dsc -n "__fish_dsc_using_subcommand setting; and __fish_seen_subcommand_from list" -s v -l verbose -d 'Show output even when list is empty'
+complete -c dsc -n "__fish_dsc_using_subcommand setting; and __fish_seen_subcommand_from list" -s h -l help -d 'Print help (see more with \'--help\')'
+complete -c dsc -n "__fish_dsc_using_subcommand setting; and __fish_seen_subcommand_from help" -f -a "set" -d 'Set a site setting on a Discourse (or all tagged Discourses)'
+complete -c dsc -n "__fish_dsc_using_subcommand setting; and __fish_seen_subcommand_from help" -f -a "get" -d 'Get the current value of a site setting'
+complete -c dsc -n "__fish_dsc_using_subcommand setting; and __fish_seen_subcommand_from help" -f -a "list" -d 'List all site settings'
 complete -c dsc -n "__fish_dsc_using_subcommand setting; and __fish_seen_subcommand_from help" -f -a "help" -d 'Print this message or the help of the given subcommand(s)'
 complete -c dsc -n "__fish_dsc_using_subcommand completions" -s d -l dir -d 'Output directory. Prints to stdout when omitted' -r -F
 complete -c dsc -n "__fish_dsc_using_subcommand completions" -s h -l help -d 'Print help (see more with \'--help\')'
@@ -273,4 +283,6 @@ complete -c dsc -n "__fish_dsc_using_subcommand help; and __fish_seen_subcommand
 complete -c dsc -n "__fish_dsc_using_subcommand help; and __fish_seen_subcommand_from theme" -f -a "list" -d 'List installed themes'
 complete -c dsc -n "__fish_dsc_using_subcommand help; and __fish_seen_subcommand_from theme" -f -a "install" -d 'Install a theme from URL'
 complete -c dsc -n "__fish_dsc_using_subcommand help; and __fish_seen_subcommand_from theme" -f -a "remove" -d 'Remove a theme by name'
-complete -c dsc -n "__fish_dsc_using_subcommand help; and __fish_seen_subcommand_from setting" -f -a "set" -d 'Set a site setting across configured Discourses (optionally filtered by tags)'
+complete -c dsc -n "__fish_dsc_using_subcommand help; and __fish_seen_subcommand_from setting" -f -a "set" -d 'Set a site setting on a Discourse (or all tagged Discourses)'
+complete -c dsc -n "__fish_dsc_using_subcommand help; and __fish_seen_subcommand_from setting" -f -a "get" -d 'Get the current value of a site setting'
+complete -c dsc -n "__fish_dsc_using_subcommand help; and __fish_seen_subcommand_from setting" -f -a "list" -d 'List all site settings'

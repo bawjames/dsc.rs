@@ -1,6 +1,6 @@
-# dsc.rs
+# dsc
 
-dsc.rs is a very cleverly-named Discourse CLI tool written in Rust, which does many of the things I personally want to be able to do with Discourse forums remotely from the command line.
+dsc is a very cleverly-named Discourse CLI tool written in Rust, which does many of the things I personally want to be able to do with Discourse forums remotely from the command line.
 
 ## Features
 
@@ -15,7 +15,7 @@ dsc.rs is a very cleverly-named Discourse CLI tool written in Rust, which does m
 
 Global option:
 
-- `dsc --config <path> <command>` (or `-c <path>`) to select a config file. Without `--config`, dsc searches common local/user/system paths and falls back to `./dsc.toml`.
+- `dsc --config <path> <command>` (or `-c <path>`) to select a config file. Without `--config`, `dsc` searches common local/user/system paths and falls back to `./dsc.toml`.
 - CLI help quality requirement: every command, subcommand, argument, and flag must include concise `--help` text.
 
 ## CLI Consistency Standards
@@ -81,7 +81,7 @@ This section defines the shared standards for command UX and output consistency.
 
 ### `dsc list [--format <format>] [--tags <tag1,tag2,...>]`
 
-Lists all Discourse installs known to dsc.rs, optionally filtered by tags.
+Lists all Discourse installs known to dsc, optionally filtered by tags.
 
 Tag filters accept comma or semicolon separators and match any tag (case-insensitive).
 
@@ -191,7 +191,7 @@ If `--dir` is provided, writes the completion script to the given directory. Oth
 
 ## Emoji
 
-I like to use custom emoji on my forums but the current interface for uploading them is quite tedious, being restricted to the same number of simultaneous uploads as you have set for Posts, and the maximum is currently 20. `dsc.rs` can bulk upload emoji from a local directory to a target Discourse install.
+I like to use custom emoji on my forums but the current interface for uploading them is quite tedious, being restricted to the same number of simultaneous uploads as you have set for Posts, and the maximum is currently 20. `dsc` can bulk upload emoji from a local directory to a target Discourse install.
 
 Having a complete set of the Fontawesome icons used in the Discourse UI as Custom Emoji makes it far easier to explain the user interface in posts to users.
 
@@ -395,7 +395,7 @@ Requires an admin API key and username for each target Discourse.
 
 ### dsc.toml Spec
 
-dsc.toml is the configuration file used by dsc.rs to keep track of Discourse installs.
+dsc.toml is the configuration file used by dsc to keep track of Discourse installs.
 
 ```toml
 [[discourse]]

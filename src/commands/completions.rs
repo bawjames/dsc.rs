@@ -101,29 +101,27 @@ fn inject_zsh_dynamic_discourse_completion(mut content: String) -> String {
 }
 
 fn replace_update_name_completion(content: String) -> String {
-    let mut output = String::with_capacity(content.len());
-    let mut remaining = content.as_str();
     let update_marker = "(update)\n_arguments";
-    while let Some(pos) = remaining.find(update_marker) {
-        let (before, rest) = remaining.split_at(pos);
-        output.push_str(before);
 
-        let rest = &rest[update_marker.len()..];
-        output.push_str(update_marker);
+    if let Some(update_pos) = content.find(update_marker) {
+        let after_start = update_pos + update_marker.len();
+        let after_update = &content[after_start..];
 
-        if let Some(name_pos) = rest.find("':name:_default'") {
-            let (mid, tail) = rest.split_at(name_pos);
-            output.push_str(mid);
-            output.push_str("':name:_dsc_discourse_names'");
-            output.push_str(&tail["':name:_default'".len()..]);
-            remaining = "";
-            output.push_str(remaining);
-            return output;
+        // The generated argument spec includes the description, e.g.:
+        //   ':name -- Discourse name, or '\''all'\'' to update ...:_default'
+        // so we can't match ':name:_default' directly — find ':name' then
+        // the next ':_default'' within that argument.
+        if let Some(name_pos) = after_update.find("':name") {
+            let after_name = &after_update[name_pos..];
+            if let Some(default_pos) = after_name.find(":_default'") {
+                let abs_pos = after_start + name_pos + default_pos;
+                let mut result = content[..abs_pos].to_string();
+                result.push_str(":_dsc_discourse_names'");
+                result.push_str(&content[abs_pos + ":_default'".len()..]);
+                return result;
+            }
         }
-
-        remaining = rest;
     }
 
-    output.push_str(remaining);
-    output
+    content
 }

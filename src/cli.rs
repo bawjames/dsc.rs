@@ -117,6 +117,8 @@ pub enum Commands {
         #[arg(long, short = 'd')]
         dir: Option<PathBuf>,
     },
+    /// Print the dsc version.
+    Version,
 }
 
 #[derive(Subcommand)]
@@ -399,15 +401,37 @@ pub enum ThemeCommand {
 
 #[derive(Subcommand)]
 pub enum SettingCommand {
-    /// Set a site setting across configured Discourses (optionally filtered by tags).
+    /// Set a site setting on a Discourse (or all tagged Discourses).
     Set {
+        /// Discourse name. Required when targeting a single discourse.
+        discourse: String,
         /// Setting key.
         setting: String,
         /// Setting value.
         value: String,
-        /// Optional tag filter (comma/semicolon separated, match-any).
+        /// Optional tag filter (comma/semicolon separated, match-any). Ignored when discourse is specified.
         #[arg(long, value_name = "tag1,tag2")]
         tags: Option<String>,
+    },
+
+    /// Get the current value of a site setting.
+    Get {
+        /// Discourse name.
+        discourse: String,
+        /// Setting key.
+        setting: String,
+    },
+
+    /// List all site settings.
+    List {
+        /// Discourse name.
+        discourse: String,
+        /// Output format.
+        #[arg(long, short = 'f', value_enum, default_value = "text")]
+        format: ListFormat,
+        /// Show output even when list is empty.
+        #[arg(long, short = 'v')]
+        verbose: bool,
     },
 }
 

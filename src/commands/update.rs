@@ -183,7 +183,12 @@ fn run_update(discourse: &DiscourseConfig) -> Result<UpdateMetadata> {
     let discourse_update_cmd = std::env::var("DSC_SSH_UPDATE_CMD")
         .unwrap_or_else(|_| "cd /var/discourse && sudo -n ./launcher rebuild app".to_string());
     let cleanup_cmd = std::env::var("DSC_SSH_CLEANUP_CMD")
-        .unwrap_or_else(|_| "cd /var/discourse && sudo -n ./launcher cleanup".to_string());
+        .unwrap_or_else(|_| {
+            // ./launcher cleanup runs docker container prune + docker image prune, both of which
+            // prompt for [y/N] confirmation. Without a TTY, they read EOF and default to N,
+            // silently doing nothing. Use -f to skip confirmation in non-interactive SSH.
+            "sudo -n docker container prune -f && sudo -n docker image prune -f".to_string()
+        });
 
     let mut server_rebooted = false;
 
@@ -561,20 +566,19 @@ fn get_os_version(target: &str) -> Result<Option<String>> {
 
 fn parse_reclaimed_space(output: &str) -> Option<String> {
     let cleaned = strip_ansi_codes(output);
+    // Use the last match: container prune runs first (typically 0B) and image prune runs
+    // second (the meaningful amount), so the last "Total reclaimed space:" is what matters.
     cleaned
         .lines()
-        .find_map(|line| {
+        .filter_map(|line| {
             let lower = line.to_ascii_lowercase();
-            if let Some(idx) = lower.find("total reclaimed space:") {
-                let (_, rest) = line.split_at(idx);
-                return rest
-                    .splitn(2, ':')
-                    .nth(1)
-                    .map(|value| value.trim().to_string());
-            }
-            None
+            let idx = lower.find("total reclaimed space:")?;
+            let (_, rest) = line.split_at(idx);
+            rest.splitn(2, ':')
+                .nth(1)
+                .map(|value| value.trim().to_string())
         })
-        .map(|value| value.trim().to_string())
+        .last()
 }
 
 fn get_root_disk_usage(target: &str) -> Result<String> {
@@ -778,7 +782,8 @@ fn handle_changelog_post(discourse: &DiscourseConfig, payload: &str, yes: bool) 
 
     match post_changelog_update(discourse, payload) {
         Ok(post_id) => {
-            println!("Changelog post created with ID: {}", post_id);
+            let base = discourse.baseurl.trim_end_matches('/');
+            println!("Changelog post created: {}/p/{}", base, post_id);
             Ok(())
         }
         Err(err) => {

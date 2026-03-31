@@ -271,6 +271,12 @@ _dsc() {
             dsc__help__plugin,remove)
                 cmd="dsc__help__plugin__remove"
                 ;;
+            dsc__help__setting,get)
+                cmd="dsc__help__setting__get"
+                ;;
+            dsc__help__setting,list)
+                cmd="dsc__help__setting__list"
+                ;;
             dsc__help__setting,set)
                 cmd="dsc__help__setting__set"
                 ;;
@@ -352,14 +358,26 @@ _dsc() {
             dsc__plugin__help,remove)
                 cmd="dsc__plugin__help__remove"
                 ;;
+            dsc__setting,get)
+                cmd="dsc__setting__get"
+                ;;
             dsc__setting,help)
                 cmd="dsc__setting__help"
+                ;;
+            dsc__setting,list)
+                cmd="dsc__setting__list"
                 ;;
             dsc__setting,set)
                 cmd="dsc__setting__set"
                 ;;
+            dsc__setting__help,get)
+                cmd="dsc__setting__help__get"
+                ;;
             dsc__setting__help,help)
                 cmd="dsc__setting__help__help"
+                ;;
+            dsc__setting__help,list)
+                cmd="dsc__setting__help__list"
                 ;;
             dsc__setting__help,set)
                 cmd="dsc__setting__help__set"
@@ -1521,8 +1539,36 @@ _dsc() {
             return 0
             ;;
         dsc__help__setting)
-            opts="set"
+            opts="set get list"
             if [[ ${cur} == -* || ${COMP_CWORD} -eq 3 ]] ; then
+                COMPREPLY=( $(compgen -W "${opts}" -- "${cur}") )
+                return 0
+            fi
+            case "${prev}" in
+                *)
+                    COMPREPLY=()
+                    ;;
+            esac
+            COMPREPLY=( $(compgen -W "${opts}" -- "${cur}") )
+            return 0
+            ;;
+        dsc__help__setting__get)
+            opts=""
+            if [[ ${cur} == -* || ${COMP_CWORD} -eq 4 ]] ; then
+                COMPREPLY=( $(compgen -W "${opts}" -- "${cur}") )
+                return 0
+            fi
+            case "${prev}" in
+                *)
+                    COMPREPLY=()
+                    ;;
+            esac
+            COMPREPLY=( $(compgen -W "${opts}" -- "${cur}") )
+            return 0
+            ;;
+        dsc__help__setting__list)
+            opts=""
+            if [[ ${cur} == -* || ${COMP_CWORD} -eq 4 ]] ; then
                 COMPREPLY=( $(compgen -W "${opts}" -- "${cur}") )
                 return 0
             fi
@@ -2039,7 +2085,7 @@ _dsc() {
             return 0
             ;;
         dsc__setting)
-            opts="-h --help set help"
+            opts="-h --help set get list help"
             if [[ ${cur} == -* || ${COMP_CWORD} -eq 2 ]] ; then
                 COMPREPLY=( $(compgen -W "${opts}" -- "${cur}") )
                 return 0
@@ -2052,8 +2098,8 @@ _dsc() {
             COMPREPLY=( $(compgen -W "${opts}" -- "${cur}") )
             return 0
             ;;
-        dsc__setting__help)
-            opts="set help"
+        dsc__setting__get)
+            opts="-h --help <DISCOURSE> <SETTING>"
             if [[ ${cur} == -* || ${COMP_CWORD} -eq 3 ]] ; then
                 COMPREPLY=( $(compgen -W "${opts}" -- "${cur}") )
                 return 0
@@ -2066,7 +2112,49 @@ _dsc() {
             COMPREPLY=( $(compgen -W "${opts}" -- "${cur}") )
             return 0
             ;;
+        dsc__setting__help)
+            opts="set get list help"
+            if [[ ${cur} == -* || ${COMP_CWORD} -eq 3 ]] ; then
+                COMPREPLY=( $(compgen -W "${opts}" -- "${cur}") )
+                return 0
+            fi
+            case "${prev}" in
+                *)
+                    COMPREPLY=()
+                    ;;
+            esac
+            COMPREPLY=( $(compgen -W "${opts}" -- "${cur}") )
+            return 0
+            ;;
+        dsc__setting__help__get)
+            opts=""
+            if [[ ${cur} == -* || ${COMP_CWORD} -eq 4 ]] ; then
+                COMPREPLY=( $(compgen -W "${opts}" -- "${cur}") )
+                return 0
+            fi
+            case "${prev}" in
+                *)
+                    COMPREPLY=()
+                    ;;
+            esac
+            COMPREPLY=( $(compgen -W "${opts}" -- "${cur}") )
+            return 0
+            ;;
         dsc__setting__help__help)
+            opts=""
+            if [[ ${cur} == -* || ${COMP_CWORD} -eq 4 ]] ; then
+                COMPREPLY=( $(compgen -W "${opts}" -- "${cur}") )
+                return 0
+            fi
+            case "${prev}" in
+                *)
+                    COMPREPLY=()
+                    ;;
+            esac
+            COMPREPLY=( $(compgen -W "${opts}" -- "${cur}") )
+            return 0
+            ;;
+        dsc__setting__help__list)
             opts=""
             if [[ ${cur} == -* || ${COMP_CWORD} -eq 4 ]] ; then
                 COMPREPLY=( $(compgen -W "${opts}" -- "${cur}") )
@@ -2094,8 +2182,30 @@ _dsc() {
             COMPREPLY=( $(compgen -W "${opts}" -- "${cur}") )
             return 0
             ;;
+        dsc__setting__list)
+            opts="-f -v -h --format --verbose --help <DISCOURSE>"
+            if [[ ${cur} == -* || ${COMP_CWORD} -eq 3 ]] ; then
+                COMPREPLY=( $(compgen -W "${opts}" -- "${cur}") )
+                return 0
+            fi
+            case "${prev}" in
+                --format)
+                    COMPREPLY=($(compgen -W "text json yaml" -- "${cur}"))
+                    return 0
+                    ;;
+                -f)
+                    COMPREPLY=($(compgen -W "text json yaml" -- "${cur}"))
+                    return 0
+                    ;;
+                *)
+                    COMPREPLY=()
+                    ;;
+            esac
+            COMPREPLY=( $(compgen -W "${opts}" -- "${cur}") )
+            return 0
+            ;;
         dsc__setting__set)
-            opts="-h --tags --help <SETTING> <VALUE>"
+            opts="-h --tags --help <DISCOURSE> <SETTING> <VALUE>"
             if [[ ${cur} == -* || ${COMP_CWORD} -eq 3 ]] ; then
                 COMPREPLY=( $(compgen -W "${opts}" -- "${cur}") )
                 return 0

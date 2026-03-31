@@ -1,4 +1,4 @@
-use anyhow::{Result, anyhow};
+use anyhow::{anyhow, Result};
 use clap::Parser;
 use dsc::cli::*;
 use dsc::commands;
@@ -234,14 +234,39 @@ fn main() -> Result<()> {
         Commands::Setting {
             command:
                 SettingCommand::Set {
+                    discourse,
                     setting,
                     value,
                     tags,
                 },
-        } => commands::setting::set_site_setting(&config, &setting, &value, tags.as_deref()),
+        } => commands::setting::set_site_setting(
+            &config,
+            Some(discourse.as_str()),
+            &setting,
+            &value,
+            tags.as_deref(),
+        ),
+
+        Commands::Setting {
+            command: SettingCommand::Get { discourse, setting },
+        } => commands::setting::get_site_setting(&config, &discourse, &setting),
+
+        Commands::Setting {
+            command:
+                SettingCommand::List {
+                    discourse,
+                    format,
+                    verbose,
+                },
+        } => commands::setting::list_site_settings(&config, &discourse, format, verbose),
 
         Commands::Completions { shell, dir } => {
             commands::completions::write_completions(shell, dir.as_deref())
+        }
+
+        Commands::Version => {
+            println!("{}", env!("CARGO_PKG_VERSION"));
+            Ok(())
         }
     }
 }

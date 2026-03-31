@@ -1,6 +1,6 @@
-# dsc.rs
+# dsc
 
-dsc.rs is a very cleverly-named Discourse CLI tool written in Rust, which does many of the things I personally want to be able to do with Discourse forums remotely from the command line.
+`dsc` is a Discourse CLI tool written in Rust, which does many of the things I need to do with Discourse forums remotely from the command line.
 
 It acts as a command-line companion that keeps multiple forums in sync from your terminal. It can track installs, run upgrades over SSH, manage emojis, perform backups, and save topics or categories as local Markdown so you can edit with your own tools.
 
@@ -19,16 +19,21 @@ Most functionality is provided through interactions with the Discourse REST API,
 
 - Prerequisites: a recent Rust toolchain (edition 2024; install via rustup).
 - From source (debug):
+
   ```bash
   cargo build
   target/debug/dsc --help
   ```
+
 - From source (optimized):
+
   ```bash
   cargo build --release
   target/release/dsc --help
   ```
+
 - Install into your Cargo bin dir:
+
   ```bash
   cargo install --path .
   ```
@@ -127,7 +132,9 @@ Update summary notes:
 - Backup create: `dsc backup create <discourse>`
 - Backup list: `dsc backup list <discourse> [--format text|markdown|markdown-table|json|yaml|csv]`
 - Backup restore: `dsc backup restore <discourse> <backup-path>`
-- Set a site setting: `dsc setting set <setting> <value> [--tags alpha,beta]`
+- Setting list: `dsc setting list <discourse> [--format text|json|yaml]`
+- Setting get: `dsc setting get <discourse> <setting>`
+- Setting set: `dsc setting set <discourse> <setting> <value>`
 - List filtered by tags: `dsc list --tags alpha,beta`
 
 ## Installation
